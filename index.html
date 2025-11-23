@@ -2,7 +2,7 @@
 <html lang="zh-TW" data-theme="light">
 <head>
   <meta charset="UTF-8">
-  <title>財務自由終極儀表板 (Ultimate CFO)</title>
+  <title>財務自由終極儀表板 (AI Explained)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -84,11 +84,11 @@
 
     /* Risk Lines */
     .risk-lines { display: flex; flex-direction: column; gap: 6px; font-size: 0.85rem; margin-top: 8px; }
-    .risk-row { display: flex; justify-content: space-between; align-items: center; background:rgba(0,0,0,0.02); padding:4px; border-radius:4px; }
+    .risk-row { display: flex; justify-content: space-between; align-items: center; background:rgba(0,0,0,0.02); padding:4px 6px; border-radius:4px; }
     .line-val { font-weight: bold; }
     .line-trigger { font-weight: 800; margin-left:4px; }
-    .line-label { color: var(--text-sub); display:flex; align-items:center; gap:4px;}
-    .line-label i { font-size:0.8rem; }
+    .line-label { color: var(--text-sub); display:flex; align-items:center; gap:4px; font-size:0.85rem;}
+    .line-label i { font-size:0.9rem; }
 
     /* Slider Control */
     .sim-control { background: linear-gradient(to right, rgba(239,68,68,0.05), rgba(239,68,68,0.01)); border: 1px solid rgba(239,68,68,0.15); padding: 15px; border-radius: 8px; margin-bottom: 15px; display: flex; flex-direction: column; gap: 10px; }
@@ -101,6 +101,21 @@
     .summary-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.9rem; }
     .summary-val { font-weight: 700; }
     .total-line { border-top: 2px solid #eee; padding-top: 10px; margin-top: 5px; font-size: 1.1rem; }
+
+    /* AI Advice Box & Details */
+    .ai-box { background: linear-gradient(135deg, #eff6ff 0%, #ffffff 100%); border: 1px solid #bfdbfe; padding: 20px; border-radius: 12px; margin-top: 20px; position: relative; overflow: hidden; }
+    [data-theme="dark"] .ai-box { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border-color: #334155; }
+    .ai-title { display: flex; align-items: center; gap: 10px; font-weight: bold; color: var(--c-blue); font-size: 1.1rem; margin-bottom: 10px; }
+    .ai-content { font-size: 0.95rem; line-height: 1.6; color: var(--text-main); margin-bottom: 15px; }
+    .ai-icon-bg { position: absolute; right: -10px; bottom: -20px; font-size: 6rem; opacity: 0.05; color: var(--c-blue); transform: rotate(-15deg); }
+
+    /* Accordion Details */
+    details { background: rgba(255,255,255,0.5); border: 1px solid rgba(0,0,0,0.05); border-radius: 8px; margin-bottom: 8px; overflow: hidden; transition: 0.3s; }
+    details summary { padding: 10px 15px; cursor: pointer; font-weight: 600; font-size: 0.9rem; color: var(--text-sub); display: flex; align-items: center; gap: 8px; outline: none; }
+    details summary:hover { background: rgba(0,0,0,0.02); color: var(--c-blue); }
+    details[open] { background: rgba(255,255,255,0.8); box-shadow: 0 4px 6px -2px rgba(0,0,0,0.05); }
+    details p { padding: 0 15px 15px 15px; margin: 0; font-size: 0.9rem; color: var(--text-main); line-height: 1.6; border-top: 1px solid rgba(0,0,0,0.05); margin-top: 5px; padding-top: 10px; }
+    .highlight-val { color: var(--c-blue); font-weight: bold; }
 
     @media (max-width: 1200px) {
       .hero-grid { grid-template-columns: 1fr 1fr; }
@@ -116,7 +131,7 @@
   <div class="header">
     <div>
       <h1 style="margin:0; color:var(--c-blue)"><i class="fas fa-university"></i> 財務自由終極儀表板</h1>
-      <span style="font-size:0.85rem; color:var(--text-sub)">風險監控、股災模擬、真實負債、利息分流</span>
+      <span style="font-size:0.85rem; color:var(--text-sub)">風險標記、智能解說、股災模擬、真實負債</span>
     </div>
     <div class="btn-group">
       <button onclick="toggleTheme()"><i class="fas fa-adjust"></i> 模式</button>
@@ -183,7 +198,7 @@
             <span style="font-size:0.8rem;">-60%</span>
         </div>
         <div style="font-size:0.8rem; color:var(--text-sub);">
-            * 拖動滑桿，觀察下方右側「模擬結果」欄位。
+            * 拖動滑桿，觀察下方右側「模擬結果」欄位，測試極端情況下的安全性。
         </div>
       </div>
 
@@ -366,6 +381,19 @@
         </div>
       </div>
 
+      <!-- AI 建議區塊 (Enhanced) -->
+      <div class="ai-box">
+        <div class="ai-title"><i class="fas fa-robot"></i> AI 財務總結與建議</div>
+        <div id="ai_advice_content" class="ai-content">正在分析您的財務數據...</div>
+        
+        <div class="ai-title" style="margin-top:20px; font-size:1rem;"><i class="fas fa-lightbulb"></i> 點擊查看：計算邏輯與詳細解說</div>
+        <div id="ai_explained_container">
+            <!-- Dynamic Accordions -->
+        </div>
+        
+        <i class="fas fa-brain ai-icon-bg"></i>
+      </div>
+
     </div>
 
     <!-- 右側：收支計算面板 -->
@@ -388,7 +416,7 @@
         </div>
       </div>
 
-      <!-- 支出 -->
+      <!-- 支出 (利息分拆版) -->
       <div class="section-card">
         <h3 style="margin:0 0 15px 0; color:var(--c-danger)">💸 月支出</h3>
         
@@ -441,13 +469,11 @@
   let chartAsset = null;
   let chartFlow = null;
 
-  // Helper
   const v = (id) => parseFloat(document.getElementById(id)?.value) || 0;
   const t = (id, txt) => { const el = document.getElementById(id); if(el) el.innerHTML = txt; };
 
-  // 1. 資產狀態渲染函數
+  // 1. 資產狀態渲染 (Risk Text Fixed)
   function renderAssetStatus(id, asset, loan, mcLimit, liqLimit, isEtf) {
-    // 滑桿值
     const dropPct = parseFloat(document.getElementById('sim_slider').value);
     document.getElementById('sim_label').innerText = `-${dropPct}%`;
     
@@ -455,7 +481,6 @@
     let interest = 0;
     if(loan > 0) interest = (loan * (rate/100)) / 12;
 
-    // A. 現況計算
     let ratioText = "";
     let color = "b-safe";
     let triggerMC = 0;
@@ -464,7 +489,6 @@
     let bufferLiq = 0;
 
     if(!isEtf) {
-        // 保單
         const r = asset>0 ? loan/asset*100 : 0;
         ratioText = r.toFixed(1) + "%";
         if(r >= liqLimit) color = "b-danger"; else if(r >= mcLimit) color = "b-warn";
@@ -477,7 +501,6 @@
             bufferLiq = Math.max(0, (1 - triggerLiq/asset)*100);
         }
     } else {
-        // ETF
         const r = loan>0 ? asset/loan*100 : 0;
         ratioText = loan>0 ? r.toFixed(0) + "%" : "-";
         if(loan>0 && r < 130) color = "b-warn";
@@ -492,26 +515,26 @@
         }
     }
 
-    // 渲染風險欄位 (修復顯示)
+    // 風險文字標記 (Updated)
     const statusHtml = `
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
-            <span style="font-size:0.75rem; color:var(--text-sub)">目前</span>
+            <span style="font-size:0.75rem; color:var(--text-sub)">目前借款比</span>
             <span class="badge ${color}">${ratioText}</span>
         </div>
         <div class="risk-lines">
             <div class="risk-row">
-                <span class="line-label" title="補繳線"><i class="fas fa-exclamation-triangle" style="color:var(--c-warn)"></i> 跌至 <span class="line-trigger" style="color:var(--c-warn)">${triggerMC.toFixed(1)}</span></span>
+                <span class="line-label"><i class="fas fa-exclamation-circle" style="color:var(--c-warn)"></i> 補繳線 <span class="line-trigger" style="color:var(--c-warn)">${triggerMC.toFixed(1)}</span></span>
                 <span class="line-val" style="color:var(--c-warn); font-size:0.85rem;">剩 ${bufferMC.toFixed(0)}%</span>
             </div>
             <div class="risk-row">
-                <span class="line-label" title="斷頭線"><i class="fas fa-skull" style="color:var(--c-danger)"></i> 跌至 <span class="line-trigger" style="color:var(--c-danger)">${triggerLiq.toFixed(1)}</span></span>
+                <span class="line-label"><i class="fas fa-skull" style="color:var(--c-danger)"></i> 斷頭線 <span class="line-trigger" style="color:var(--c-danger)">${triggerLiq.toFixed(1)}</span></span>
                 <span class="line-val" style="color:var(--c-danger); font-size:0.85rem;">剩 ${bufferLiq.toFixed(0)}%</span>
             </div>
         </div>
     `;
     t(`status_${id}`, statusHtml);
 
-    // B. 模擬
+    // 模擬計算
     const factor = 1 - (dropPct / 100);
     const simAsset = asset * factor;
     let simTxt = "安全";
@@ -523,7 +546,7 @@
         if(simRatioVal >= liqLimit) { simTxt = "斷頭"; simCls = "b-danger"; }
         else if(simRatioVal >= mcLimit) { simTxt = "補繳"; simCls = "b-warn"; }
     } else {
-        simRatioVal = loan>0 ? simAsset/loan*100 : 0; 
+        simRatioVal = loan>0 ? simAsset/loan*100 : 0;
         if(loan>0) {
             if(simRatioVal < 115) { simTxt = "斷頭"; simCls = "b-danger"; }
             else if(simRatioVal < 130) { simTxt = "追繳"; simCls = "b-warn"; }
@@ -540,21 +563,86 @@
     `;
     t(`sim_res_${id}`, simHtml);
 
-    return { interest };
+    return { interest, bufferMC, bufferLiq, name: id };
+  }
+
+  // AI Advice Generation (AI + Explainers)
+  function generateAI(netWorth, surplus, debtRatio, minBufferObj, totalAsset, totalDebt, investDebt, lifeDebt) {
+    let msg = "";
+    let detailsHtml = "";
+
+    // 1. Buffer Analysis
+    const bufferDesc = minBufferObj.val > 20 ? 
+        `<span style='color:var(--c-safe)'>安全充足 (>20%)</span>` : 
+        (minBufferObj.val > 10 ? `<span style='color:var(--c-warn)'>留意波動 (<20%)</span>` : `<span style='color:var(--c-danger)'>危險 (<10%)</span>`);
+    
+    msg += `<div style="margin-bottom:8px;">🛡️ <b>資產安全：</b> 目前最脆弱資產為 <b>${minBufferObj.name.toUpperCase()}</b>，抗跌空間 ${bufferDesc}。</div>`;
+    
+    detailsHtml += `
+        <details>
+            <summary>💡 為什麼 AI 說資產「${minBufferObj.val > 20 ? '安全' : '危險'}」？</summary>
+            <p>
+                AI 掃描了所有資產（保單 A-D 與 ETF），找出<b>最容易爆掉</b>的那一個。<br>
+                目前 <b>${minBufferObj.name.toUpperCase()}</b> 距離「補繳通知」最近，如果市場再跌 <b>${minBufferObj.val.toFixed(1)}%</b> 就會觸發。<br>
+                一般建議保留 <b>20%</b> 以上的緩衝，代表即使遇到像 2022 年那樣的 19% 跌幅，您都不用補錢。
+            </p>
+        </details>
+    `;
+
+    // 2. Leverage Analysis
+    const levDesc = debtRatio > 60 ? 
+        `<span style='color:var(--c-warn)'>偏高 (${debtRatio.toFixed(1)}%)</span>` : 
+        `<span style='color:var(--c-safe)'>健康 (${debtRatio.toFixed(1)}%)</span>`;
+    
+    msg += `<div style="margin-bottom:8px;">⚖️ <b>槓桿評估：</b> 整體負債比 ${levDesc}。主要是房貸與信貸推升了比率。</div>`;
+
+    detailsHtml += `
+        <details>
+            <summary>💡 62.5% 的槓桿率是指什麼？怎麼算的？</summary>
+            <p>
+                這是指您<b>整個人生</b>的槓桿，不只是投資。<br>
+                公式：<span class="highlight-val">總負債 (${totalDebt.toLocaleString()}萬) ÷ 總資產 (${totalAsset.toLocaleString()}萬)</span><br><br>
+                您的總負債包含：<br>
+                1. 投資借款（保單/ETF）：${investDebt.toLocaleString()} 萬<br>
+                2. 生活負債（房貸/信貸）：${lifeDebt.toLocaleString()} 萬<br><br>
+                因為房貸本金與房產價值通常佔比很大，加上還有信貸，所以整體比率會偏高。AI 建議優先償還<b>信貸</b>，因為它是高利率且無擔保的「壞債」。
+            </p>
+        </details>
+    `;
+
+    // 3. Cashflow Analysis
+    const cashDesc = surplus > 0 ? 
+        `<span style='color:var(--c-safe)'>正向健康 (+${surplus.toFixed(1)}萬)</span>` : 
+        `<span style='color:var(--c-danger)'>赤字警示 (${surplus.toFixed(1)}萬)</span>`;
+    
+    msg += `<div>💰 <b>現金流：</b> 每月結餘 ${cashDesc}。請確保被動收入持續大於利息支出。</div>`;
+
+    document.getElementById('ai_advice_content').innerHTML = msg;
+    document.getElementById('ai_explained_container').innerHTML = detailsHtml;
   }
 
   function calc() {
     let policyTotalInterest = 0;
     let etfTotalInterest = 0;
+    let minBuffer = 100;
+    let minBufferName = "無";
     
+    const processRisk = (res) => {
+        if (res.bufferMC < minBuffer && res.bufferMC >= 0) { // bufferMC logic
+            minBuffer = res.bufferMC;
+            minBufferName = res.name;
+        }
+        return res.interest;
+    };
+
     const rA = renderAssetStatus('a', v('asset_a'), v('loan_a'), 80, 90, false);
     const rB = renderAssetStatus('b', v('asset_b'), v('loan_b'), 80, 90, false);
     const rC = renderAssetStatus('c', v('asset_c'), v('loan_c'), 80, 90, false);
     const rD = renderAssetStatus('d', v('asset_d'), v('loan_d'), 60, 70, false);
-    policyTotalInterest = rA.interest + rB.interest + rC.interest + rD.interest;
-
     const rE = renderAssetStatus('etf', v('asset_etf'), v('loan_etf'), 0, 0, true);
-    etfTotalInterest = rE.interest;
+
+    policyTotalInterest = processRisk(rA) + processRisk(rB) + processRisk(rC) + processRisk(rD);
+    etfTotalInterest = processRisk(rE);
 
     t('disp_policy_interest', policyTotalInterest.toFixed(2));
     t('disp_etf_interest', etfTotalInterest.toFixed(2));
@@ -609,6 +697,9 @@
     t('surplus_msg', surplus>=0 ? "財務健康" : "現金流赤字");
 
     updateCharts([investAsset, houseVal, cash], [incAct, incPas, totalExp]);
+    
+    // 呼叫 AI 分析
+    generateAI(netWorth, surplus, debtRatio, { val: minBuffer, name: minBufferName }, totalAssets, totalLiabilities, investDebt, (houseDebt+personalDebt));
   }
 
   function initCharts() {
@@ -643,14 +734,14 @@
   function saveData() {
     const d = {};
     document.querySelectorAll('input').forEach(e => d[e.id] = e.value);
-    localStorage.setItem('wcj_cfo_final_fixed', JSON.stringify(d));
+    localStorage.setItem('wcj_cfo_ai_v2', JSON.stringify(d));
     alert('已儲存');
   }
   function toggleTheme() { document.documentElement.setAttribute('data-theme', document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark'); }
 
   window.onload = () => {
     initCharts();
-    const d = JSON.parse(localStorage.getItem('wcj_cfo_final_fixed'));
+    const d = JSON.parse(localStorage.getItem('wcj_cfo_ai_v2'));
     if(d) for(k in d) if(document.getElementById(k)) document.getElementById(k).value=d[k];
     calc();
   };
