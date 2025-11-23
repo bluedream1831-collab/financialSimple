@@ -394,4 +394,447 @@
             
             <div style="flex:1; min-width:200px; border-right:1px solid #eee; padding-right:20px;">
                 <h4 style="margin:0 0 10px 0; color:var(--text-sub)">房產估值</h4>
-             
+                <div class="inp-group">
+                    <label class="inp-label">房屋市值</label>
+                    <input id="asset_house" type="number" value="470" oninput="calc()" style="width:100%; border-color:var(--c-blue)">
+                </div>
+            </div>
+
+            <div style="flex:1; min-width:200px;">
+                <h4 style="margin:0 0 10px 0; color:var(--text-sub)">欠款本金 (Outstanding Principal)</h4>
+                <div style="display:flex; gap:15px;">
+                    <div class="inp-group" style="flex:1">
+                        <label class="inp-label">房貸剩餘本金</label>
+                        <input id="debt_house" type="number" value="462" oninput="calc()" style="width:100%">
+                    </div>
+                    <div class="inp-group" style="flex:1">
+                        <label class="inp-label">信貸剩餘本金</label>
+                        <input id="debt_personal" type="number" value="98" oninput="calc()" style="width:100%">
+                    </div>
+                </div>
+            </div>
+
+            <div style="flex:1; min-width:150px;">
+                <h4 style="margin:0 0 10px 0; color:var(--text-sub)">流動現金</h4>
+                <div class="inp-group">
+                    <label class="inp-label">手頭現金</label>
+                    <input id="asset_cash" type="number" value="45" oninput="calc()" style="width:100%; border-color:var(--c-safe)">
+                </div>
+            </div>
+
+        </div>
+      </div>
+
+      <!-- AI 建議區塊 -->
+      <div class="ai-box">
+        <div class="ai-title"><i class="fas fa-robot"></i> AI 財務總結與建議</div>
+        <div id="ai_advice_content" class="ai-content">正在分析您的財務數據...</div>
+        
+        <div class="ai-title" style="margin-top:20px; font-size:1rem;"><i class="fas fa-lightbulb"></i> 點擊查看：計算邏輯與詳細解說</div>
+        <div id="ai_explained_container"></div>
+        
+        <i class="fas fa-brain ai-icon-bg"></i>
+      </div>
+
+    </div>
+
+    <!-- 右側：收支計算面板 -->
+    <div class="side-panel">
+      
+      <!-- 收入 -->
+      <div class="section-card">
+        <h3 style="margin:0 0 15px 0; color:var(--c-blue)">💰 月收入</h3>
+        <div class="summary-row">
+            <span>主動薪資</span>
+            <input id="inc_active" type="number" value="4.2" oninput="calc()">
+        </div>
+        <div class="summary-row">
+            <span style="color:var(--c-gold); font-weight:bold;">被動配息</span>
+            <input id="inc_passive" type="number" value="5.5" oninput="calc()">
+        </div>
+        <div class="summary-row total-line" style="color:var(--c-blue)">
+            <span>總收入</span>
+            <span id="disp_inc_total" class="privacy-blur">0</span>
+        </div>
+      </div>
+
+      <!-- 支出 -->
+      <div class="section-card">
+        <h3 style="margin:0 0 15px 0; color:var(--c-danger)">💸 月支出</h3>
+        
+        <div class="summary-row">
+            <span>房貸月供</span>
+            <input id="exp_house" type="number" value="3.1" oninput="calc()">
+        </div>
+        <div class="summary-row">
+            <span>信貸月供</span>
+            <input id="exp_personal" type="number" value="1.3" oninput="calc()">
+        </div>
+        <div class="summary-row">
+            <span>保險/生活</span>
+            <input id="exp_life" type="number" value="2.6" oninput="calc()">
+        </div>
+        <div class="summary-row">
+            <span>彈性支出</span>
+            <input id="exp_flex" type="number" value="0.0" oninput="calc()">
+        </div>
+        
+        <hr style="border:0; border-top:1px dashed #ddd; margin:10px 0;">
+        
+        <div class="summary-row" style="color:var(--text-sub)">
+            <span>保單利息(自動)</span>
+            <span id="disp_policy_interest" class="privacy-blur">0</span>
+        </div>
+        <div class="summary-row" style="color:var(--text-sub)">
+            <span>ETF利息(自動)</span>
+            <span id="disp_etf_interest" class="privacy-blur">0</span>
+        </div>
+
+        <div class="summary-row total-line" style="color:var(--c-danger)">
+            <span>總支出</span>
+            <span id="disp_exp_total" class="privacy-blur">0</span>
+        </div>
+      </div>
+
+      <!-- 結餘 -->
+      <div class="section-card" style="text-align:center;">
+         <div style="font-size:0.9rem; color:var(--text-sub)">月現金流</div>
+         <div style="font-size:2rem; font-weight:800;" id="disp_surplus_big" class="privacy-blur">0</div>
+         <div style="margin-top:5px; font-size:0.8rem;" id="surplus_msg"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  let chartAsset = null;
+  let chartFlow = null;
+
+  const v = (id) => parseFloat(document.getElementById(id)?.value) || 0;
+  const t = (id, txt) => { const el = document.getElementById(id); if(el) el.innerHTML = txt; };
+
+  // 1. 資產狀態渲染 (Risk + Water Level)
+  function renderAssetStatus(id, asset, loan, mcLimit, liqLimit, isEtf) {
+    const dropPct = parseFloat(document.getElementById('sim_slider').value);
+    document.getElementById('sim_label').innerText = `-${dropPct}%`;
+    
+    const rate = v(`rate_${id}`);
+    let interest = 0;
+    if(loan > 0) interest = (loan * (rate/100)) / 12;
+
+    let ratioText = "";
+    let color = "b-safe";
+    let triggerMC = 0, triggerLiq = 0;
+    let bufferMC = 0, bufferLiq = 0;
+    let barWidth = 0;
+
+    if(!isEtf) {
+        // Policy
+        const r = asset>0 ? loan/asset*100 : 0;
+        ratioText = r.toFixed(1) + "%";
+        if(r >= liqLimit) color = "b-danger"; else if(r >= mcLimit) color = "b-warn";
+        
+        triggerMC = loan / (mcLimit/100);
+        triggerLiq = loan / (liqLimit/100);
+        
+        if(asset > 0) {
+            bufferMC = Math.max(0, (1 - triggerMC/asset)*100);
+            bufferLiq = Math.max(0, (1 - triggerLiq/asset)*100);
+        }
+        barWidth = Math.min(r, 100); // Bar fills from left
+    } else {
+        // ETF
+        const r = loan>0 ? asset/loan*100 : 0; // Maint Ratio
+        ratioText = loan>0 ? r.toFixed(0) + "%" : "-";
+        
+        if(loan>0 && r < 130) color = "b-warn";
+        if(loan>0 && r < 115) color = "b-danger";
+
+        triggerMC = loan * 1.3;
+        triggerLiq = loan * 1.15;
+        
+        if(asset > 0) {
+            bufferMC = Math.max(0, (1 - triggerMC/asset)*100);
+            bufferLiq = Math.max(0, (1 - triggerLiq/asset)*100);
+        }
+        
+        // For visual bar consistency (higher is worse):
+        // Convert Maint Ratio to Loan-to-Value roughly for display
+        // Maint 130% ~= LTV 77%
+        // Maint 115% ~= LTV 87%
+        // Current LTV
+        let ltv = asset>0 ? loan/asset*100 : 0;
+        barWidth = Math.min(ltv, 100);
+    }
+
+    // Bar Color
+    let barColor = "var(--c-safe)";
+    if(barWidth >= (isEtf ? 77 : mcLimit)) barColor = "var(--c-warn)";
+    if(barWidth >= (isEtf ? 87 : liqLimit)) barColor = "var(--c-danger)";
+
+    // Markers Position (Loan-to-Value scale)
+    let posMC = isEtf ? 77 : mcLimit;
+    let posLiq = isEtf ? 87 : liqLimit;
+
+    const statusHtml = `
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2px;">
+            <span style="font-size:0.75rem; color:var(--text-sub)">借款比 <span class="badge ${color}" style="font-size:0.7rem; padding:2px 6px;">${ratioText}</span></span>
+        </div>
+        
+        <!-- Water Level Bar -->
+        <div class="water-track" title="水漲船高 = 風險增加">
+            <div class="water-fill" style="width:${barWidth}%; background:${barColor}"></div>
+            <div class="water-mark mark-mc" style="left:${posMC}%" title="補繳線"></div>
+            <div class="water-mark mark-liq" style="left:${posLiq}%" title="斷頭線"></div>
+        </div>
+
+        <div class="risk-lines">
+            <div class="risk-row">
+                <span class="line-label"><i class="fas fa-exclamation-circle" style="color:var(--c-warn)"></i> 補繳線 <span class="line-trigger privacy-blur" style="color:var(--c-warn)">${triggerMC.toFixed(1)}</span></span>
+                <span class="line-val" style="color:var(--c-warn); font-size:0.85rem;">剩 ${bufferMC.toFixed(0)}%</span>
+            </div>
+            <div class="risk-row">
+                <span class="line-label"><i class="fas fa-skull" style="color:var(--c-danger)"></i> 斷頭線 <span class="line-trigger privacy-blur" style="color:var(--c-danger)">${triggerLiq.toFixed(1)}</span></span>
+                <span class="line-val" style="color:var(--c-danger); font-size:0.85rem;">剩 ${bufferLiq.toFixed(0)}%</span>
+            </div>
+        </div>
+    `;
+    t(`status_${id}`, statusHtml);
+
+    // B. Simulation
+    const factor = 1 - (dropPct / 100);
+    const simAsset = asset * factor;
+    let simTxt = "安全";
+    let simCls = "b-safe";
+    let simRatioVal = 0;
+
+    if(!isEtf) {
+        simRatioVal = simAsset>0 ? loan/simAsset*100 : 0;
+        if(simRatioVal >= liqLimit) { simTxt = "斷頭"; simCls = "b-danger"; }
+        else if(simRatioVal >= mcLimit) { simTxt = "補繳"; simCls = "b-warn"; }
+    } else {
+        simRatioVal = loan>0 ? simAsset/loan*100 : 0; 
+        if(loan>0) {
+            if(simRatioVal < 115) { simTxt = "斷頭"; simCls = "b-danger"; }
+            else if(simRatioVal < 130) { simTxt = "追繳"; simCls = "b-warn"; }
+        }
+    }
+
+    const simDisplayRatio = isEtf ? (loan>0?simRatioVal.toFixed(0)+"%":"-") : simRatioVal.toFixed(1)+"%";
+    const simHtml = `
+        <div style="font-weight:bold; font-size:0.9rem;" class="privacy-blur">${simAsset.toFixed(0)} <small style="color:var(--text-sub)">萬</small></div>
+        <div style="display:flex; justify-content:space-between; margin-top:4px; font-size:0.8rem;">
+            <span>${simDisplayRatio}</span>
+            <span class="badge ${simCls}">${simTxt}</span>
+        </div>
+    `;
+    t(`sim_res_${id}`, simHtml);
+
+    return { interest, bufferMC, bufferLiq, name: id };
+  }
+
+  // AI Advice
+  function generateAI(netWorth, surplus, debtRatio, minBufferObj, totalAsset, totalDebt, investDebt, lifeDebt) {
+    let msg = "";
+    let detailsHtml = "";
+
+    // 1. Buffer
+    const bufferDesc = minBufferObj.val > 20 ? 
+        `<span style='color:var(--c-safe)'>安全充足 (>20%)</span>` : 
+        (minBufferObj.val > 10 ? `<span style='color:var(--c-warn)'>留意波動 (<20%)</span>` : `<span style='color:var(--c-danger)'>危險 (<10%)</span>`);
+    
+    msg += `<div style="margin-bottom:8px;">🛡️ <b>資產安全：</b> 目前最脆弱資產為 <b>${minBufferObj.name.toUpperCase()}</b>，抗跌空間 ${bufferDesc}。</div>`;
+    
+    detailsHtml += `
+        <details>
+            <summary>💡 為什麼 AI 說資產「${minBufferObj.val > 20 ? '安全' : '危險'}」？</summary>
+            <p>
+                AI 掃描了所有資產，找出<b>最容易爆掉</b>的那一個。<br>
+                目前 <b>${minBufferObj.name.toUpperCase()}</b> 距離「補繳通知」最近，如果市場再跌 <b>${minBufferObj.val.toFixed(1)}%</b> 就會觸發。<br>
+                建議保留 <b>20%</b> 以上的緩衝。
+            </p>
+        </details>
+    `;
+
+    // 2. Leverage
+    const levDesc = debtRatio > 60 ? 
+        `<span style='color:var(--c-warn)'>偏高 (${debtRatio.toFixed(1)}%)</span>` : 
+        `<span style='color:var(--c-safe)'>健康 (${debtRatio.toFixed(1)}%)</span>`;
+    
+    msg += `<div style="margin-bottom:8px;">⚖️ <b>槓桿評估：</b> 整體負債比 ${levDesc}。主要是房貸與信貸推升了比率。</div>`;
+
+    detailsHtml += `
+        <details>
+            <summary>💡 ${debtRatio.toFixed(1)}% 的槓桿率是指什麼？</summary>
+            <p>
+                公式：<span class="highlight-val">總負債 (${totalDebt.toLocaleString()}萬) ÷ 總資產 (${totalAsset.toLocaleString()}萬)</span><br><br>
+                您的總負債包含：<br>
+                1. 投資借款（保單/ETF）：${investDebt.toLocaleString()} 萬<br>
+                2. 生活負債（房貸/信貸）：${lifeDebt.toLocaleString()} 萬<br><br>
+                AI 建議優先償還<b>信貸</b>，因為它是高利率壞債。
+            </p>
+        </details>
+    `;
+
+    // 3. Cashflow
+    const cashDesc = surplus > 0 ? 
+        `<span style='color:var(--c-safe)'>正向健康 (+${surplus.toFixed(1)}萬)</span>` : 
+        `<span style='color:var(--c-danger)'>赤字警示 (${surplus.toFixed(1)}萬)</span>`;
+    
+    msg += `<div>💰 <b>現金流：</b> 每月結餘 ${cashDesc}。請確保被動收入持續大於利息支出。</div>`;
+
+    document.getElementById('ai_advice_content').innerHTML = msg;
+    document.getElementById('ai_explained_container').innerHTML = detailsHtml;
+  }
+
+  function calc() {
+    let policyTotalInterest = 0;
+    let etfTotalInterest = 0;
+    let minBuffer = 100;
+    let minBufferName = "無";
+    
+    const processRisk = (res) => {
+        if (res.bufferMC < minBuffer && res.bufferMC >= 0) { 
+            minBuffer = res.bufferMC;
+            minBufferName = res.name;
+        }
+        return res.interest;
+    };
+
+    const rA = renderAssetStatus('a', v('asset_a'), v('loan_a'), 80, 90, false);
+    const rB = renderAssetStatus('b', v('asset_b'), v('loan_b'), 80, 90, false);
+    const rC = renderAssetStatus('c', v('asset_c'), v('loan_c'), 80, 90, false);
+    const rD = renderAssetStatus('d', v('asset_d'), v('loan_d'), 60, 70, false);
+    const rE = renderAssetStatus('etf', v('asset_etf'), v('loan_etf'), 0, 0, true);
+
+    policyTotalInterest = processRisk(rA) + processRisk(rB) + processRisk(rC) + processRisk(rD);
+    etfTotalInterest = processRisk(rE);
+
+    t('disp_policy_interest', policyTotalInterest.toFixed(2));
+    t('disp_etf_interest', etfTotalInterest.toFixed(2));
+    const totalInvestInterest = policyTotalInterest + etfTotalInterest;
+
+    const investAsset = v('asset_a')+v('asset_b')+v('asset_c')+v('asset_d')+v('asset_etf');
+    const investDebt = v('loan_a')+v('loan_b')+v('loan_c')+v('loan_d')+v('loan_etf');
+    const investCost = v('cost_a')+v('cost_b')+v('cost_c')+v('cost_d')+v('cost_etf');
+    const houseVal = v('asset_house');
+    const houseDebt = v('debt_house');
+    const personalDebt = v('debt_personal');
+    const cash = v('asset_cash');
+
+    const totalAssets = investAsset + houseVal + cash;
+    const totalLiabilities = investDebt + houseDebt + personalDebt;
+    const netWorth = totalAssets - totalLiabilities;
+
+    t('val_net_worth', netWorth.toLocaleString());
+    t('val_assets', totalAssets.toLocaleString());
+    t('val_liabilities', totalLiabilities.toLocaleString());
+    t('val_invest_assets', investAsset.toLocaleString());
+    t('val_cost', investCost.toLocaleString());
+    
+    const pl = investAsset - investCost;
+    const elPl = document.getElementById('val_pl');
+    elPl.innerText = (pl>0?"+":"") + pl.toLocaleString();
+    elPl.style.color = pl>=0 ? "var(--c-safe)" : "var(--c-danger)";
+
+    t('val_invest_debt', investDebt.toLocaleString());
+    t('val_life_debt', (houseDebt+personalDebt).toLocaleString());
+    
+    const debtRatio = totalAssets>0 ? (totalLiabilities/totalAssets*100) : 0;
+    t('val_debt_ratio', debtRatio.toFixed(1)+"%");
+
+    const incAct = v('inc_active');
+    const incPas = v('inc_passive');
+    const inc = incAct + incPas;
+    t('disp_inc_total', inc.toFixed(2));
+    t('val_income', inc.toFixed(1));
+
+    const expFix = v('exp_house') + v('exp_personal') + v('exp_life') + v('exp_flex');
+    const totalExp = expFix + totalInvestInterest;
+    t('disp_exp_total', totalExp.toFixed(2));
+    t('val_expense', totalExp.toFixed(1));
+
+    const surplus = inc - totalExp;
+    t('val_surplus', surplus.toFixed(2));
+    
+    const surBig = document.getElementById('disp_surplus_big');
+    surBig.innerText = (surplus>0?"+":"") + surplus.toFixed(2) + " 萬";
+    surBig.style.color = surplus>=0 ? "var(--c-safe)" : "var(--c-danger)";
+    t('surplus_msg', surplus>=0 ? "財務健康" : "現金流赤字");
+
+    updateCharts([investAsset, houseVal, cash], [incAct, incPas, totalExp]);
+    generateAI(netWorth, surplus, debtRatio, { val: minBuffer, name: minBufferName }, totalAssets, totalLiabilities, investDebt, (houseDebt+personalDebt));
+  }
+
+  function initCharts() {
+    chartAsset = new Chart(document.getElementById('assetChart'), {
+        type: 'doughnut',
+        data: {
+            labels: ['投資', '房產', '現金'],
+            datasets: [{ data: [1, 1, 1], backgroundColor: ['#8b5cf6', '#f97316', '#10b981'], borderWidth: 0 }]
+        },
+        options: { responsive:true, maintainAspectRatio:false, cutout:'65%' }
+    });
+
+    chartFlow = new Chart(document.getElementById('flowChart'), {
+        type: 'bar',
+        data: {
+            labels: ['收支'],
+            datasets: [
+                { label: '主動', data: [0], backgroundColor: '#3b82f6', stack: 'Income' },
+                { label: '被動', data: [0], backgroundColor: '#eab308', stack: 'Income' },
+                { label: '支出', data: [0], backgroundColor: '#ef4444', stack: 'Expense' }
+            ]
+        },
+        options: { responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true }, y: { beginAtZero: true } } }
+    });
+  }
+
+  function updateCharts(assets, flows) {
+    if(chartAsset) { chartAsset.data.datasets[0].data = assets; chartAsset.update(); }
+    if(chartFlow) { chartFlow.data.datasets[0].data = [flows[0]]; chartFlow.data.datasets[1].data = [flows[1]]; chartFlow.data.datasets[2].data = [flows[2]]; chartFlow.update(); }
+  }
+
+  function togglePrivacy() {
+    document.body.classList.toggle('privacy-mode');
+    const btn = document.getElementById('btnPrivacy');
+    if(document.body.classList.contains('privacy-mode')) {
+        btn.innerHTML = '<i class="fas fa-eye-slash"></i> 顯示金額';
+        btn.classList.add('active');
+    } else {
+        btn.innerHTML = '<i class="fas fa-eye"></i> 隱藏金額';
+        btn.classList.remove('active');
+    }
+  }
+
+  function exportPDF() {
+    const el = document.getElementById('dashboard-container');
+    const opt = {
+        margin: 5,
+        filename: '財務報告.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS:true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+    alert("正在產生 PDF (A4 直式)，請稍候...");
+    html2pdf().set(opt).from(el).save();
+  }
+
+  function saveData() {
+    const d = {};
+    document.querySelectorAll('input').forEach(e => d[e.id] = e.value);
+    localStorage.setItem('wcj_final_v6_water', JSON.stringify(d));
+    alert('已儲存');
+  }
+  function toggleTheme() { document.documentElement.setAttribute('data-theme', document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark'); }
+
+  window.onload = () => {
+    initCharts();
+    const d = JSON.parse(localStorage.getItem('wcj_final_v6_water'));
+    if(d) for(k in d) if(document.getElementById(k)) document.getElementById(k).value=d[k];
+    calc();
+  };
+</script>
+</body>
+</html>
