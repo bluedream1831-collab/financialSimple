@@ -2,7 +2,7 @@
 <html lang="zh-TW" data-theme="light">
 <head>
   <meta charset="UTF-8">
-  <title>WCJ 終極財務儀表板 (Risk Display Fixed)</title>
+  <title>財務自由終極儀表板 (Ultimate CFO)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -63,7 +63,7 @@
 
     /* Table Fixed */
     .table-container { overflow-x: auto; }
-    .asset-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; min-width: 800px; /* 強制最小寬度，確保不被擠壓 */ }
+    .asset-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; min-width: 800px; }
     .asset-table th { text-align: left; padding: 10px; color: var(--text-sub); border-bottom: 2px solid var(--bg-body); white-space: nowrap; }
     .asset-table td { padding: 12px 10px; border-bottom: 1px solid #f1f5f9; vertical-align: top; }
     
@@ -82,7 +82,7 @@
     
     .rule-tag { font-size: 0.75rem; color: var(--text-sub); background: #f1f5f9; padding: 2px 6px; border-radius: 4px; margin-top: 4px; display: inline-block; border:1px solid #e2e8f0; }
 
-    /* Risk Lines (Updated Visibility) */
+    /* Risk Lines */
     .risk-lines { display: flex; flex-direction: column; gap: 6px; font-size: 0.85rem; margin-top: 8px; }
     .risk-row { display: flex; justify-content: space-between; align-items: center; background:rgba(0,0,0,0.02); padding:4px; border-radius:4px; }
     .line-val { font-weight: bold; }
@@ -106,7 +106,6 @@
       .hero-grid { grid-template-columns: 1fr 1fr; }
       .charts-grid { grid-template-columns: 1fr; }
       .main-layout { grid-template-columns: 1fr; }
-      /* Removed the hiding of table columns! */
     }
   </style>
 </head>
@@ -116,8 +115,8 @@
   
   <div class="header">
     <div>
-      <h1 style="margin:0; color:var(--c-blue)"><i class="fas fa-university"></i> WCJ 終極財務儀表板</h1>
-      <span style="font-size:0.85rem; color:var(--text-sub)">風險線顯示修復版 (Risk Fixed)</span>
+      <h1 style="margin:0; color:var(--c-blue)"><i class="fas fa-university"></i> 財務自由終極儀表板</h1>
+      <span style="font-size:0.85rem; color:var(--text-sub)">風險監控、股災模擬、真實負債、利息分流</span>
     </div>
     <div class="btn-group">
       <button onclick="toggleTheme()"><i class="fas fa-adjust"></i> 模式</button>
@@ -442,10 +441,11 @@
   let chartAsset = null;
   let chartFlow = null;
 
+  // Helper
   const v = (id) => parseFloat(document.getElementById(id)?.value) || 0;
   const t = (id, txt) => { const el = document.getElementById(id); if(el) el.innerHTML = txt; };
 
-  // 1. 資產狀態渲染函數 (Risk Fixed)
+  // 1. 資產狀態渲染函數
   function renderAssetStatus(id, asset, loan, mcLimit, liqLimit, isEtf) {
     // 滑桿值
     const dropPct = parseFloat(document.getElementById('sim_slider').value);
@@ -492,10 +492,10 @@
         }
     }
 
-    // HTML Output (Force Visible)
+    // 渲染風險欄位 (修復顯示)
     const statusHtml = `
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
-            <span style="font-size:0.75rem; color:var(--text-sub)">當前</span>
+            <span style="font-size:0.75rem; color:var(--text-sub)">目前</span>
             <span class="badge ${color}">${ratioText}</span>
         </div>
         <div class="risk-lines">
@@ -643,14 +643,14 @@
   function saveData() {
     const d = {};
     document.querySelectorAll('input').forEach(e => d[e.id] = e.value);
-    localStorage.setItem('wcj_cfo_risk_fixed_final', JSON.stringify(d));
+    localStorage.setItem('wcj_cfo_final_fixed', JSON.stringify(d));
     alert('已儲存');
   }
   function toggleTheme() { document.documentElement.setAttribute('data-theme', document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark'); }
 
   window.onload = () => {
     initCharts();
-    const d = JSON.parse(localStorage.getItem('wcj_cfo_risk_fixed_final'));
+    const d = JSON.parse(localStorage.getItem('wcj_cfo_final_fixed'));
     if(d) for(k in d) if(document.getElementById(k)) document.getElementById(k).value=d[k];
     calc();
   };
