@@ -2,7 +2,7 @@
 <html lang="zh-TW" data-theme="light">
 <head>
   <meta charset="UTF-8">
-  <title>WCJ 終極財務儀表板 (Risk Line Fixed)</title>
+  <title>WCJ 終極財務儀表板 (Risk Display Fixed)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -61,7 +61,9 @@
     .section-card { background: var(--bg-card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 20px; margin-bottom: 20px; }
     .section-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid var(--bg-body); display: flex; justify-content: space-between; align-items: center; }
 
-    .asset-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    /* Table Fixed */
+    .table-container { overflow-x: auto; }
+    .asset-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; min-width: 800px; /* 強制最小寬度，確保不被擠壓 */ }
     .asset-table th { text-align: left; padding: 10px; color: var(--text-sub); border-bottom: 2px solid var(--bg-body); white-space: nowrap; }
     .asset-table td { padding: 12px 10px; border-bottom: 1px solid #f1f5f9; vertical-align: top; }
     
@@ -80,12 +82,13 @@
     
     .rule-tag { font-size: 0.75rem; color: var(--text-sub); background: #f1f5f9; padding: 2px 6px; border-radius: 4px; margin-top: 4px; display: inline-block; border:1px solid #e2e8f0; }
 
-    /* Risk Lines (New Style) */
-    .risk-lines { display: flex; flex-direction: column; gap: 4px; font-size: 0.8rem; margin-top: 5px; }
-    .risk-row { display: flex; justify-content: space-between; align-items: center; }
+    /* Risk Lines (Updated Visibility) */
+    .risk-lines { display: flex; flex-direction: column; gap: 6px; font-size: 0.85rem; margin-top: 8px; }
+    .risk-row { display: flex; justify-content: space-between; align-items: center; background:rgba(0,0,0,0.02); padding:4px; border-radius:4px; }
     .line-val { font-weight: bold; }
+    .line-trigger { font-weight: 800; margin-left:4px; }
     .line-label { color: var(--text-sub); display:flex; align-items:center; gap:4px;}
-    .line-label i { font-size:0.7rem; }
+    .line-label i { font-size:0.8rem; }
 
     /* Slider Control */
     .sim-control { background: linear-gradient(to right, rgba(239,68,68,0.05), rgba(239,68,68,0.01)); border: 1px solid rgba(239,68,68,0.15); padding: 15px; border-radius: 8px; margin-bottom: 15px; display: flex; flex-direction: column; gap: 10px; }
@@ -103,7 +106,7 @@
       .hero-grid { grid-template-columns: 1fr 1fr; }
       .charts-grid { grid-template-columns: 1fr; }
       .main-layout { grid-template-columns: 1fr; }
-      .asset-table th:nth-child(4), .asset-table td:nth-child(4) { display: none; } /* Hide Sim on Mobile */
+      /* Removed the hiding of table columns! */
     }
   </style>
 </head>
@@ -114,7 +117,7 @@
   <div class="header">
     <div>
       <h1 style="margin:0; color:var(--c-blue)"><i class="fas fa-university"></i> WCJ 終極財務儀表板</h1>
-      <span style="font-size:0.85rem; color:var(--text-sub)">含詳細風險線、股災模擬、真實負債、利息分流</span>
+      <span style="font-size:0.85rem; color:var(--text-sub)">風險線顯示修復版 (Risk Fixed)</span>
     </div>
     <div class="btn-group">
       <button onclick="toggleTheme()"><i class="fas fa-adjust"></i> 模式</button>
@@ -170,7 +173,7 @@
       <!-- 股災模擬控制區 -->
       <div class="sim-control">
         <div style="display:flex; justify-content:space-between; align-items:center;">
-            <strong style="color:var(--c-danger)"><i class="fas fa-chart-line"></i> 市場壓力測試模擬</strong>
+            <strong style="color:var(--c-danger)"><i class="fas fa-chart-line"></i> 市場壓力測試模擬 (滑桿)</strong>
             <span style="background:#fff; padding:2px 8px; border-radius:4px; font-weight:bold; border:1px solid #ccc;">
                 假設跌幅：<span id="sim_label" style="color:var(--c-danger); font-size:1.1rem;">0%</span>
             </span>
@@ -181,24 +184,24 @@
             <span style="font-size:0.8rem;">-60%</span>
         </div>
         <div style="font-size:0.8rem; color:var(--text-sub);">
-            * 拖動滑桿，觀察右側欄位變化，測試資產是否會觸發斷頭。
+            * 拖動滑桿，觀察下方右側「模擬結果」欄位。
         </div>
       </div>
 
-      <!-- 資產監控表 (核心修正區) -->
+      <!-- 資產監控表 -->
       <div class="section-card">
         <div class="section-title">
-          <span>🛡️ 資產抗跌能力詳表 (現況/模擬)</span>
+          <span>🛡️ 資產抗跌能力詳表</span>
         </div>
-        <div style="overflow-x:auto;">
+        <div class="table-container">
           <table class="asset-table">
             <thead>
               <tr>
                 <th style="width:20%">項目 / 規定</th>
                 <th>現值 / 成本</th>
                 <th>借款 / 利率(%)</th>
-                <th style="width:25%; background:rgba(59,130,246,0.02)">風險現況 (觸發價位)</th>
-                <th style="width:20%; background:rgba(239,68,68,0.05)">滑桿模擬結果</th>
+                <th style="width:28%; background:rgba(59,130,246,0.02)">風險現況 (觸發價位 & 緩衝)</th>
+                <th style="width:18%; background:rgba(239,68,68,0.05)">模擬結果</th>
               </tr>
             </thead>
             <tbody>
@@ -386,7 +389,7 @@
         </div>
       </div>
 
-      <!-- 支出 (利息分拆版) -->
+      <!-- 支出 -->
       <div class="section-card">
         <h3 style="margin:0 0 15px 0; color:var(--c-danger)">💸 月支出</h3>
         
@@ -442,9 +445,9 @@
   const v = (id) => parseFloat(document.getElementById(id)?.value) || 0;
   const t = (id, txt) => { const el = document.getElementById(id); if(el) el.innerHTML = txt; };
 
-  // 渲染狀態函數 (修復：明確顯示觸發價格)
+  // 1. 資產狀態渲染函數 (Risk Fixed)
   function renderAssetStatus(id, asset, loan, mcLimit, liqLimit, isEtf) {
-    // 取得滑桿
+    // 滑桿值
     const dropPct = parseFloat(document.getElementById('sim_slider').value);
     document.getElementById('sim_label').innerText = `-${dropPct}%`;
     
@@ -455,16 +458,13 @@
     // A. 現況計算
     let ratioText = "";
     let color = "b-safe";
-    
-    // 計算觸發價格 (Trigger Price)
     let triggerMC = 0;
     let triggerLiq = 0;
     let bufferMC = 0;
     let bufferLiq = 0;
 
     if(!isEtf) {
-        // 保單: 借款比 >= Limit 觸發
-        // Trigger Asset Value = Loan / Limit%
+        // 保單
         const r = asset>0 ? loan/asset*100 : 0;
         ratioText = r.toFixed(1) + "%";
         if(r >= liqLimit) color = "b-danger"; else if(r >= mcLimit) color = "b-warn";
@@ -477,15 +477,14 @@
             bufferLiq = Math.max(0, (1 - triggerLiq/asset)*100);
         }
     } else {
-        // ETF: 維持率 < Limit 觸發
-        // Trigger Asset Value = Loan * LimitMaint
+        // ETF
         const r = loan>0 ? asset/loan*100 : 0;
         ratioText = loan>0 ? r.toFixed(0) + "%" : "-";
         if(loan>0 && r < 130) color = "b-warn";
         if(loan>0 && r < 115) color = "b-danger";
 
-        triggerMC = loan * 1.3;  // 130%
-        triggerLiq = loan * 1.15; // 115%
+        triggerMC = loan * 1.3;
+        triggerLiq = loan * 1.15;
         
         if(asset > 0) {
             bufferMC = Math.max(0, (1 - triggerMC/asset)*100);
@@ -493,26 +492,26 @@
         }
     }
 
-    // 渲染第四欄：風險現況
+    // HTML Output (Force Visible)
     const statusHtml = `
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
-            <span style="font-size:0.75rem; color:var(--text-sub)">目前</span>
+            <span style="font-size:0.75rem; color:var(--text-sub)">當前</span>
             <span class="badge ${color}">${ratioText}</span>
         </div>
         <div class="risk-lines">
             <div class="risk-row">
-                <span class="line-label" title="跌到此金額需補繳"><i class="fas fa-exclamation-circle" style="color:var(--c-warn)"></i> 跌至 <b style="color:var(--c-warn)">${triggerMC.toFixed(1)}</b></span>
-                <span class="line-val" style="color:var(--c-warn)">剩${bufferMC.toFixed(0)}%</span>
+                <span class="line-label" title="補繳線"><i class="fas fa-exclamation-triangle" style="color:var(--c-warn)"></i> 跌至 <span class="line-trigger" style="color:var(--c-warn)">${triggerMC.toFixed(1)}</span></span>
+                <span class="line-val" style="color:var(--c-warn); font-size:0.85rem;">剩 ${bufferMC.toFixed(0)}%</span>
             </div>
             <div class="risk-row">
-                <span class="line-label" title="跌到此金額斷頭"><i class="fas fa-skull" style="color:var(--c-danger)"></i> 跌至 <b style="color:var(--c-danger)">${triggerLiq.toFixed(1)}</b></span>
-                <span class="line-val" style="color:var(--c-danger)">剩${bufferLiq.toFixed(0)}%</span>
+                <span class="line-label" title="斷頭線"><i class="fas fa-skull" style="color:var(--c-danger)"></i> 跌至 <span class="line-trigger" style="color:var(--c-danger)">${triggerLiq.toFixed(1)}</span></span>
+                <span class="line-val" style="color:var(--c-danger); font-size:0.85rem;">剩 ${bufferLiq.toFixed(0)}%</span>
             </div>
         </div>
     `;
     t(`status_${id}`, statusHtml);
 
-    // B. 模擬計算
+    // B. 模擬
     const factor = 1 - (dropPct / 100);
     const simAsset = asset * factor;
     let simTxt = "安全";
@@ -521,13 +520,13 @@
 
     if(!isEtf) {
         simRatioVal = simAsset>0 ? loan/simAsset*100 : 0;
-        if(simRatioVal >= liqLimit) { simTxt = "已斷頭"; simCls = "b-danger"; }
-        else if(simRatioVal >= mcLimit) { simTxt = "需補繳"; simCls = "b-warn"; }
+        if(simRatioVal >= liqLimit) { simTxt = "斷頭"; simCls = "b-danger"; }
+        else if(simRatioVal >= mcLimit) { simTxt = "補繳"; simCls = "b-warn"; }
     } else {
-        simRatioVal = loan>0 ? simAsset/loan*100 : 0;
+        simRatioVal = loan>0 ? simAsset/loan*100 : 0; 
         if(loan>0) {
-            if(simRatioVal < 115) { simTxt = "已斷頭"; simCls = "b-danger"; }
-            else if(simRatioVal < 130) { simTxt = "需追繳"; simCls = "b-warn"; }
+            if(simRatioVal < 115) { simTxt = "斷頭"; simCls = "b-danger"; }
+            else if(simRatioVal < 130) { simTxt = "追繳"; simCls = "b-warn"; }
         }
     }
 
@@ -545,7 +544,6 @@
   }
 
   function calc() {
-    // A. 投資資產
     let policyTotalInterest = 0;
     let etfTotalInterest = 0;
     
@@ -562,11 +560,9 @@
     t('disp_etf_interest', etfTotalInterest.toFixed(2));
     const totalInvestInterest = policyTotalInterest + etfTotalInterest;
 
-    // B. 資產負債
     const investAsset = v('asset_a')+v('asset_b')+v('asset_c')+v('asset_d')+v('asset_etf');
     const investDebt = v('loan_a')+v('loan_b')+v('loan_c')+v('loan_d')+v('loan_etf');
     const investCost = v('cost_a')+v('cost_b')+v('cost_c')+v('cost_d')+v('cost_etf');
-    
     const houseVal = v('asset_house');
     const houseDebt = v('debt_house');
     const personalDebt = v('debt_personal');
@@ -593,7 +589,6 @@
     const debtRatio = totalAssets>0 ? (totalLiabilities/totalAssets*100) : 0;
     t('val_debt_ratio', debtRatio.toFixed(1)+"%");
 
-    // C. 收支
     const incAct = v('inc_active');
     const incPas = v('inc_passive');
     const inc = incAct + incPas;
@@ -648,14 +643,14 @@
   function saveData() {
     const d = {};
     document.querySelectorAll('input').forEach(e => d[e.id] = e.value);
-    localStorage.setItem('wcj_cfo_fixed_final', JSON.stringify(d));
+    localStorage.setItem('wcj_cfo_risk_fixed_final', JSON.stringify(d));
     alert('已儲存');
   }
   function toggleTheme() { document.documentElement.setAttribute('data-theme', document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark'); }
 
   window.onload = () => {
     initCharts();
-    const d = JSON.parse(localStorage.getItem('wcj_cfo_fixed_final'));
+    const d = JSON.parse(localStorage.getItem('wcj_cfo_risk_fixed_final'));
     if(d) for(k in d) if(document.getElementById(k)) document.getElementById(k).value=d[k];
     calc();
   };
