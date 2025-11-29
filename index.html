@@ -2,7 +2,7 @@
 <html lang="zh-TW" data-theme="light">
 <head>
   <meta charset="UTF-8">
-  <title>財務自由終極儀表板 (Debugged Fixed)</title>
+  <title>財務自由終極儀表板 (Farglory Rate Fixed)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -397,7 +397,7 @@
                     <div class="inp-group">
                         <input id="loan_e" type="number" value="8" oninput="calc()">
                         <div style="display:flex;align-items:center;gap:2px;">
-                            <input id="rate_e" type="number" value="4.0" class="sm" oninput="calc()"><span style="font-size:0.7rem">%</span>
+                            <input id="rate_e" type="number" value="3.1" class="sm" oninput="calc()"><span style="font-size:0.7rem">%</span>
                         </div>
                     </div>
                 </td>
@@ -705,7 +705,7 @@
     `;
     t(`sim_res_${id}`, simHtml);
 
-    return { interest, bufferMC, bufferLiq, name: id, divAcc, loan, asset };
+    return { interest, bufferMC, bufferLiq, name: id, divAcc };
   }
 
   // AI Advice
@@ -900,14 +900,14 @@
   function saveData() {
     const d = {};
     document.querySelectorAll('input').forEach(e => d[e.id] = e.value);
-    localStorage.setItem('wcj_final_v12_debugged', JSON.stringify(d));
+    localStorage.setItem('wcj_final_v13_farglory', JSON.stringify(d));
     alert('已儲存');
   }
   function toggleTheme() { document.documentElement.setAttribute('data-theme', document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark'); }
 
   window.onload = () => {
     initCharts();
-    const d = JSON.parse(localStorage.getItem('wcj_final_v12_debugged'));
+    const d = JSON.parse(localStorage.getItem('wcj_final_v13_farglory'));
     if(d) for(k in d) if(document.getElementById(k)) document.getElementById(k).value=d[k];
     calc();
   };
