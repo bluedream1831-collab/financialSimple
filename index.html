@@ -2,7 +2,7 @@
 <html lang="zh-TW" data-theme="light">
 <head>
   <meta charset="UTF-8">
-  <title>財務自由終極儀表板 (Farglory Rate Fixed)</title>
+  <title>財務自由終極儀表板 (Liquidity AI Update)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -441,22 +441,48 @@
 
       <!-- 房產與負債 -->
       <div class="section-card">
-        <div class="section-title">🏠 房產與生活負債 (本金歸戶)</div>
+        <div class="section-title">🏠 房產與生活負債 (含流動性)</div>
         <div style="display:flex; gap:20px; flex-wrap:wrap;">
+            
             <div style="flex:1; min-width:200px;">
                 <h4 style="margin:0 0 10px 0; color:var(--text-sub)">房產估值</h4>
-                <input id="asset_house" type="number" value="470" oninput="calc()" style="width:100%; border-color:var(--c-blue)">
+                <div class="inp-group">
+                    <label class="inp-label">房屋市值</label>
+                    <input id="asset_house" type="number" value="470" oninput="calc()" style="width:100%; border-color:var(--c-blue)">
+                </div>
             </div>
+
             <div style="flex:1; min-width:200px;">
                 <h4 style="margin:0 0 10px 0; color:var(--text-sub)">欠款本金</h4>
                 <div style="display:flex; gap:15px;">
-                    <div><label style="font-size:0.8rem">房貸餘額</label><input id="debt_house" type="number" value="460" oninput="calc()" style="width:100%"></div>
-                    <div><label style="font-size:0.8rem">信貸餘額</label><input id="debt_personal" type="number" value="96.7" oninput="calc()" style="width:100%"></div>
+                    <div class="inp-group" style="flex:1">
+                        <label class="inp-label">房貸餘額</label>
+                        <input id="debt_house" type="number" value="460" oninput="calc()" style="width:100%">
+                    </div>
+                    <div class="inp-group" style="flex:1">
+                        <label class="inp-label">信貸餘額</label>
+                        <input id="debt_personal" type="number" value="96.7" oninput="calc()" style="width:100%">
+                    </div>
                 </div>
             </div>
-            <div style="flex:1; min-width:150px;">
-                <h4 style="margin:0 0 10px 0; color:var(--text-sub)">流動現金</h4>
-                <input id="asset_cash" type="number" value="45" oninput="calc()" style="width:100%; border-color:var(--c-safe)">
+
+            <div style="flex:1; min-width:250px;">
+                <h4 style="margin:0 0 10px 0; color:var(--c-safe)">流動性與備用金</h4>
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                    <div class="inp-group" style="flex:1">
+                        <label class="inp-label">手頭現金</label>
+                        <input id="asset_cash" type="number" value="40" oninput="calc()" style="border-color:var(--c-safe); width:100%">
+                    </div>
+                    <div class="inp-group" style="flex:1">
+                        <label class="inp-label">未用循環信貸</label>
+                        <input id="unused_credit" type="number" value="36" oninput="calc()" style="width:100%">
+                    </div>
+                    <div class="inp-group" style="flex:1">
+                        <label class="inp-label">未用質押額度</label>
+                        <input id="unused_pledge" type="number" value="50" oninput="calc()" style="width:100%">
+                    </div>
+                </div>
+                <div id="total_liquidity_display" style="font-size:0.85rem; color:var(--c-safe); margin-top:6px; font-weight:bold; text-align:right;"></div>
             </div>
         </div>
       </div>
@@ -709,51 +735,65 @@
   }
 
   // AI Advice
-  function generateAI(netWorth, surplus, debtRatio, minBufferObj, totalAsset, totalDebt, investDebt, lifeDebt) {
+  function generateAI(netWorth, surplus, debtRatio, minBufferObj, totalAsset, totalDebt, investDebt, lifeDebt, totalLiquidity, monthlyExpense) {
     let msg = "";
     let detailsHtml = "";
 
+    // 1. Liquidity (New!)
+    const monthsSurvival = monthlyExpense > 0 ? totalLiquidity / monthlyExpense : 0;
+    if (monthsSurvival >= 6) {
+        msg += `<div style="margin-bottom:8px;">💧 <b>流動性充裕：</b> 備用金 <b>${totalLiquidity.toLocaleString()}萬</b>，約可支撐 <b>${monthsSurvival.toFixed(1)}個月</b> 開銷，安全氣囊足夠。</div>`;
+    } else if (monthsSurvival >= 3) {
+        msg += `<div style="margin-bottom:8px;">💧 <b>流動性尚可：</b> 備用金可支撐 <b>${monthsSurvival.toFixed(1)}個月</b>，建議補足至 6 個月以應對突發狀況。</div>`;
+    } else {
+        msg += `<div style="margin-bottom:8px;">⚠️ <b>流動性吃緊：</b> 備用金僅夠 <b>${monthsSurvival.toFixed(1)}個月</b>，風險極高！建議優先保留現金。</div>`;
+    }
+
+    // 2. Buffer
     const bufferDesc = minBufferObj.val > 20 ? 
         `<span style='color:var(--c-safe)'>安全充足 (>20%)</span>` : 
         (minBufferObj.val > 10 ? `<span style='color:var(--c-warn)'>留意波動 (<20%)</span>` : `<span style='color:var(--c-danger)'>危險 (<10%)</span>`);
     
-    msg += `<div style="margin-bottom:8px;">🛡️ <b>資產安全：</b> 目前最脆弱資產為 <b>${minBufferObj.name.toUpperCase()}</b>，抗跌空間 ${bufferDesc}。</div>`;
+    msg += `<div style="margin-bottom:8px;">🛡️ <b>資產安全：</b> 最脆弱資產為 <b>${minBufferObj.name.toUpperCase()}</b>，抗跌空間 ${bufferDesc}。</div>`;
     
-    detailsHtml += `
-        <details>
-            <summary>💡 為什麼 AI 說資產「${minBufferObj.val > 20 ? '安全' : '危險'}」？</summary>
-            <p>
-                AI 掃描了所有資產，找出<b>最容易爆掉</b>的那一個。<br>
-                目前 <b>${minBufferObj.name.toUpperCase()}</b> 距離「補繳通知」最近，如果市場再跌 <b>${minBufferObj.val.toFixed(1)}%</b> 就會觸發。<br>
-                建議保留 <b>20%</b> 以上的緩衝。
-            </p>
-        </details>
-    `;
-
+    // 3. Leverage
     const levDesc = debtRatio > 60 ? 
         `<span style='color:var(--c-warn)'>偏高 (${debtRatio.toFixed(1)}%)</span>` : 
         `<span style='color:var(--c-safe)'>健康 (${debtRatio.toFixed(1)}%)</span>`;
     
     msg += `<div style="margin-bottom:8px;">⚖️ <b>槓桿評估：</b> 整體負債比 ${levDesc}。主要是房貸與信貸推升了比率。</div>`;
 
-    detailsHtml += `
-        <details>
-            <summary>💡 ${debtRatio.toFixed(1)}% 的槓桿率是指什麼？</summary>
-            <p>
-                公式：<span class="highlight-val">總負債 (${totalDebt.toLocaleString()}萬) ÷ 總資產 (${totalAsset.toLocaleString()}萬)</span><br><br>
-                您的總負債包含：<br>
-                1. 投資借款（保單/ETF）：${investDebt.toLocaleString()} 萬<br>
-                2. 生活負債（房貸/信貸）：${lifeDebt.toLocaleString()} 萬<br><br>
-                AI 建議優先償還<b>信貸</b>，因為它是高利率壞債。
-            </p>
-        </details>
-    `;
-
+    // 4. Cashflow
     const cashDesc = surplus > 0 ? 
         `<span style='color:var(--c-safe)'>正向健康 (+${surplus.toFixed(1)}萬)</span>` : 
         `<span style='color:var(--c-danger)'>赤字警示 (${surplus.toFixed(1)}萬)</span>`;
     
     msg += `<div>💰 <b>現金流：</b> 每月結餘 ${cashDesc}。請確保被動收入持續大於利息支出。</div>`;
+
+    // Details Accordion
+    detailsHtml += `
+        <details>
+            <summary>💡 您的「總可動用備用金」是怎麼算的？</summary>
+            <p>
+                系統將您的<br>
+                1. 手頭現金 (${v('asset_cash')}萬)<br>
+                2. 未用循環信貸 (${v('unused_credit')}萬)<br>
+                3. 未用質押額度 (${v('unused_pledge')}萬)<br>
+                加總得到 <b>${totalLiquidity}萬</b>。<br>
+                這筆錢是用來救急（如失業、股災補繳）的救命錢。
+            </p>
+        </details>
+        <details>
+            <summary>💡 62% 的槓桿率是指什麼？</summary>
+            <p>
+                公式：<span class="highlight-val">總負債 (${totalDebt.toLocaleString()}萬) ÷ 總資產 (${totalAsset.toLocaleString()}萬)</span><br><br>
+                您的總負債包含：<br>
+                1. 投資借款：${investDebt.toLocaleString()} 萬<br>
+                2. 生活負債（房貸/信貸）：${lifeDebt.toLocaleString()} 萬<br><br>
+                AI 建議優先償還<b>信貸</b>，因為它是高利率壞債。
+            </p>
+        </details>
+    `;
 
     document.getElementById('ai_advice_content').innerHTML = msg;
     document.getElementById('ai_explained_container').innerHTML = detailsHtml;
@@ -808,7 +848,7 @@
     t('val_cost', investCost.toLocaleString());
     t('val_total_div', totalDividends.toLocaleString()); 
     
-    // Total P/L (Realized + Unrealized)
+    // Total P/L
     const pl = (investAsset + totalDividends) - investCost;
     const elPl = document.getElementById('val_pl');
     elPl.innerText = (pl>0?"+":"") + pl.toLocaleString();
@@ -839,8 +879,14 @@
     surBig.style.color = surplus>=0 ? "var(--c-safe)" : "var(--c-danger)";
     t('surplus_msg', surplus>=0 ? "財務健康" : "現金流赤字");
 
+    // Liquidity Calc
+    const unusedCredit = v('unused_credit');
+    const unusedPledge = v('unused_pledge');
+    const totalLiquidity = cash + unusedCredit + unusedPledge;
+    t('total_liquidity_display', `總可動用備用金: ${totalLiquidity} 萬`);
+
     updateCharts([investAsset, houseVal, cash], [incAct, incPas, totalExp]);
-    generateAI(netWorth, surplus, debtRatio, { val: minBuffer, name: minBufferName }, totalAssets, totalLiabilities, investDebt, (houseDebt+personalDebt));
+    generateAI(netWorth, surplus, debtRatio, { val: minBuffer, name: minBufferName }, totalAssets, totalLiabilities, investDebt, (houseDebt+personalDebt), totalLiquidity, totalExp);
   }
 
   function initCharts() {
@@ -900,14 +946,14 @@
   function saveData() {
     const d = {};
     document.querySelectorAll('input').forEach(e => d[e.id] = e.value);
-    localStorage.setItem('wcj_final_v13_farglory', JSON.stringify(d));
+    localStorage.setItem('wcj_final_v15_liquidity', JSON.stringify(d));
     alert('已儲存');
   }
   function toggleTheme() { document.documentElement.setAttribute('data-theme', document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark'); }
 
   window.onload = () => {
     initCharts();
-    const d = JSON.parse(localStorage.getItem('wcj_final_v13_farglory'));
+    const d = JSON.parse(localStorage.getItem('wcj_final_v15_liquidity'));
     if(d) for(k in d) if(document.getElementById(k)) document.getElementById(k).value=d[k];
     calc();
   };
