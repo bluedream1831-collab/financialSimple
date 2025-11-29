@@ -2,7 +2,7 @@
 <html lang="zh-TW" data-theme="light">
 <head>
   <meta charset="UTF-8">
-  <title>財務自由終極儀表板 (All Features Restored)</title>
+  <title>財務自由終極儀表板 (Final Complete)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -100,17 +100,17 @@
 
     .rule-tag { font-size: 0.75rem; color: var(--text-sub); background: #f1f5f9; padding: 2px 6px; border-radius: 4px; margin-top: 4px; display: inline-block; border:1px solid #e2e8f0; font-weight:600; }
 
-    /* Water Level & Risk - RESTORED */
+    /* Water Level & Risk */
     .water-track { position: relative; width: 100%; height: 10px; background: #e2e8f0; border-radius: 5px; margin-top: 8px; overflow: hidden; }
     .water-fill { height: 100%; background: var(--c-safe); border-radius: 5px; transition: width 0.5s ease, background 0.3s; }
     .water-mark { position: absolute; top: 0; bottom: 0; width: 2px; z-index: 2; }
     .mark-mc { background: var(--c-warn); }
     .mark-liq { background: var(--c-danger); }
 
-    .risk-lines { display: flex; flex-direction: column; gap: 5px; font-size: 0.8rem; margin-top: 6px; }
+    .risk-lines { display: flex; flex-direction: column; gap: 4px; font-size: 0.8rem; margin-top: 6px; }
     .risk-row { display: flex; justify-content: space-between; align-items: center; background:rgba(0,0,0,0.02); padding:3px 5px; border-radius:4px; }
     .line-val { font-weight: bold; }
-    .line-trigger { font-weight: 800; margin-left:4px; color: var(--text-main); }
+    .line-trigger { font-weight: 800; margin-left:4px; }
     .line-label { color: var(--text-sub); display:flex; align-items:center; gap:4px; font-size:0.8rem;}
 
     /* Slider */
@@ -165,7 +165,7 @@
   <div class="header">
     <div>
       <h1 style="margin:0; color:var(--c-blue)"><i class="fas fa-university"></i> 財務自由終極儀表板</h1>
-      <span style="font-size:0.85rem; color:var(--text-sub)">持有紀錄、雙重報酬、風險水位、股災模擬</span>
+      <span style="font-size:0.85rem; color:var(--text-sub)">持有紀錄、含息報酬、補繳試算、真實負債</span>
     </div>
     <div class="btn-group" data-html2canvas-ignore="true">
       <button onclick="togglePrivacy()" id="btnPrivacy" class="btn-privacy"><i class="fas fa-eye"></i> 隱藏金額</button>
@@ -238,7 +238,7 @@
         </div>
       </div>
 
-      <!-- 資產監控表 (修復回歸！) -->
+      <!-- 資產監控表 -->
       <div class="section-card">
         <div class="section-title">
           <span>🛡️ 資產持有與風險詳表</span>
@@ -248,7 +248,7 @@
             <thead>
               <tr>
                 <th style="width:20%">項目 / 持有時間</th>
-                <th>現值 / 成本 / 累積配息 (雙報酬)</th>
+                <th>現值 / 成本 / 累積配息</th>
                 <th>借款 / 利率(%)</th>
                 <th style="width:30%; background:rgba(59,130,246,0.02)">風險現況 (觸發價 & 水位)</th>
                 <th style="width:15%; background:rgba(239,68,68,0.05)">模擬結果 (補繳試算)</th>
@@ -271,7 +271,7 @@
                         <input id="cost_a" type="number" value="50" oninput="calc()" placeholder="成本" style="opacity:0.7">
                         <input id="div_a" type="number" value="4.4" oninput="calc()" placeholder="累積配息" style="border-color:var(--c-gold); color:var(--c-gold);">
                     </div>
-                    <div id="roi_a"></div>
+                    <div id="roi_a" style="margin-top:2px;"></div>
                 </td>
                 <td>
                     <div class="inp-group">
@@ -331,7 +331,7 @@
                         <input id="cost_c" type="number" value="173" oninput="calc()" style="opacity:0.7">
                         <input id="div_c" type="number" value="3.3" oninput="calc()" style="border-color:var(--c-gold); color:var(--c-gold);">
                     </div>
-                    <div id="roi_c"></div>
+                    <div id="roi_c" style="margin-top:2px;"></div>
                 </td>
                 <td>
                     <div class="inp-group">
@@ -361,7 +361,7 @@
                         <input id="cost_d" type="number" value="303" oninput="calc()" style="opacity:0.7">
                         <input id="div_d" type="number" value="9.8" oninput="calc()" style="border-color:var(--c-gold); color:var(--c-gold);">
                     </div>
-                    <div id="roi_d"></div>
+                    <div id="roi_d" style="margin-top:2px;"></div>
                 </td>
                 <td>
                     <div class="inp-group">
@@ -391,7 +391,7 @@
                         <input id="cost_e" type="number" value="15" oninput="calc()" style="opacity:0.7">
                         <input id="div_e" type="number" value="0" oninput="calc()" style="border-color:var(--c-gold); color:var(--c-gold);">
                     </div>
-                    <div id="roi_e"></div>
+                    <div id="roi_e" style="margin-top:2px;"></div>
                 </td>
                 <td>
                     <div class="inp-group">
@@ -421,7 +421,7 @@
                         <input id="cost_etf" type="number" value="175" oninput="calc()" style="opacity:0.7">
                         <input id="div_etf" type="number" value="12.6" oninput="calc()" style="border-color:var(--c-gold); color:var(--c-gold);">
                     </div>
-                    <div id="roi_etf"></div>
+                    <div id="roi_etf" style="margin-top:2px;"></div>
                 </td>
                 <td>
                     <div class="inp-group">
@@ -547,23 +547,21 @@
 
   function renderAssetStatus(id, asset, loan, cost, mcLimit, liqLimit, isEtf, isSavings=false) {
     const divAcc = v(`div_${id}`);
-    
-    // Dual ROI Calculation
+    const roi = cost > 0 ? ((asset + divAcc - cost) / cost * 100) : 0;
     const priceRoi = cost > 0 ? ((asset - cost) / cost * 100) : 0;
-    const totalRoi = cost > 0 ? ((asset + divAcc - cost) / cost * 100) : 0;
-
+    
     const getColor = (val) => val >= 0 ? 'c-up' : 'c-down';
     const getSym = (val) => val >= 0 ? '+' : '';
 
     const roiHtml = `
         <div class="roi-wrapper">
             <div class="roi-row">
-                <span class="roi-label">含息</span>
-                <span class="roi-val ${getColor(totalRoi)}">${getSym(totalRoi)}${totalRoi.toFixed(1)}%</span>
+                <span style="font-size:0.7rem; color:var(--text-sub)">含息</span>
+                <span class="roi-val ${getColor(roi)}">${getSym(roi)} ${roi.toFixed(1)}%</span>
             </div>
             <div class="roi-row">
-                <span class="roi-label">不含息</span>
-                <span class="roi-val ${getColor(priceRoi)}">${getSym(priceRoi)}${priceRoi.toFixed(1)}%</span>
+                <span style="font-size:0.7rem; color:var(--text-sub)">不含息</span>
+                <span class="roi-val ${getColor(priceRoi)}">${getSym(priceRoi)} ${priceRoi.toFixed(1)}%</span>
             </div>
         </div>
     `;
@@ -579,7 +577,6 @@
     let interest = 0;
     if(loan > 0) interest = (loan * (rate/100)) / 12;
 
-    // Risk Calc
     let ratioText = "";
     let color = "b-safe";
     let triggerMC = 0, triggerLiq = 0;
@@ -607,44 +604,45 @@
         const r = asset>0 ? loan/asset*100 : 0;
         ratioText = r.toFixed(1) + "%";
         if(r >= liqLimit) color = "b-danger"; else if(r >= mcLimit) color = "b-warn";
+        
         triggerMC = loan / (mcLimit/100);
         triggerLiq = loan / (liqLimit/100);
+        
         if(asset > 0) {
             bufferMC = Math.max(0, (1 - triggerMC/asset)*100);
             bufferLiq = Math.max(0, (1 - triggerLiq/asset)*100);
         }
         barWidth = Math.min(r, 100);
     } else {
-        const r = loan>0 ? asset/loan*100 : 0;
-        ratioText = loan>0 ? r.toFixed(0) + "%" : "-";
-        if(loan>0 && r < 130) color = "b-warn";
-        if(loan>0 && r < 115) color = "b-danger";
+        // ETF Dual Ratio: LTV & Maint
+        const maint = loan>0 ? asset/loan*100 : 0;
+        const ltv = asset>0 ? loan/asset*100 : 0;
+        
+        ratioText = `借${ltv.toFixed(1)}% | 維${maint.toFixed(0)}%`;
+
+        if(loan>0 && maint < 130) color = "b-warn";
+        if(loan>0 && maint < 115) color = "b-danger";
+
         triggerMC = loan * 1.3;
         triggerLiq = loan * 1.15;
+        
         if(asset > 0) {
             bufferMC = Math.max(0, (1 - triggerMC/asset)*100);
             bufferLiq = Math.max(0, (1 - triggerLiq/asset)*100);
         }
-        let ltv = asset>0 ? loan/asset*100 : 0;
         barWidth = Math.min(ltv, 100);
     }
 
     let barColor = "var(--c-safe)";
-    if(isEtf) {
-        if(barWidth >= 77) barColor = "var(--c-warn)";
-        if(barWidth >= 87) barColor = "var(--c-danger)";
-    } else {
-        if(barWidth >= mcLimit) barColor = "var(--c-warn)";
-        if(barWidth >= liqLimit) barColor = "var(--c-danger)";
-    }
-
     let posMC = isEtf ? 77 : mcLimit;
     let posLiq = isEtf ? 87 : liqLimit;
 
-    // The Full Risk HTML Block
+    if(barWidth >= posMC) barColor = "var(--c-warn)";
+    if(barWidth >= posLiq) barColor = "var(--c-danger)";
+
     const statusHtml = `
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2px;">
-            <span style="font-size:0.75rem; color:var(--text-sub)">借款比 <span class="badge ${color}" style="font-size:0.7rem; padding:2px 6px;">${ratioText}</span></span>
+            <span style="font-size:0.75rem; color:var(--text-sub)">${isEtf ? '風險指標' : '借款比'} <span class="badge ${color}" style="font-size:0.7rem; padding:2px 6px;">${ratioText}</span></span>
         </div>
         <div class="water-track" title="水位圖">
             <div class="water-fill" style="width:${barWidth}%; background:${barColor}"></div>
@@ -653,18 +651,17 @@
         </div>
         <div class="risk-lines">
             <div class="risk-row">
-                <span class="line-label"><i class="fas fa-exclamation-circle" style="color:var(--c-warn)"></i> 補繳 <span class="line-trigger privacy-blur" style="color:var(--c-warn)">${triggerMC.toFixed(1)}</span></span>
+                <span class="line-label"><i class="fas fa-exclamation-circle" style="color:var(--c-warn)"></i> 補繳線 <span class="line-trigger privacy-blur" style="color:var(--c-warn)">${triggerMC.toFixed(1)}</span></span>
                 <span class="line-val" style="color:var(--c-warn); font-size:0.85rem;">剩 ${bufferMC.toFixed(0)}%</span>
             </div>
             <div class="risk-row">
-                <span class="line-label"><i class="fas fa-skull" style="color:var(--c-danger)"></i> 斷頭 <span class="line-trigger privacy-blur" style="color:var(--c-danger)">${triggerLiq.toFixed(1)}</span></span>
+                <span class="line-label"><i class="fas fa-skull" style="color:var(--c-danger)"></i> 斷頭線 <span class="line-trigger privacy-blur" style="color:var(--c-danger)">${triggerLiq.toFixed(1)}</span></span>
                 <span class="line-val" style="color:var(--c-danger); font-size:0.85rem;">剩 ${bufferLiq.toFixed(0)}%</span>
             </div>
         </div>
     `;
     t(`status_${id}`, statusHtml);
 
-    // B. Simulation
     const factor = 1 - (dropPct / 100);
     const simAsset = asset * factor;
     let simTxt = "安全";
@@ -681,25 +678,32 @@
             topUpNeeded = loan - maxLoanAllowed;
         }
     } else {
-        simRatioVal = loan>0 ? simAsset/loan*100 : 0; 
+        const simMaint = loan>0 ? simAsset/loan*100 : 0;
         if(loan>0) {
-            if(simRatioVal < 115) { simTxt = "斷頭"; simCls = "b-danger"; }
-            else if(simRatioVal < 130) { simTxt = "追繳"; simCls = "b-warn"; }
-            if (simRatioVal < 130) {
+            if(simMaint < 115) { simTxt = "斷頭"; simCls = "b-danger"; }
+            else if(simMaint < 130) { simTxt = "追繳"; simCls = "b-warn"; }
+            if (simMaint < 130) {
                 const targetLoan = simAsset / 1.3;
                 topUpNeeded = loan - targetLoan;
             }
         }
     }
 
-    const simDisplayRatio = isEtf ? (loan>0?simRatioVal.toFixed(0)+"%":"-") : simRatioVal.toFixed(1)+"%";
+    // Display simulated ratio/maint
+    let simDisp = "";
+    if(isEtf) {
+         simDisp = loan>0 ? (simAsset/loan*100).toFixed(0)+"%" : "-";
+    } else {
+         simDisp = simRatioVal.toFixed(1)+"%";
+    }
+
     let topUpHtml = "";
     if (topUpNeeded > 0) topUpHtml = `<div style="font-size:0.8rem; color:var(--c-danger); margin-top:2px; font-weight:bold;">💸 需補 ${topUpNeeded.toFixed(1)} 萬</div>`;
 
     const simHtml = `
         <div style="font-weight:bold; font-size:0.9rem;" class="privacy-blur">${simAsset.toFixed(0)} <small style="color:var(--text-sub)">萬</small></div>
         <div style="display:flex; justify-content:space-between; margin-top:4px; font-size:0.8rem;">
-            <span>${simDisplayRatio}</span>
+            <span>${simDisp}</span>
             <span class="badge ${simCls}">${simTxt}</span>
         </div>
         ${topUpHtml}
@@ -882,14 +886,14 @@
   function saveData() {
     const d = {};
     document.querySelectorAll('input').forEach(e => d[e.id] = e.value);
-    localStorage.setItem('wcj_final_v21_restored', JSON.stringify(d));
+    localStorage.setItem('wcj_final_v22_complete', JSON.stringify(d));
     alert('已儲存');
   }
   function toggleTheme() { document.documentElement.setAttribute('data-theme', document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark'); }
 
   window.onload = () => {
     initCharts();
-    const d = JSON.parse(localStorage.getItem('wcj_final_v21_restored'));
+    const d = JSON.parse(localStorage.getItem('wcj_final_v22_complete'));
     if(d) for(k in d) if(document.getElementById(k)) document.getElementById(k).value=d[k];
     calc();
   };
