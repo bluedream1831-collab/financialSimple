@@ -2,7 +2,7 @@
 <html lang="zh-TW" data-theme="light">
 <head>
   <meta charset="UTF-8">
-  <title>財務自由終極儀表板 (Time & Dual ROI)</title>
+  <title>財務自由終極儀表板 (Debugged Fixed)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -82,7 +82,7 @@
     
     /* Date Input */
     .date-wrapper { display:flex; flex-direction:column; gap:2px; margin-top:5px; }
-    input[type="date"] { padding: 4px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.75rem; color: var(--text-sub); width: 100%; background: transparent; }
+    input[type="date"] { padding: 4px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.75rem; color: var(--text-sub); width: 100%; margin-top: 4px; background: transparent; }
     .duration-tag { font-size:0.75rem; color: var(--c-blue); font-weight:bold; }
 
     /* Badges & ROI */
@@ -165,7 +165,7 @@
   <div class="header">
     <div>
       <h1 style="margin:0; color:var(--c-blue)"><i class="fas fa-university"></i> 財務自由終極儀表板</h1>
-      <span style="font-size:0.85rem; color:var(--text-sub)">持有時間、雙重報酬率 (含息/不含息)、風險精算</span>
+      <span style="font-size:0.85rem; color:var(--text-sub)">持有紀錄、含息報酬、補繳試算、真實負債</span>
     </div>
     <div class="btn-group" data-html2canvas-ignore="true">
       <button onclick="togglePrivacy()" id="btnPrivacy" class="btn-privacy"><i class="fas fa-eye"></i> 隱藏金額</button>
@@ -269,9 +269,9 @@
                     <div class="inp-group">
                         <input id="asset_a" type="number" value="47.7" oninput="calc()" placeholder="現值">
                         <input id="cost_a" type="number" value="50" oninput="calc()" placeholder="成本" style="opacity:0.7">
-                        <input id="div_a" type="number" value="0" oninput="calc()" placeholder="累積配息" style="border-color:var(--c-gold); color:var(--c-gold);">
+                        <input id="div_a" type="number" value="3.4" oninput="calc()" placeholder="累積配息" style="border-color:var(--c-gold); color:var(--c-gold);">
                     </div>
-                    <div id="roi_a"></div>
+                    <div id="roi_a" style="margin-top:2px;"></div>
                 </td>
                 <td>
                     <div class="inp-group">
@@ -299,7 +299,7 @@
                     <div class="inp-group">
                         <input id="asset_b" type="number" value="147.8" oninput="calc()">
                         <input id="cost_b" type="number" value="150" oninput="calc()" style="opacity:0.7">
-                        <input id="div_b" type="number" value="0" oninput="calc()" style="border-color:var(--c-gold); color:var(--c-gold);">
+                        <input id="div_b" type="number" value="13.2" oninput="calc()" style="border-color:var(--c-gold); color:var(--c-gold);">
                     </div>
                     <div id="roi_b"></div>
                 </td>
@@ -329,9 +329,9 @@
                     <div class="inp-group">
                         <input id="asset_c" type="number" value="180" oninput="calc()">
                         <input id="cost_c" type="number" value="173" oninput="calc()" style="opacity:0.7">
-                        <input id="div_c" type="number" value="0" oninput="calc()" style="border-color:var(--c-gold); color:var(--c-gold);">
+                        <input id="div_c" type="number" value="3.3" oninput="calc()" style="border-color:var(--c-gold); color:var(--c-gold);">
                     </div>
-                    <div id="roi_c"></div>
+                    <div id="roi_c" style="margin-top:2px;"></div>
                 </td>
                 <td>
                     <div class="inp-group">
@@ -359,9 +359,9 @@
                     <div class="inp-group">
                         <input id="asset_d" type="number" value="328" oninput="calc()">
                         <input id="cost_d" type="number" value="303" oninput="calc()" style="opacity:0.7">
-                        <input id="div_d" type="number" value="0" oninput="calc()" style="border-color:var(--c-gold); color:var(--c-gold);">
+                        <input id="div_d" type="number" value="9.8" oninput="calc()" style="border-color:var(--c-gold); color:var(--c-gold);">
                     </div>
-                    <div id="roi_d"></div>
+                    <div id="roi_d" style="margin-top:2px;"></div>
                 </td>
                 <td>
                     <div class="inp-group">
@@ -373,6 +373,36 @@
                 </td>
                 <td style="background:rgba(59,130,246,0.02)"><div id="status_d"></div></td>
                 <td style="background:rgba(239,68,68,0.02)"><div id="sim_res_d"></div></td>
+              </tr>
+
+              <!-- 保單 E -->
+              <tr>
+                <td>
+                    <b>保單 E</b> (遠雄人壽)<br>
+                    <span class="rule-tag">補繳 80% / 斷頭 90%</span>
+                    <div class="date-wrapper">
+                        <input type="date" id="date_e" onchange="calc()">
+                        <div id="dur_e" class="duration-tag"></div>
+                    </div>
+                </td>
+                <td>
+                    <div class="inp-group">
+                        <input id="asset_e" type="number" value="15" oninput="calc()">
+                        <input id="cost_e" type="number" value="15" oninput="calc()" style="opacity:0.7">
+                        <input id="div_e" type="number" value="0" oninput="calc()" style="border-color:var(--c-gold); color:var(--c-gold);">
+                    </div>
+                    <div id="roi_e" style="margin-top:2px;"></div>
+                </td>
+                <td>
+                    <div class="inp-group">
+                        <input id="loan_e" type="number" value="8" oninput="calc()">
+                        <div style="display:flex;align-items:center;gap:2px;">
+                            <input id="rate_e" type="number" value="4.0" class="sm" oninput="calc()"><span style="font-size:0.7rem">%</span>
+                        </div>
+                    </div>
+                </td>
+                <td style="background:rgba(59,130,246,0.02)"><div id="status_e"></div></td>
+                <td style="background:rgba(239,68,68,0.02)"><div id="sim_res_e"></div></td>
               </tr>
 
               <!-- ETF -->
@@ -389,9 +419,9 @@
                     <div class="inp-group">
                         <input id="asset_etf" type="number" value="171" oninput="calc()">
                         <input id="cost_etf" type="number" value="175" oninput="calc()" style="opacity:0.7">
-                        <input id="div_etf" type="number" value="0" oninput="calc()" style="border-color:var(--c-gold); color:var(--c-gold);">
+                        <input id="div_etf" type="number" value="12.6" oninput="calc()" style="border-color:var(--c-gold); color:var(--c-gold);">
                     </div>
-                    <div id="roi_etf"></div>
+                    <div id="roi_etf" style="margin-top:2px;"></div>
                 </td>
                 <td>
                     <div class="inp-group">
@@ -420,8 +450,8 @@
             <div style="flex:1; min-width:200px;">
                 <h4 style="margin:0 0 10px 0; color:var(--text-sub)">欠款本金</h4>
                 <div style="display:flex; gap:15px;">
-                    <div><label style="font-size:0.8rem">房貸餘額</label><input id="debt_house" type="number" value="462" oninput="calc()" style="width:100%"></div>
-                    <div><label style="font-size:0.8rem">信貸餘額</label><input id="debt_personal" type="number" value="98" oninput="calc()" style="width:100%"></div>
+                    <div><label style="font-size:0.8rem">房貸餘額</label><input id="debt_house" type="number" value="460" oninput="calc()" style="width:100%"></div>
+                    <div><label style="font-size:0.8rem">信貸餘額</label><input id="debt_personal" type="number" value="96.7" oninput="calc()" style="width:100%"></div>
                 </div>
             </div>
             <div style="flex:1; min-width:150px;">
@@ -458,7 +488,7 @@
         <h3 style="margin:0 0 15px 0; color:var(--c-danger)">💸 月支出</h3>
         <div class="summary-row"><span>房貸月供</span><input id="exp_house" type="number" value="3.1" oninput="calc()"></div>
         <div class="summary-row"><span>信貸月供</span><input id="exp_personal" type="number" value="1.3" oninput="calc()"></div>
-        <div class="summary-row"><span>保險/生活</span><input id="exp_life" type="number" value="2.6" oninput="calc()"></div>
+        <div class="summary-row"><span>保險/生活</span><input id="exp_life" type="number" value="2.0" oninput="calc()"></div>
         <div class="summary-row"><span>彈性支出</span><input id="exp_flex" type="number" value="0.0" oninput="calc()"></div>
         <hr style="border:0; border-top:1px dashed #ddd; margin:10px 0;">
         <div class="summary-row" style="color:var(--text-sub)"><span>保單利息(自動)</span><span id="disp_policy_interest" class="privacy-blur">0</span></div>
@@ -675,7 +705,7 @@
     `;
     t(`sim_res_${id}`, simHtml);
 
-    return { interest, bufferMC, bufferLiq, name: id, divAcc };
+    return { interest, bufferMC, bufferLiq, name: id, divAcc, loan, asset };
   }
 
   // AI Advice
@@ -749,18 +779,19 @@
     const rB = renderAssetStatus('b', v('asset_b'), v('loan_b'), v('cost_b'), 80, 90, false);
     const rC = renderAssetStatus('c', v('asset_c'), v('loan_c'), v('cost_c'), 80, 90, false);
     const rD = renderAssetStatus('d', v('asset_d'), v('loan_d'), v('cost_d'), 60, 70, false);
-    const rE = renderAssetStatus('etf', v('asset_etf'), v('loan_etf'), v('cost_etf'), 0, 0, true);
+    const rE = renderAssetStatus('e', v('asset_e'), v('loan_e'), v('cost_e'), 80, 90, false);
+    const rETF = renderAssetStatus('etf', v('asset_etf'), v('loan_etf'), v('cost_etf'), 0, 0, true);
 
-    policyTotalInterest = processRisk(rA) + processRisk(rB) + processRisk(rC) + processRisk(rD);
-    etfTotalInterest = processRisk(rE);
+    policyTotalInterest = processRisk(rA) + processRisk(rB) + processRisk(rC) + processRisk(rD) + processRisk(rE);
+    etfTotalInterest = processRisk(rETF);
 
     t('disp_policy_interest', policyTotalInterest.toFixed(2));
     t('disp_etf_interest', etfTotalInterest.toFixed(2));
     const totalInvestInterest = policyTotalInterest + etfTotalInterest;
 
-    const investAsset = v('asset_a')+v('asset_b')+v('asset_c')+v('asset_d')+v('asset_etf');
-    const investDebt = v('loan_a')+v('loan_b')+v('loan_c')+v('loan_d')+v('loan_etf');
-    const investCost = v('cost_a')+v('cost_b')+v('cost_c')+v('cost_d')+v('cost_etf');
+    const investAsset = v('asset_a')+v('asset_b')+v('asset_c')+v('asset_d')+v('asset_e')+v('asset_etf');
+    const investDebt = v('loan_a')+v('loan_b')+v('loan_c')+v('loan_d')+v('loan_e')+v('loan_etf');
+    const investCost = v('cost_a')+v('cost_b')+v('cost_c')+v('cost_d')+v('cost_e')+v('cost_etf');
     const houseVal = v('asset_house');
     const houseDebt = v('debt_house');
     const personalDebt = v('debt_personal');
@@ -869,14 +900,14 @@
   function saveData() {
     const d = {};
     document.querySelectorAll('input').forEach(e => d[e.id] = e.value);
-    localStorage.setItem('wcj_final_v10_complete', JSON.stringify(d));
+    localStorage.setItem('wcj_final_v12_debugged', JSON.stringify(d));
     alert('已儲存');
   }
   function toggleTheme() { document.documentElement.setAttribute('data-theme', document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark'); }
 
   window.onload = () => {
     initCharts();
-    const d = JSON.parse(localStorage.getItem('wcj_final_v10_complete'));
+    const d = JSON.parse(localStorage.getItem('wcj_final_v12_debugged'));
     if(d) for(k in d) if(document.getElementById(k)) document.getElementById(k).value=d[k];
     calc();
   };
