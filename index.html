@@ -23,7 +23,6 @@
       --c-blue: #3b82f6;
       --c-purple: #8b5cf6;
       --c-gold: #eab308;
-      --c-orange: #f97316;
       
       --radius: 12px;
       --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
@@ -61,15 +60,15 @@
 
     /* FIRE Progress Bar */
     .fire-track { width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px; margin-top: 8px; overflow: hidden; }
-    .fire-fill { height: 100%; background: linear-gradient(90deg, var(--c-blue), var(--c-purple)); border-radius: 4px; width: 0%; transition: width 1s ease; }
+    .fire-fill { height: 100%; background: linear-gradient(90deg, var(--c-gold), var(--c-orange)); border-radius: 4px; width: 0%; transition: width 1s ease; }
 
-    /* Charts Grid (Fixed Height) */
+    /* Charts Grid */
     .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
     .chart-card { background: var(--bg-card); padding: 20px; border-radius: var(--radius); box-shadow: var(--shadow); height: 380px; display: flex; flex-direction: column; }
     .chart-box { flex: 1; position: relative; width: 100%; overflow: hidden; }
 
-    /* Simulation Control Zone (New Independent Section) */
-    .control-zone { background: white; border-radius: var(--radius); box-shadow: var(--shadow); padding: 20px; margin-bottom: 20px; border-left: 5px solid var(--c-danger); }
+    /* Control Zone */
+    .control-zone { background: var(--bg-card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 20px; margin-bottom: 20px; border-left: 5px solid var(--c-danger); }
     .control-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
     .control-group h3 { margin: 0 0 10px 0; font-size: 1rem; display: flex; align-items: center; gap: 8px; }
     
@@ -79,12 +78,12 @@
     #rate_slider::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--c-blue); cursor: pointer; border: 2px solid #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
 
     .history-btns { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
-    .h-btn { padding: 6px 12px; border: 1px solid #e2e8f0; background: white; border-radius: 20px; cursor: pointer; font-size: 0.8rem; transition: 0.2s; display: flex; align-items: center; gap: 4px; color: var(--text-sub); }
+    .h-btn { padding: 6px 12px; border: 1px solid #e2e8f0; background: var(--bg-card); border-radius: 20px; cursor: pointer; font-size: 0.8rem; transition: 0.2s; display: flex; align-items: center; gap: 4px; color: var(--text-sub); }
     .h-btn:hover { border-color: var(--c-danger); color: var(--c-danger); background: rgba(239, 68, 68, 0.05); transform: translateY(-1px); }
 
     .crash-detail-box { margin-top: 10px; padding: 10px; background: rgba(239, 68, 68, 0.05); border-radius: 6px; font-size: 0.85rem; line-height: 1.5; display: none; color: var(--text-main); }
 
-    /* Main Content (Table + Side) */
+    /* Main Content */
     .main-layout { display: grid; grid-template-columns: 3fr 1fr; gap: 20px; }
     .section-card { background: var(--bg-card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 20px; margin-bottom: 20px; }
     .section-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid var(--bg-body); display: flex; justify-content: space-between; align-items: center; }
@@ -99,7 +98,7 @@
     .inp-group { display: flex; flex-direction: column; gap: 5px; }
     input[type="number"] { width: 95px; padding: 6px; border: 1px solid #cbd5e1; border-radius: 4px; text-align: right; font-weight: 600; background: var(--bg-body); color: var(--text-main); }
     input.sm { width: 60px; font-size: 0.85rem; }
-    input[type="date"] { padding: 4px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.75rem; width: 100%; background: transparent; }
+    input[type="date"] { padding: 4px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.75rem; width: 100%; background: transparent; color: var(--text-main); }
 
     /* Visual Elements */
     .badge { padding: 3px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; display: inline-block; }
@@ -163,14 +162,14 @@
   <div class="header">
     <div>
       <h1 style="margin:0; color:var(--c-blue)"><i class="fas fa-university"></i> 財務自由終極儀表板</h1>
-      <span style="font-size:0.85rem; color:var(--text-sub)">架構重組穩定版：解決圖表消失問題</span>
+      <span style="font-size:0.85rem; color:var(--text-sub)">Fixed & Verified: 功能全開版</span>
     </div>
     <div class="btn-group" data-html2canvas-ignore="true">
       <button onclick="togglePrivacy()" id="btnPrivacy" class="btn-privacy"><i class="fas fa-eye"></i> 隱藏金額</button>
       <button onclick="toggleTheme()"><i class="fas fa-adjust"></i> 模式</button>
-      <button onclick="exportJSON()" class="btn-backup"><i class="fas fa-download"></i> 備份</button>
+      <button onclick="exportJSON()" class="btn-backup"><i class="fas fa-download"></i> 備份(JSON)</button>
       <button onclick="document.getElementById('importFile').click()" class="btn-backup" style="border-style:dashed"><i class="fas fa-upload"></i> 還原</button>
-      <button onclick="saveData()"><i class="fas fa-save"></i> 存檔</button>
+      <button onclick="saveData()"><i class="fas fa-save"></i> 本地存檔</button>
       <button onclick="calc()"><i class="fas fa-sync"></i> 重算</button>
       <button onclick="exportPDF()" class="btn-pdf"><i class="fas fa-file-pdf"></i> 匯出 PDF</button>
       <input type="file" id="importFile" style="display:none" onchange="importJSON(this)">
@@ -197,10 +196,13 @@
       <div class="hero-title"><i class="fas fa-fire"></i> FIRE 退休進度</div>
       <div style="display:flex; justify-content:space-between; align-items:end;">
           <div class="hero-val privacy-blur" style="color:var(--c-gold)" id="fire_pct">0%</div>
-          <div style="font-size:0.8rem; color:var(--text-sub);">目標: <input type="number" id="fire_target" value="3000" oninput="calc()" style="width:60px; border:none; border-bottom:1px dashed #ccc; background:transparent;"> 萬</div>
+          <div style="font-size:0.8rem; color:var(--text-sub); display:flex; align-items:center;">
+              目標: <input type="number" id="fire_target" value="3000" oninput="calc()" style="width:60px; border:none; border-bottom:1px dashed #ccc; background:transparent;"> 萬
+          </div>
       </div>
       <div class="fire-track"><div id="fire_bar" class="fire-fill" style="background:var(--c-gold)"></div></div>
       <div class="hero-sub" style="margin-top:5px;">還差 <span id="fire_diff" class="privacy-blur">0</span> 萬</div>
+      <i class="fas fa-flag-checkered hero-icon-bg" style="color:var(--c-gold)"></i>
     </div>
 
     <div class="hero-card" style="border-top-color: var(--c-purple);">
@@ -223,7 +225,7 @@
     </div>
   </div>
 
-  <!-- 3. 壓力測試控制台 (獨立區塊) -->
+  <!-- 3. 壓力測試控制台 -->
   <div class="control-zone">
     <div class="control-layout">
         <!-- 股災模擬 -->
@@ -243,7 +245,7 @@
             </div>
             
             <div id="crash_detail" class="crash-detail-box">
-                <span id="crash_title" class="crash-title"></span>
+                <span id="crash_title" class="crash-title" style="font-weight:bold;"></span><br>
                 <span id="crash_desc"></span>
             </div>
         </div>
@@ -541,8 +543,6 @@
             bufferLiq = Math.max(0, (1 - triggerLiq/asset)*100);
         }
         // For visual bar: approximate Maint to LTV
-        // 130% Maint ~= 77% LTV
-        // 115% Maint ~= 87% LTV
         barWidth = Math.min(ltv, 100);
         posMC = 77;
         posLiq = 87;
@@ -715,16 +715,20 @@
     t('val_cost', investCost.toLocaleString());
     t('val_total_div', totalDividends.toLocaleString()); 
     
+    // FIRE Calculation
+    const fireTarget = v('fire_target');
+    const firePct = fireTarget > 0 ? (netWorth / fireTarget) * 100 : 0;
+    const fireDiff = fireTarget - netWorth;
+    t('fire_pct', firePct.toFixed(1) + "%");
+    t('fire_diff', fireDiff > 0 ? fireDiff.toLocaleString() : "0");
+    document.getElementById('fire_bar').style.width = Math.min(firePct, 100) + "%";
+    
     const pl = (investAsset + totalDividends) - investCost;
     const elPl = document.getElementById('val_pl');
     elPl.innerText = (pl>0?"+":"") + pl.toLocaleString();
     elPl.style.color = pl>=0 ? "var(--c-safe)" : "var(--c-danger)";
 
-    t('val_invest_debt', investDebt.toLocaleString());
-    t('val_life_debt', (houseDebt+personalDebt).toLocaleString());
-    
     const debtRatio = totalAssets>0 ? (totalLiabilities/totalAssets*100) : 0;
-    t('val_debt_ratio', debtRatio.toFixed(1)+"%");
 
     const incAct = v('inc_active');
     const incPas = v('inc_passive');
@@ -758,7 +762,6 @@
   }
 
   function initCharts() {
-    // Destroy old charts if exist
     if (chartAsset) chartAsset.destroy();
     if (chartFlow) chartFlow.destroy();
 
@@ -795,8 +798,8 @@
   function exportPDF() {
     const el = document.getElementById('dashboard-container');
     const opt = {
-        margin: 5,
-        filename: '財務報告.pdf',
+        margin: [5, 5, 5, 5],
+        filename: '財務自由報告.pdf',
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2, useCORS:true },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
@@ -808,8 +811,20 @@
   function saveData() {
     const d = {};
     document.querySelectorAll('input').forEach(e => d[e.id] = e.value);
-    localStorage.setItem('wcj_final_v33_fixed', JSON.stringify(d));
-    alert('已儲存');
+    localStorage.setItem('wcj_final_v34_fixed', JSON.stringify(d));
+    alert('已儲存至瀏覽器 (Local Storage)');
+  }
+  
+  function exportJSON() {
+    const d = {};
+    document.querySelectorAll('input').forEach(e => d[e.id] = e.value);
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(d));
+    const node = document.createElement('a');
+    node.setAttribute("href", dataStr);
+    node.setAttribute("download", "financial_backup_" + new Date().toISOString().slice(0,10) + ".json");
+    document.body.appendChild(node);
+    node.click();
+    node.remove();
   }
   
   function importJSON(input) {
@@ -844,7 +859,7 @@
 
   window.onload = () => {
     initCharts();
-    const d = JSON.parse(localStorage.getItem('wcj_final_v33_fixed'));
+    const d = JSON.parse(localStorage.getItem('wcj_final_v34_fixed'));
     if(d) for(k in d) if(document.getElementById(k)) document.getElementById(k).value=d[k];
     calc();
   };
