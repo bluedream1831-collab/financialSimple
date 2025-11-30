@@ -2,7 +2,7 @@
 <html lang="zh-TW" data-theme="light">
 <head>
   <meta charset="UTF-8">
-  <title>財務自由終極儀表板 (Fixed & Verified)</title>
+  <title>財務自由終極儀表板 (Pro Notes Edition)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <!-- 核心函式庫 -->
@@ -124,16 +124,11 @@
     .summary-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.9rem; }
     .total-line { border-top: 2px solid #eee; padding-top: 10px; margin-top: 5px; font-size: 1.1rem; font-weight: bold; }
 
-    /* AI Box */
-    .ai-box { background: linear-gradient(135deg, #eff6ff 0%, #ffffff 100%); border: 1px solid #bfdbfe; padding: 20px; border-radius: 12px; margin-top: 20px; position: relative; overflow: hidden; }
-    .ai-title { display: flex; align-items: center; gap: 10px; font-weight: bold; color: var(--c-blue); font-size: 1.1rem; margin-bottom: 10px; }
-    .ai-content { font-size: 0.95rem; line-height: 1.6; color: var(--text-main); margin-bottom: 15px; }
-
-    details { background: rgba(255,255,255,0.5); border: 1px solid rgba(0,0,0,0.05); border-radius: 8px; margin-bottom: 8px; overflow: hidden; transition: 0.3s; }
-    details summary { padding: 10px 15px; cursor: pointer; font-weight: 600; font-size: 0.9rem; color: var(--text-sub); display: flex; align-items: center; gap: 8px; outline: none; }
-    details summary:hover { background: rgba(0,0,0,0.02); color: var(--c-blue); }
-    details p { padding: 0 15px 15px 15px; margin: 0; font-size: 0.9rem; color: var(--text-main); line-height: 1.6; border-top: 1px solid rgba(0,0,0,0.05); margin-top: 5px; padding-top: 10px; }
-    .highlight-val { color: var(--c-blue); font-weight: bold; }
+    /* Notes Box */
+    .notes-box { background: linear-gradient(135deg, #eff6ff 0%, #ffffff 100%); border: 1px solid #bfdbfe; padding: 20px; border-radius: 12px; margin-top: 20px; position: relative; }
+    .notes-title { display: flex; align-items: center; gap: 10px; font-weight: bold; color: var(--c-blue); font-size: 1.1rem; margin-bottom: 10px; }
+    textarea.custom-notes { width:100%; min-height:180px; padding:12px; border:1px solid #bfdbfe; border-radius:8px; font-family:'Segoe UI', sans-serif; font-size:0.95rem; line-height:1.6; resize:vertical; background:rgba(255,255,255,0.8); color: var(--text-main); }
+    textarea.custom-notes:focus { border-color: var(--c-blue); background:#fff; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
 
     /* Privacy Mode */
     body.privacy-mode input[type="number"],
@@ -162,7 +157,7 @@
   <div class="header">
     <div>
       <h1 style="margin:0; color:var(--c-blue)"><i class="fas fa-university"></i> 財務自由終極儀表板</h1>
-      <span style="font-size:0.85rem; color:var(--text-sub)">Fixed & Verified: 功能全開版</span>
+      <span style="font-size:0.85rem; color:var(--text-sub)">Pro Notes Edition: 自訂策略版</span>
     </div>
     <div class="btn-group" data-html2canvas-ignore="true">
       <button onclick="togglePrivacy()" id="btnPrivacy" class="btn-privacy"><i class="fas fa-eye"></i> 隱藏金額</button>
@@ -344,8 +339,8 @@
             <div style="flex:1; min-width:200px;">
                 <h4 style="margin:0 0 5px 0; color:var(--text-sub); font-size:0.9rem;">欠款本金</h4>
                 <div style="display:flex; gap:10px;">
-                    <div style="flex:1"><label style="font-size:0.8rem">房貸餘額</label><input id="debt_house" type="number" value="462" oninput="calc()" style="width:100%"></div>
-                    <div style="flex:1"><label style="font-size:0.8rem">信貸餘額</label><input id="debt_personal" type="number" value="98" oninput="calc()" style="width:100%"></div>
+                    <div style="flex:1"><label style="font-size:0.8rem">房貸餘額</label><input id="debt_house" type="number" value="460.4" oninput="calc()" style="width:100%"></div>
+                    <div style="flex:1"><label style="font-size:0.8rem">信貸餘額</label><input id="debt_personal" type="number" value="95.6" oninput="calc()" style="width:100%"></div>
                 </div>
             </div>
             <div style="flex:1; min-width:250px;">
@@ -360,12 +355,28 @@
         </div>
       </div>
       
-      <!-- AI 建議 -->
-      <div class="ai-box">
-        <div class="ai-title"><i class="fas fa-robot"></i> AI 財務總結與建議</div>
-        <div id="ai_advice_content" class="ai-content">分析中...</div>
-        <div class="ai-title" style="margin-top:20px; font-size:1rem;"><i class="fas fa-lightbulb"></i> 點擊查看：計算邏輯與詳細解說</div>
-        <div id="ai_explained_container"></div>
+      <!-- 策略筆記與備註 -->
+      <div class="notes-box">
+        <div class="notes-title"><i class="fas fa-clipboard-list"></i> 策略筆記與備註 (AI 建議區)</div>
+        <textarea id="user_notes" class="custom-notes" placeholder="在此輸入您的理財策略、AI 建議或備忘錄...">【財務健檢與操作建議 - 2024/11】
+
+1. 優先目標：信貸殲滅戰 (95.6萬)
+   - 策略：將每月「淨現金流」全數用於償還信貸，而非再投資。
+   - 原因：信貸會吃掉大量現金流且無擔保，還清後抗風險能力大增。
+
+2. 風險警示：假性流動性
+   - 現況：手頭現金約 40 萬 (僅夠支撐約 5 個月)。
+   - 建議：不要過度依賴「未用信貸/質押」當備用金。目標將純現金拉高至 80 萬 (約 12 個月生活費)。
+
+3. 監控指標
+   - 債務支出比：若 (月還款總額 / 總收入) > 60%，需立刻暫停新增投資。
+   - 淨值維持率：若任一資產緩衝跌破 15%，請準備執行去槓桿 (賣資產還債)。
+
+4. 升息風險
+   - 若利率再升 0.5%~1%，現金流可能轉負，需預留緩衝。
+
+(此區塊可自由編輯，點擊「本地存檔」即可保存您的筆記)</textarea>
+        <div style="text-align:right; margin-top:5px; font-size:0.8rem; color:var(--text-sub);">* 記得點擊「本地存檔」以保存筆記</div>
       </div>
     </div>
 
@@ -635,34 +646,6 @@
     return { interest, bufferMC, bufferLiq, name: id, divAcc, loan, asset };
   }
 
-  // AI Advice
-  function generateAI(netWorth, surplus, debtRatio, minBufferObj, totalAsset, totalDebt, investDebt, lifeDebt, totalLiquidity, monthlyExpense) {
-    let msg = "";
-    let detailsHtml = "";
-
-    const monthsSurvival = monthlyExpense > 0 ? totalLiquidity / monthlyExpense : 0;
-    if (monthsSurvival >= 6) msg += `<div style="margin-bottom:8px;">💧 <b>流動性充裕：</b> 備用金 <b>${totalLiquidity.toLocaleString()}萬</b>，約可支撐 <b>${monthsSurvival.toFixed(1)}個月</b> 開銷，安全氣囊足夠。</div>`;
-    else if (monthsSurvival >= 3) msg += `<div style="margin-bottom:8px;">💧 <b>流動性尚可：</b> 備用金可支撐 <b>${monthsSurvival.toFixed(1)}個月</b>，建議補足至 6 個月。</div>`;
-    else msg += `<div style="margin-bottom:8px;">⚠️ <b>流動性吃緊：</b> 備用金僅夠 <b>${monthsSurvival.toFixed(1)}個月</b>，風險極高！</div>`;
-
-    const bufferDesc = minBufferObj.val > 20 ? 
-        `<span style='color:var(--c-safe)'>安全充足 (>20%)</span>` : 
-        (minBufferObj.val > 10 ? `<span style='color:var(--c-warn)'>留意波動 (<20%)</span>` : `<span style='color:var(--c-danger)'>危險 (<10%)</span>`);
-    msg += `<div style="margin-bottom:8px;">🛡️ <b>資產安全：</b> 最脆弱資產為 <b>${minBufferObj.name.toUpperCase()}</b>，抗跌空間 ${bufferDesc}。</div>`;
-    
-    const levDesc = debtRatio > 60 ? `<span style='color:var(--c-warn)'>偏高 (${debtRatio.toFixed(1)}%)</span>` : `<span style='color:var(--c-safe)'>健康 (${debtRatio.toFixed(1)}%)</span>`;
-    msg += `<div style="margin-bottom:8px;">⚖️ <b>槓桿評估：</b> 整體負債比 ${levDesc}。主要是房貸與信貸推升了比率。</div>`;
-
-    const cashDesc = surplus > 0 ? `<span style='color:var(--c-safe)'>正向健康 (+${surplus.toFixed(1)}萬)</span>` : `<span style='color:var(--c-danger)'>赤字警示 (${surplus.toFixed(1)}萬)</span>`;
-    msg += `<div>💰 <b>現金流：</b> 每月結餘 ${cashDesc}。請確保被動收入持續大於利息支出。</div>`;
-
-    detailsHtml += `<details><summary>💡 您的「總可動用備用金」是怎麼算的？</summary><p>系統將您的<br>1. 手頭現金 (${v('asset_cash')}萬)<br>2. 未用循環信貸 (${v('unused_credit')}萬)<br>3. 未用質押額度 (${v('unused_pledge')}萬)<br>加總得到 <b>${totalLiquidity}萬</b>。<br>這筆錢是用來救急（如失業、股災補繳）的救命錢。</p></details>`;
-    detailsHtml += `<details><summary>💡 ${debtRatio.toFixed(1)}% 的槓桿率是指什麼？</summary><p>公式：<span class="highlight-val">總負債 (${totalDebt.toLocaleString()}萬) ÷ 總資產 (${totalAsset.toLocaleString()}萬)</span><br><br>您的總負債包含：<br>1. 投資借款：${investDebt.toLocaleString()} 萬<br>2. 生活負債（房貸/信貸）：${lifeDebt.toLocaleString()} 萬<br>AI 建議優先償還<b>信貸</b>。</p></details>`;
-
-    document.getElementById('ai_advice_content').innerHTML = msg;
-    document.getElementById('ai_explained_container').innerHTML = detailsHtml;
-  }
-
   function calc() {
     const rateHike = parseFloat(document.getElementById('rate_slider').value);
     document.getElementById('rate_label').innerText = rateHike.toFixed(3) + "%";
@@ -758,7 +741,6 @@
     t('total_liquidity_display', `總可動用備用金: ${totalLiquidity} 萬`);
 
     updateCharts([investAsset, houseVal, cash], [incAct, incPas, totalExp]);
-    generateAI(netWorth, surplus, debtRatio, { val: minBuffer, name: minBufferName }, totalAssets, totalLiabilities, investDebt, (houseDebt+personalDebt), totalLiquidity, totalExp);
   }
 
   function initCharts() {
@@ -799,25 +781,26 @@
     const el = document.getElementById('dashboard-container');
     const opt = {
         margin: [5, 5, 5, 5],
-        filename: '財務自由報告.pdf',
+        filename: '財務自由報告_Notes.pdf',
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2, useCORS:true },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
-    alert("正在產生 PDF (A4 直式)，請稍候...");
+    alert("正在產生 PDF (含您的筆記)，請稍候...");
     html2pdf().set(opt).from(el).save();
   }
 
   function saveData() {
     const d = {};
-    document.querySelectorAll('input').forEach(e => d[e.id] = e.value);
-    localStorage.setItem('wcj_final_v34_fixed', JSON.stringify(d));
-    alert('已儲存至瀏覽器 (Local Storage)');
+    // Select all inputs AND textareas (notes)
+    document.querySelectorAll('input, textarea').forEach(e => d[e.id] = e.value);
+    localStorage.setItem('wcj_final_v35_notes', JSON.stringify(d));
+    alert('已儲存 (含筆記)');
   }
   
   function exportJSON() {
     const d = {};
-    document.querySelectorAll('input').forEach(e => d[e.id] = e.value);
+    document.querySelectorAll('input, textarea').forEach(e => d[e.id] = e.value);
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(d));
     const node = document.createElement('a');
     node.setAttribute("href", dataStr);
@@ -859,8 +842,10 @@
 
   window.onload = () => {
     initCharts();
-    const d = JSON.parse(localStorage.getItem('wcj_final_v34_fixed'));
-    if(d) for(k in d) if(document.getElementById(k)) document.getElementById(k).value=d[k];
+    const d = JSON.parse(localStorage.getItem('wcj_final_v35_notes'));
+    if(d) {
+        for(k in d) { if(document.getElementById(k)) document.getElementById(k).value=d[k]; }
+    }
     calc();
   };
 </script>
