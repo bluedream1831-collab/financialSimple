@@ -2,12 +2,13 @@
 <html lang="zh-TW" data-theme="light">
 <head>
   <meta charset="UTF-8">
-  <title>財務自由終極儀表板 (Backup & FIRE)</title>
+  <title>財務自由終極儀表板 (Fixed & Verified)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
+  <!-- 核心函式庫 -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
   <style>
     :root {
@@ -38,47 +39,57 @@
     * { box-sizing: border-box; outline: none; }
     body { font-family: 'Segoe UI', sans-serif; background: var(--bg-body); color: var(--text-main); margin: 0; padding: 15px; transition: 0.3s; }
     
-    #dashboard-container { max-width: 1600px; margin: 0 auto; background: var(--bg-body); padding: 10px; }
+    #dashboard-container { max-width: 1600px; margin: 0 auto; padding-bottom: 50px; }
 
     /* Header */
     .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
     .btn-group { display: flex; gap: 5px; flex-wrap: wrap; }
-    .btn-group button { background: var(--bg-card); border: 1px solid var(--text-sub); color: var(--text-main); padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight:bold; transition:0.2s; font-size: 0.85rem; display:flex; align-items:center; gap:5px; }
-    .btn-group button:hover { background: var(--c-blue); color: white; border-color: var(--c-blue); }
-    
+    .btn-group button { background: var(--bg-card); border: 1px solid var(--text-sub); color: var(--text-main); padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight:bold; transition:0.2s; font-size: 0.85rem; display:flex; align-items:center; gap:6px; }
+    .btn-group button:hover { background: var(--c-blue); color: white; border-color: var(--c-blue); transform:translateY(-1px); }
     .btn-backup { border-color: var(--c-purple) !important; color: var(--c-purple) !important; }
-    .btn-backup:hover { background: var(--c-purple) !important; color: white !important; }
-    
     .btn-pdf { border-color: var(--c-danger) !important; color: var(--c-danger) !important; }
-    .btn-pdf:hover { background: var(--c-danger) !important; color: white !important; }
-    
     .btn-privacy { border-color: var(--text-main) !important; }
     .btn-privacy.active { background: var(--text-main); color: var(--bg-card); }
 
-    /* Hero Section */
+    /* Hero Grid */
     .hero-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px; }
-    .hero-card { background: var(--bg-card); padding: 20px; border-radius: var(--radius); box-shadow: var(--shadow); border-top: 4px solid var(--c-blue); position: relative; }
-    .hero-title { font-size: 0.9rem; color: var(--text-sub); font-weight: 600; margin-bottom: 5px; }
-    .hero-val { font-size: 1.8rem; font-weight: 800; }
-    .hero-sub { font-size: 0.8rem; opacity: 0.8; margin-top: 5px; line-height: 1.4; }
+    .hero-card { background: var(--bg-card); padding: 20px; border-radius: var(--radius); box-shadow: var(--shadow); border-top: 4px solid var(--c-blue); position: relative; overflow: hidden; }
+    .hero-title { font-size: 0.9rem; color: var(--text-sub); font-weight: 600; margin-bottom: 5px; display:flex; align-items:center; gap:5px; }
+    .hero-val { font-size: 1.8rem; font-weight: 800; position: relative; z-index: 2; }
+    .hero-sub { font-size: 0.8rem; opacity: 0.8; margin-top: 5px; line-height: 1.4; position: relative; z-index: 2; }
+    .hero-icon-bg { position: absolute; right: -10px; bottom: -10px; font-size: 5rem; opacity: 0.05; transform: rotate(-15deg); z-index: 1; }
 
     /* FIRE Progress Bar */
     .fire-track { width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px; margin-top: 8px; overflow: hidden; }
     .fire-fill { height: 100%; background: linear-gradient(90deg, var(--c-blue), var(--c-purple)); border-radius: 4px; width: 0%; transition: width 1s ease; }
 
-    /* Charts Section */
+    /* Charts Grid (Fixed Height) */
     .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
-    .chart-card { background: var(--bg-card); padding: 20px; border-radius: var(--radius); box-shadow: var(--shadow); height: 380px; page-break-inside: avoid; }
-    .chart-box { position: relative; height: 320px; width: 100%; }
+    .chart-card { background: var(--bg-card); padding: 20px; border-radius: var(--radius); box-shadow: var(--shadow); height: 380px; display: flex; flex-direction: column; }
+    .chart-box { flex: 1; position: relative; width: 100%; overflow: hidden; }
 
-    /* Main Layout */
-    .main-layout { display: grid; grid-template-columns: 3fr 1fr; gap: 20px; }
+    /* Simulation Control Zone (New Independent Section) */
+    .control-zone { background: white; border-radius: var(--radius); box-shadow: var(--shadow); padding: 20px; margin-bottom: 20px; border-left: 5px solid var(--c-danger); }
+    .control-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+    .control-group h3 { margin: 0 0 10px 0; font-size: 1rem; display: flex; align-items: center; gap: 8px; }
     
-    /* Section Card */
-    .section-card { background: var(--bg-card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 20px; margin-bottom: 20px; page-break-inside: avoid; }
+    .range-wrap { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+    input[type=range] { flex: 1; height: 6px; border-radius: 5px; background: #cbd5e1; outline: none; -webkit-appearance: none; }
+    #sim_slider::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--c-danger); cursor: pointer; border: 2px solid #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+    #rate_slider::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--c-blue); cursor: pointer; border: 2px solid #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+
+    .history-btns { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+    .h-btn { padding: 6px 12px; border: 1px solid #e2e8f0; background: white; border-radius: 20px; cursor: pointer; font-size: 0.8rem; transition: 0.2s; display: flex; align-items: center; gap: 4px; color: var(--text-sub); }
+    .h-btn:hover { border-color: var(--c-danger); color: var(--c-danger); background: rgba(239, 68, 68, 0.05); transform: translateY(-1px); }
+
+    .crash-detail-box { margin-top: 10px; padding: 10px; background: rgba(239, 68, 68, 0.05); border-radius: 6px; font-size: 0.85rem; line-height: 1.5; display: none; color: var(--text-main); }
+
+    /* Main Content (Table + Side) */
+    .main-layout { display: grid; grid-template-columns: 3fr 1fr; gap: 20px; }
+    .section-card { background: var(--bg-card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 20px; margin-bottom: 20px; }
     .section-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid var(--bg-body); display: flex; justify-content: space-between; align-items: center; }
 
-    /* Asset Table */
+    /* Table */
     .table-container { overflow-x: auto; }
     .asset-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; min-width: 950px; }
     .asset-table th { text-align: left; padding: 10px; color: var(--text-sub); border-bottom: 2px solid var(--bg-body); white-space: nowrap; }
@@ -86,73 +97,42 @@
     
     /* Inputs */
     .inp-group { display: flex; flex-direction: column; gap: 5px; }
-    .inp-label { font-size: 0.75rem; color: var(--text-sub); }
-    input[type="number"] { width: 95px; padding: 6px; border: 1px solid #cbd5e1; border-radius: 4px; text-align: right; font-weight: 600; background: var(--bg-body); color: var(--text-main); transition:0.2s; }
-    input[type="number"]:focus { border-color: var(--c-blue); background: #fff; }
+    input[type="number"] { width: 95px; padding: 6px; border: 1px solid #cbd5e1; border-radius: 4px; text-align: right; font-weight: 600; background: var(--bg-body); color: var(--text-main); }
     input.sm { width: 60px; font-size: 0.85rem; }
-    
-    /* Date Input */
-    .date-wrapper { display:flex; flex-direction:column; gap:2px; margin-top:5px; }
-    input[type="date"] { padding: 4px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.75rem; color: var(--text-sub); width: 100%; margin-top: 4px; background: transparent; }
-    .duration-tag { font-size:0.75rem; color: var(--c-blue); font-weight:bold; }
+    input[type="date"] { padding: 4px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.75rem; width: 100%; background: transparent; }
 
-    /* Badges & ROI */
+    /* Visual Elements */
     .badge { padding: 3px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; display: inline-block; }
     .b-safe { background: rgba(16,185,129,0.15); color: var(--c-safe); }
     .b-warn { background: rgba(245,158,11,0.15); color: var(--c-warn); }
     .b-danger { background: rgba(239,68,68,0.15); color: var(--c-danger); }
+    .rule-tag { font-size: 0.75rem; color: var(--text-sub); background: #f1f5f9; padding: 2px 6px; border-radius: 4px; margin-top: 4px; display: inline-block; border: 1px solid #e2e8f0; font-weight: 600; }
     
+    .water-track { position: relative; width: 100%; height: 10px; background: #e2e8f0; border-radius: 5px; margin-top: 8px; overflow: hidden; }
+    .water-fill { height: 100%; background: var(--c-safe); border-radius: 5px; transition: width 0.5s ease; }
+    .water-mark { position: absolute; top: 0; bottom: 0; width: 2px; z-index: 2; }
+    .mark-mc { background: var(--c-warn); }
+    .mark-liq { background: var(--c-danger); }
+    
+    /* ROI */
     .roi-wrapper { margin-top:6px; font-size:0.75rem; display:flex; flex-direction:column; gap:3px; border-top:1px dashed #eee; padding-top:4px; }
     .roi-row { display:flex; justify-content:space-between; }
     .roi-val { font-weight:bold; font-family: monospace;}
     .c-up { color: var(--c-safe); }
     .c-down { color: var(--c-danger); }
 
-    .rule-tag { font-size: 0.75rem; color: var(--text-sub); background: #f1f5f9; padding: 2px 6px; border-radius: 4px; margin-top: 4px; display: inline-block; border:1px solid #e2e8f0; font-weight:600; }
-
-    /* Water Level & Risk */
-    .water-track { position: relative; width: 100%; height: 10px; background: #e2e8f0; border-radius: 5px; margin-top: 8px; overflow: hidden; }
-    .water-fill { height: 100%; background: var(--c-safe); border-radius: 5px; transition: width 0.5s ease, background 0.3s; }
-    .water-mark { position: absolute; top: 0; bottom: 0; width: 2px; z-index: 2; }
-    .mark-mc { background: var(--c-warn); }
-    .mark-liq { background: var(--c-danger); }
-
-    .risk-lines { display: flex; flex-direction: column; gap: 4px; font-size: 0.8rem; margin-top: 6px; }
-    .risk-row { display: flex; justify-content: space-between; align-items: center; background:rgba(0,0,0,0.02); padding:3px 5px; border-radius:4px; }
-    .line-val { font-weight: bold; }
-    .line-trigger { font-weight: 800; margin-left:4px; }
-    .line-label { color: var(--text-sub); display:flex; align-items:center; gap:4px; font-size:0.8rem;}
-
-    /* Sliders Control */
-    .control-container { display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:15px; }
-    .sim-control { border: 1px solid rgba(239,68,68,0.2); padding: 15px; border-radius: 8px; background: linear-gradient(to right, rgba(239,68,68,0.03), rgba(255,255,255,0)); }
-    .rate-control { border: 1px solid rgba(59,130,246,0.2); padding: 15px; border-radius: 8px; background: linear-gradient(to right, rgba(59,130,246,0.03), rgba(255,255,255,0)); }
-    
-    .range-wrap { display: flex; align-items: center; gap: 10px; margin-top:10px; }
-    input[type=range] { flex: 1; height: 6px; border-radius: 5px; background: #cbd5e1; outline: none; -webkit-appearance: none; }
-    
-    /* Red Slider (Crash) */
-    #sim_slider::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--c-danger); cursor: pointer; border: 2px solid #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-    /* Blue Slider (Rate) */
-    #rate_slider::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--c-blue); cursor: pointer; border: 2px solid #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-
-    /* Side Panel */
-    .side-panel { display: flex; flex-direction: column; gap: 20px; }
+    /* Side Panel Summary */
     .summary-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.9rem; }
-    .summary-val { font-weight: 700; }
-    .total-line { border-top: 2px solid #eee; padding-top: 10px; margin-top: 5px; font-size: 1.1rem; }
+    .total-line { border-top: 2px solid #eee; padding-top: 10px; margin-top: 5px; font-size: 1.1rem; font-weight: bold; }
 
-    /* AI Advice */
-    .ai-box { background: linear-gradient(135deg, #eff6ff 0%, #ffffff 100%); border: 1px solid #bfdbfe; padding: 20px; border-radius: 12px; margin-top: 20px; position: relative; overflow: hidden; page-break-inside: avoid; }
-    [data-theme="dark"] .ai-box { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border-color: #334155; }
+    /* AI Box */
+    .ai-box { background: linear-gradient(135deg, #eff6ff 0%, #ffffff 100%); border: 1px solid #bfdbfe; padding: 20px; border-radius: 12px; margin-top: 20px; position: relative; overflow: hidden; }
     .ai-title { display: flex; align-items: center; gap: 10px; font-weight: bold; color: var(--c-blue); font-size: 1.1rem; margin-bottom: 10px; }
     .ai-content { font-size: 0.95rem; line-height: 1.6; color: var(--text-main); margin-bottom: 15px; }
-    .ai-icon-bg { position: absolute; right: -10px; bottom: -20px; font-size: 6rem; opacity: 0.05; color: var(--c-blue); transform: rotate(-15deg); }
 
-    details { background: rgba(255,255,255,0.5); border: 1px solid rgba(0,0,0,0.05); border-radius: 8px; margin-bottom: 8px; overflow: hidden; transition: 0.3s; page-break-inside: avoid; }
+    details { background: rgba(255,255,255,0.5); border: 1px solid rgba(0,0,0,0.05); border-radius: 8px; margin-bottom: 8px; overflow: hidden; transition: 0.3s; }
     details summary { padding: 10px 15px; cursor: pointer; font-weight: 600; font-size: 0.9rem; color: var(--text-sub); display: flex; align-items: center; gap: 8px; outline: none; }
     details summary:hover { background: rgba(0,0,0,0.02); color: var(--c-blue); }
-    details[open] { background: rgba(255,255,255,0.8); box-shadow: 0 4px 6px -2px rgba(0,0,0,0.05); }
     details p { padding: 0 15px 15px 15px; margin: 0; font-size: 0.9rem; color: var(--text-main); line-height: 1.6; border-top: 1px solid rgba(0,0,0,0.05); margin-top: 5px; padding-top: 10px; }
     .highlight-val { color: var(--c-blue); font-weight: bold; }
 
@@ -171,9 +151,7 @@
 
     @media (max-width: 1200px) {
       .hero-grid { grid-template-columns: 1fr 1fr; }
-      .charts-grid { grid-template-columns: 1fr; }
-      .main-layout { grid-template-columns: 1fr; }
-      .control-container { grid-template-columns: 1fr; }
+      .charts-grid, .control-layout, .main-layout { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -181,16 +159,17 @@
 
 <div class="container" id="dashboard-container">
   
+  <!-- Header -->
   <div class="header">
     <div>
       <h1 style="margin:0; color:var(--c-blue)"><i class="fas fa-university"></i> 財務自由終極儀表板</h1>
-      <span style="font-size:0.85rem; color:var(--text-sub)">備份還原、升息模擬、FIRE進度、ETF雙指標</span>
+      <span style="font-size:0.85rem; color:var(--text-sub)">架構重組穩定版：解決圖表消失問題</span>
     </div>
     <div class="btn-group" data-html2canvas-ignore="true">
       <button onclick="togglePrivacy()" id="btnPrivacy" class="btn-privacy"><i class="fas fa-eye"></i> 隱藏金額</button>
       <button onclick="toggleTheme()"><i class="fas fa-adjust"></i> 模式</button>
       <button onclick="exportJSON()" class="btn-backup"><i class="fas fa-download"></i> 備份</button>
-      <button onclick="document.getElementById('importFile').click()" class="btn-backup"><i class="fas fa-upload"></i> 還原</button>
+      <button onclick="document.getElementById('importFile').click()" class="btn-backup" style="border-style:dashed"><i class="fas fa-upload"></i> 還原</button>
       <button onclick="saveData()"><i class="fas fa-save"></i> 存檔</button>
       <button onclick="calc()"><i class="fas fa-sync"></i> 重算</button>
       <button onclick="exportPDF()" class="btn-pdf"><i class="fas fa-file-pdf"></i> 匯出 PDF</button>
@@ -198,280 +177,156 @@
     </div>
   </div>
 
-  <!-- 1. 核心數據 -->
+  <!-- 1. 核心數據 (Hero) -->
   <div class="hero-grid">
     <div class="hero-card">
-      <div class="hero-title">真實淨資產 (True Net Worth)</div>
+      <div class="hero-title"><i class="fas fa-sack-dollar"></i> 真實淨資產</div>
       <div class="hero-val privacy-blur" style="color:var(--c-blue)"><span id="val_net_worth">0</span> 萬</div>
       <div class="hero-sub">總資產 <span id="val_assets" class="privacy-blur">0</span> － 總負債 <span id="val_liabilities" class="privacy-blur">0</span><br>(含房貸/信貸本金)</div>
+      <i class="fas fa-chart-pie hero-icon-bg" style="color:var(--c-blue)"></i>
     </div>
     
     <div class="hero-card" style="border-top-color: var(--c-safe);">
-      <div class="hero-title">FIRE 退休目標進度</div>
-      <div style="display:flex; justify-content:space-between; align-items:end;">
-          <div class="hero-val privacy-blur" style="color:var(--c-safe)" id="fire_pct">0%</div>
-          <div style="font-size:0.8rem; color:var(--text-sub); text-align:right;">目標: <input type="number" id="fire_target" value="3000" oninput="calc()" style="width:70px; border:none; background:transparent; border-bottom:1px dashed #ccc; text-align:right;"> 萬</div>
-      </div>
-      <div class="fire-track"><div id="fire_bar" class="fire-fill"></div></div>
-      <div class="hero-sub" style="margin-top:5px;">距離目標還差 <span id="fire_diff" class="privacy-blur">0</span> 萬</div>
+      <div class="hero-title"><i class="fas fa-hand-holding-dollar"></i> 每月淨現金流</div>
+      <div class="hero-val privacy-blur" style="color:var(--c-safe)">+<span id="val_surplus">0</span> 萬</div>
+      <div class="hero-sub">月收 <span id="val_income" class="privacy-blur">0</span> － 月支 <span id="val_expense" class="privacy-blur">0</span><br>(已自動扣除投資利息)</div>
+      <i class="fas fa-coins hero-icon-bg" style="color:var(--c-safe)"></i>
     </div>
 
-    <div class="hero-card" style="border-top-color: var(--c-warn);">
-      <div class="hero-title">總負債結構</div>
-      <div class="hero-val"><span id="val_debt_ratio">0%</span> <small style="font-size:1rem;font-weight:400">負債比</small></div>
-      <div class="hero-sub">投資債 <span id="val_invest_debt" class="privacy-blur">0</span> ｜ 生活債 <span id="val_life_debt" class="privacy-blur">0</span></div>
+    <div class="hero-card" style="border-top-color: var(--c-gold);">
+      <div class="hero-title"><i class="fas fa-fire"></i> FIRE 退休進度</div>
+      <div style="display:flex; justify-content:space-between; align-items:end;">
+          <div class="hero-val privacy-blur" style="color:var(--c-gold)" id="fire_pct">0%</div>
+          <div style="font-size:0.8rem; color:var(--text-sub);">目標: <input type="number" id="fire_target" value="3000" oninput="calc()" style="width:60px; border:none; border-bottom:1px dashed #ccc; background:transparent;"> 萬</div>
+      </div>
+      <div class="fire-track"><div id="fire_bar" class="fire-fill" style="background:var(--c-gold)"></div></div>
+      <div class="hero-sub" style="margin-top:5px;">還差 <span id="fire_diff" class="privacy-blur">0</span> 萬</div>
     </div>
 
     <div class="hero-card" style="border-top-color: var(--c-purple);">
-      <div class="hero-title">投資總損益 (含息)</div>
+      <div class="hero-title"><i class="fas fa-chart-line"></i> 投資總損益 (含息)</div>
       <div class="hero-val privacy-blur"><span id="val_pl">0</span> 萬</div>
       <div class="hero-sub">總投入 <span id="val_cost" class="privacy-blur">0</span> ｜ 現值 <span id="val_invest_assets" class="privacy-blur">0</span><br>累積配息 <span id="val_total_div" class="privacy-blur">0</span></div>
+      <i class="fas fa-arrow-trend-up hero-icon-bg" style="color:var(--c-purple)"></i>
     </div>
   </div>
 
-  <!-- 2. 圖表區 -->
+  <!-- 2. 圖表區 (Charts) -->
   <div class="charts-grid">
     <div class="chart-card">
-      <h3 style="margin:0 0 10px 0; font-size:1rem;">資產配置 (含房產)</h3>
+      <h3 style="margin:0 0 10px 0; font-size:1rem;"><i class="fas fa-chart-pie"></i> 資產配置 (含房產)</h3>
       <div class="chart-box"><canvas id="assetChart"></canvas></div>
     </div>
     <div class="chart-card">
-      <h3 style="margin:0 0 10px 0; font-size:1rem;">收支結構 (堆疊分析)</h3>
+      <h3 style="margin:0 0 10px 0; font-size:1rem;"><i class="fas fa-bars-progress"></i> 收支結構 (堆疊分析)</h3>
       <div class="chart-box"><canvas id="flowChart"></canvas></div>
     </div>
   </div>
 
-  <div class="main-layout">
-    
-    <!-- 左側：詳細資產負債表 -->
-    <div class="main-content">
-      
-      <!-- 雙模擬控制區 (股災 + 升息) -->
-      <div class="control-container">
-        <div class="sim-control">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <strong style="color:var(--c-danger)"><i class="fas fa-chart-line"></i> 股災模擬</strong>
-                <span style="background:#fff; padding:2px 8px; border-radius:4px; font-weight:bold; border:1px solid #ccc;">
-                    跌幅：<span id="sim_label" style="color:var(--c-danger); font-size:1rem;">0%</span>
-                </span>
-            </div>
+  <!-- 3. 壓力測試控制台 (獨立區塊) -->
+  <div class="control-zone">
+    <div class="control-layout">
+        <!-- 股災模擬 -->
+        <div class="control-group">
+            <h3 style="color:var(--c-danger)"><i class="fas fa-chart-down"></i> 股災壓力測試</h3>
             <div class="range-wrap">
-                <span style="font-size:0.8rem;">0%</span>
-                <input type="range" id="sim_slider" min="0" max="60" step="1" value="0" oninput="calc()">
-                <span style="font-size:0.8rem;">-60%</span>
+                <span style="font-size:0.8rem; width:40px;">跌幅</span>
+                <input type="range" id="sim_slider" min="0" max="60" step="1" value="0" oninput="manualSlider()">
+                <span style="font-size:0.9rem; font-weight:bold; color:var(--c-danger); width:50px;" id="sim_label">0%</span>
             </div>
-            <div style="font-size:0.75rem; color:var(--text-sub); margin-top:5px;">* 測試資產縮水與斷頭風險</div>
+            
+            <div class="history-btns">
+                <button class="h-btn" onclick="setHistoryCrash(49, 25, '2000 網路泡沫', '科技股崩盤，ETF跌49%，保單(平衡)跌25%')">📉 2000 泡沫</button>
+                <button class="h-btn" onclick="setHistoryCrash(57, 35, '2008 金融海嘯', '系統性崩盤，ETF跌57%，保單跌35%')">⚡ 2008 海嘯</button>
+                <button class="h-btn" onclick="setHistoryCrash(34, 20, '2020 新冠疫情', '恐慌性下殺，ETF跌34%，保單跌20%')">🦠 2020 疫情</button>
+                <button class="h-btn" onclick="resetSim()" style="color:var(--c-blue); border-color:var(--c-blue)">🔄 重置</button>
+            </div>
+            
+            <div id="crash_detail" class="crash-detail-box">
+                <span id="crash_title" class="crash-title"></span>
+                <span id="crash_desc"></span>
+            </div>
         </div>
 
-        <div class="rate-control">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <strong style="color:var(--c-blue)"><i class="fas fa-university"></i> 升息模擬</strong>
-                <span style="background:#fff; padding:2px 8px; border-radius:4px; font-weight:bold; border:1px solid #ccc;">
-                    利率：+<span id="rate_label" style="color:var(--c-blue); font-size:1rem;">0.0%</span>
-                </span>
-            </div>
+        <!-- 升息模擬 -->
+        <div class="control-group" style="border-left:1px solid #eee; padding-left:20px;">
+            <h3 style="color:var(--c-blue)"><i class="fas fa-money-bill-trend-up"></i> 升息現金流測試</h3>
             <div class="range-wrap">
-                <span style="font-size:0.8rem;">0%</span>
+                <span style="font-size:0.8rem; width:40px;">加息</span>
                 <input type="range" id="rate_slider" min="0" max="3" step="0.125" value="0" style="accent-color:var(--c-blue)" oninput="calc()">
-                <span style="font-size:0.8rem;">+3%</span>
+                <span style="font-size:0.9rem; font-weight:bold; color:var(--c-blue); width:50px;" id="rate_label">+0.0%</span>
             </div>
-            <div style="font-size:0.75rem; color:var(--text-sub); margin-top:5px;">* 測試升息對現金流的衝擊 (房貸/投資)</div>
+            <div style="font-size:0.8rem; color:var(--text-sub); margin-top:10px;">
+                <i class="fas fa-info-circle"></i> 測試央行升息對房貸、信貸及投資利息的衝擊。<br>
+                請觀察右下角「月支出」的變化。
+            </div>
         </div>
-      </div>
+    </div>
+  </div>
 
-      <!-- 資產監控表 -->
+  <!-- 4. 下層資料區 -->
+  <div class="main-layout">
+    <!-- 左側 -->
+    <div class="main-content">
       <div class="section-card">
-        <div class="section-title">
-          <span>🛡️ 資產持有與風險詳表</span>
-        </div>
+        <div class="section-title"><span><i class="fas fa-shield-alt"></i> 資產持有與風險詳表</span></div>
         <div class="table-container">
           <table class="asset-table">
             <thead>
               <tr>
-                <th style="width:20%">項目 / 持有時間</th>
+                <th style="width:22%">項目 / 持有時間</th>
                 <th>現值 / 成本 / 累積配息</th>
                 <th>借款 / 利率(%)</th>
-                <th style="width:30%; background:rgba(59,130,246,0.02)">風險現況 (觸發價 & 水位)</th>
-                <th style="width:15%; background:rgba(239,68,68,0.05)">模擬結果 (補繳試算)</th>
+                <th style="width:28%; background:rgba(59,130,246,0.02)">風險現況 (水位圖)</th>
+                <th style="width:18%; background:rgba(239,68,68,0.05)">模擬結果 (補繳試算)</th>
               </tr>
             </thead>
             <tbody>
               <!-- 保單 A -->
               <tr>
-                <td>
-                    <b>保單 A</b> (法巴年金)<br>
-                    <span class="rule-tag">補繳 80% / 斷頭 90%</span>
-                    <div class="date-wrapper">
-                        <input type="date" id="date_a" value="2024-09-01" onchange="calc()">
-                        <div id="dur_a" class="duration-tag">計算中...</div>
-                    </div>
-                </td>
-                <td>
-                    <div class="inp-group">
-                        <input id="asset_a" type="number" value="47.7" oninput="calc()" placeholder="現值">
-                        <input id="cost_a" type="number" value="50" oninput="calc()" placeholder="成本" style="opacity:0.7">
-                        <input id="div_a" type="number" value="4.4" oninput="calc()" placeholder="累積配息" style="border-color:var(--c-gold); color:var(--c-gold);">
-                    </div>
-                    <div id="roi_a" style="margin-top:2px;"></div>
-                </td>
-                <td>
-                    <div class="inp-group">
-                        <input id="loan_a" type="number" value="21.5" oninput="calc()" placeholder="借款">
-                        <div style="display:flex;align-items:center;gap:2px;">
-                            <input id="rate_a" type="number" value="3.17" class="sm" oninput="calc()"><span style="font-size:0.7rem">%</span>
-                        </div>
-                    </div>
-                </td>
+                <td><b>保單 A</b> (法巴年金)<br><span class="rule-tag">補繳80% / 斷頭90%</span><div class="date-wrapper"><input type="date" id="date_a" value="2024-09-01" onchange="calc()"><div id="dur_a" style="font-size:0.7rem;color:var(--c-blue)"></div></div></td>
+                <td><div class="inp-group"><input id="asset_a" type="number" value="47.7" oninput="calc()"><input id="cost_a" type="number" value="50" oninput="calc()" style="opacity:0.7"><input id="div_a" type="number" value="4.4" oninput="calc()" style="border-color:var(--c-gold)"></div><div id="roi_a"></div></td>
+                <td><div class="inp-group"><input id="loan_a" type="number" value="21.5" oninput="calc()"><div style="display:flex;align-items:center;gap:2px;"><input id="rate_a" type="number" value="3.17" class="sm" oninput="calc()"><span style="font-size:0.7rem">%</span></div></div></td>
                 <td style="background:rgba(59,130,246,0.02)"><div id="status_a"></div></td>
                 <td style="background:rgba(239,68,68,0.02)"><div id="sim_res_a"></div></td>
               </tr>
-              
               <!-- 保單 B -->
               <tr>
-                <td>
-                    <b>保單 B</b> (法巴壽險)<br>
-                    <span class="rule-tag">補繳 80% / 斷頭 90%</span>
-                    <div class="date-wrapper">
-                        <input type="date" id="date_b" value="2024-10-01" onchange="calc()">
-                        <div id="dur_b" class="duration-tag">計算中...</div>
-                    </div>
-                </td>
-                <td>
-                    <div class="inp-group">
-                        <input id="asset_b" type="number" value="147.8" oninput="calc()">
-                        <input id="cost_b" type="number" value="150" oninput="calc()" style="opacity:0.7">
-                        <input id="div_b" type="number" value="13.2" oninput="calc()" style="border-color:var(--c-gold); color:var(--c-gold);">
-                    </div>
-                    <div id="roi_b"></div>
-                </td>
-                <td>
-                    <div class="inp-group">
-                        <input id="loan_b" type="number" value="68.5" oninput="calc()">
-                        <div style="display:flex;align-items:center;gap:2px;">
-                            <input id="rate_b" type="number" value="3.17" class="sm" oninput="calc()"><span style="font-size:0.7rem">%</span>
-                        </div>
-                    </div>
-                </td>
+                <td><b>保單 B</b> (法巴壽險)<br><span class="rule-tag">補繳80% / 斷頭90%</span><div class="date-wrapper"><input type="date" id="date_b" value="2024-10-01" onchange="calc()"><div id="dur_b" style="font-size:0.7rem;color:var(--c-blue)"></div></div></td>
+                <td><div class="inp-group"><input id="asset_b" type="number" value="147.8" oninput="calc()"><input id="cost_b" type="number" value="150" oninput="calc()" style="opacity:0.7"><input id="div_b" type="number" value="13.2" oninput="calc()" style="border-color:var(--c-gold)"></div><div id="roi_b"></div></td>
+                <td><div class="inp-group"><input id="loan_b" type="number" value="68.5" oninput="calc()"><div style="display:flex;align-items:center;gap:2px;"><input id="rate_b" type="number" value="3.17" class="sm" oninput="calc()"><span style="font-size:0.7rem">%</span></div></div></td>
                 <td style="background:rgba(59,130,246,0.02)"><div id="status_b"></div></td>
                 <td style="background:rgba(239,68,68,0.02)"><div id="sim_res_b"></div></td>
               </tr>
-
               <!-- 保單 C -->
               <tr>
-                <td>
-                    <b>保單 C</b> (安達年金)<br>
-                    <span class="rule-tag">補繳 80% / 斷頭 90%</span>
-                    <div class="date-wrapper">
-                        <input type="date" id="date_c" value="2025-09-01" onchange="calc()">
-                        <div id="dur_c" class="duration-tag">計算中...</div>
-                    </div>
-                </td>
-                <td>
-                    <div class="inp-group">
-                        <input id="asset_c" type="number" value="180" oninput="calc()">
-                        <input id="cost_c" type="number" value="173" oninput="calc()" style="opacity:0.7">
-                        <input id="div_c" type="number" value="3.3" oninput="calc()" style="border-color:var(--c-gold); color:var(--c-gold);">
-                    </div>
-                    <div id="roi_c" style="margin-top:2px;"></div>
-                </td>
-                <td>
-                    <div class="inp-group">
-                        <input id="loan_c" type="number" value="84" oninput="calc()">
-                        <div style="display:flex;align-items:center;gap:2px;">
-                            <input id="rate_c" type="number" value="4.0" class="sm" oninput="calc()"><span style="font-size:0.7rem">%</span>
-                        </div>
-                    </div>
-                </td>
+                <td><b>保單 C</b> (安達年金)<br><span class="rule-tag">補繳80% / 斷頭90%</span><div class="date-wrapper"><input type="date" id="date_c" value="2025-09-01" onchange="calc()"><div id="dur_c" style="font-size:0.7rem;color:var(--c-blue)"></div></div></td>
+                <td><div class="inp-group"><input id="asset_c" type="number" value="180" oninput="calc()"><input id="cost_c" type="number" value="173" oninput="calc()" style="opacity:0.7"><input id="div_c" type="number" value="3.3" oninput="calc()" style="border-color:var(--c-gold)"></div><div id="roi_c"></div></td>
+                <td><div class="inp-group"><input id="loan_c" type="number" value="84" oninput="calc()"><div style="display:flex;align-items:center;gap:2px;"><input id="rate_c" type="number" value="4.0" class="sm" oninput="calc()"><span style="font-size:0.7rem">%</span></div></div></td>
                 <td style="background:rgba(59,130,246,0.02)"><div id="status_c"></div></td>
                 <td style="background:rgba(239,68,68,0.02)"><div id="sim_res_c"></div></td>
               </tr>
-
               <!-- 保單 D -->
               <tr>
-                <td>
-                    <b>保單 D</b> (安聯主力)<br>
-                    <span class="rule-tag">補繳 60% / 斷頭 70%</span>
-                    <div class="date-wrapper">
-                        <input type="date" id="date_d" value="2025-07-01" onchange="calc()">
-                        <div id="dur_d" class="duration-tag">計算中...</div>
-                    </div>
-                </td>
-                <td>
-                    <div class="inp-group">
-                        <input id="asset_d" type="number" value="328" oninput="calc()">
-                        <input id="cost_d" type="number" value="303" oninput="calc()" style="opacity:0.7">
-                        <input id="div_d" type="number" value="9.8" oninput="calc()" style="border-color:var(--c-gold); color:var(--c-gold);">
-                    </div>
-                    <div id="roi_d" style="margin-top:2px;"></div>
-                </td>
-                <td>
-                    <div class="inp-group">
-                        <input id="loan_d" type="number" value="88" oninput="calc()">
-                        <div style="display:flex;align-items:center;gap:2px;">
-                            <input id="rate_d" type="number" value="4.0" class="sm" oninput="calc()"><span style="font-size:0.7rem">%</span>
-                        </div>
-                    </div>
-                </td>
+                <td><b>保單 D</b> (安聯主力)<br><span class="rule-tag">補繳60% / 斷頭70%</span><div class="date-wrapper"><input type="date" id="date_d" value="2025-07-01" onchange="calc()"><div id="dur_d" style="font-size:0.7rem;color:var(--c-blue)"></div></div></td>
+                <td><div class="inp-group"><input id="asset_d" type="number" value="328" oninput="calc()"><input id="cost_d" type="number" value="303" oninput="calc()" style="opacity:0.7"><input id="div_d" type="number" value="9.8" oninput="calc()" style="border-color:var(--c-gold)"></div><div id="roi_d"></div></td>
+                <td><div class="inp-group"><input id="loan_d" type="number" value="90" oninput="calc()"><div style="display:flex;align-items:center;gap:2px;"><input id="rate_d" type="number" value="4.0" class="sm" oninput="calc()"><span style="font-size:0.7rem">%</span></div></div></td>
                 <td style="background:rgba(59,130,246,0.02)"><div id="status_d"></div></td>
                 <td style="background:rgba(239,68,68,0.02)"><div id="sim_res_d"></div></td>
               </tr>
-
               <!-- 保單 E -->
               <tr>
-                <td>
-                    <b>保單 E</b> (遠雄人壽)<br>
-                    <span class="rule-tag" style="background:#ecfccb; color:#365314; border-color:#bef264;">儲蓄型 / 無股市風險</span>
-                    <div class="date-wrapper">
-                        <input type="date" id="date_e" onchange="calc()">
-                        <div id="dur_e" class="duration-tag"></div>
-                    </div>
-                </td>
-                <td>
-                    <div class="inp-group">
-                        <input id="asset_e" type="number" value="15" oninput="calc()">
-                        <input id="cost_e" type="number" value="15" oninput="calc()" style="opacity:0.7">
-                        <input id="div_e" type="number" value="0" oninput="calc()" style="border-color:var(--c-gold); color:var(--c-gold);">
-                    </div>
-                    <div id="roi_e" style="margin-top:2px;"></div>
-                </td>
-                <td>
-                    <div class="inp-group">
-                        <input id="loan_e" type="number" value="8" oninput="calc()">
-                        <div style="display:flex;align-items:center;gap:2px;">
-                            <input id="rate_e" type="number" value="3.1" class="sm" oninput="calc()"><span style="font-size:0.7rem">%</span>
-                        </div>
-                    </div>
-                </td>
+                <td><b>保單 E</b> (遠雄人壽)<br><span class="rule-tag" style="background:#ecfccb;color:#365314;border-color:#bef264;">儲蓄型 / 無股市風險</span><div class="date-wrapper"><input type="date" id="date_e" onchange="calc()"><div id="dur_e" style="font-size:0.7rem;color:var(--c-blue)"></div></div></td>
+                <td><div class="inp-group"><input id="asset_e" type="number" value="15" oninput="calc()"><input id="cost_e" type="number" value="15" oninput="calc()" style="opacity:0.7"><input id="div_e" type="number" value="0" oninput="calc()" style="border-color:var(--c-gold)"></div><div id="roi_e"></div></td>
+                <td><div class="inp-group"><input id="loan_e" type="number" value="8" oninput="calc()"><div style="display:flex;align-items:center;gap:2px;"><input id="rate_e" type="number" value="3.1" class="sm" oninput="calc()"><span style="font-size:0.7rem">%</span></div></div></td>
                 <td style="background:rgba(59,130,246,0.02)"><div id="status_e"></div></td>
                 <td style="background:rgba(239,68,68,0.02)"><div id="sim_res_e"></div></td>
               </tr>
-
               <!-- ETF -->
               <tr style="background:rgba(59,130,246,0.03)">
-                <td>
-                    <b>台股 ETF</b> (質押)<br>
-                    <span class="rule-tag">追繳線 130% / 斷頭 115%</span>
-                    <div class="date-wrapper">
-                        <input type="date" id="date_etf" onchange="calc()">
-                        <div id="dur_etf" class="duration-tag">計算中...</div>
-                    </div>
-                </td>
-                <td>
-                    <div class="inp-group">
-                        <input id="asset_etf" type="number" value="171" oninput="calc()">
-                        <input id="cost_etf" type="number" value="175" oninput="calc()" style="opacity:0.7">
-                        <input id="div_etf" type="number" value="12.6" oninput="calc()" style="border-color:var(--c-gold); color:var(--c-gold);">
-                    </div>
-                    <div id="roi_etf" style="margin-top:2px;"></div>
-                </td>
-                <td>
-                    <div class="inp-group">
-                        <input id="loan_etf" type="number" value="34.5" oninput="calc()">
-                        <div style="display:flex;align-items:center;gap:2px;">
-                            <input id="rate_etf" type="number" value="3.0" class="sm" oninput="calc()"><span style="font-size:0.7rem">%</span>
-                        </div>
-                    </div>
-                </td>
+                <td><b>台股 ETF</b> (質押)<br><span class="rule-tag">追繳 130% / 斷頭 115%</span><div class="date-wrapper"><input type="date" id="date_etf" onchange="calc()"><div id="dur_etf" style="font-size:0.7rem;color:var(--c-blue)"></div></div></td>
+                <td><div class="inp-group"><input id="asset_etf" type="number" value="171" oninput="calc()"><input id="cost_etf" type="number" value="175" oninput="calc()" style="opacity:0.7"><input id="div_etf" type="number" value="12.6" oninput="calc()" style="border-color:var(--c-gold)"></div><div id="roi_etf"></div></td>
+                <td><div class="inp-group"><input id="loan_etf" type="number" value="34.5" oninput="calc()"><div style="display:flex;align-items:center;gap:2px;"><input id="rate_etf" type="number" value="3.0" class="sm" oninput="calc()"><span style="font-size:0.7rem">%</span></div></div></td>
                 <td style="background:rgba(59,130,246,0.02)"><div id="status_etf"></div></td>
                 <td style="background:rgba(239,68,68,0.02)"><div id="sim_res_etf"></div></td>
               </tr>
@@ -480,67 +335,49 @@
         </div>
       </div>
 
-      <!-- 房產與負債 -->
       <div class="section-card">
         <div class="section-title">🏠 房產與生活負債 (本金歸戶)</div>
         <div style="display:flex; gap:20px; flex-wrap:wrap;">
+            <div style="flex:1; min-width:200px;"><h4 style="margin:0 0 5px 0; color:var(--text-sub); font-size:0.9rem;">房產估值</h4><input id="asset_house" type="number" value="470" oninput="calc()" style="width:100%; border-color:var(--c-blue)"></div>
             <div style="flex:1; min-width:200px;">
-                <h4 style="margin:0 0 10px 0; color:var(--text-sub)">房產估值</h4>
-                <input id="asset_house" type="number" value="470" oninput="calc()" style="width:100%; border-color:var(--c-blue)">
-            </div>
-            <div style="flex:1; min-width:200px;">
-                <h4 style="margin:0 0 10px 0; color:var(--text-sub)">欠款本金</h4>
-                <div style="display:flex; gap:15px;">
-                    <div><label style="font-size:0.8rem">房貸餘額</label><input id="debt_house" type="number" value="462" oninput="calc()" style="width:100%"></div>
-                    <div><label style="font-size:0.8rem">信貸餘額</label><input id="debt_personal" type="number" value="98" oninput="calc()" style="width:100%"></div>
+                <h4 style="margin:0 0 5px 0; color:var(--text-sub); font-size:0.9rem;">欠款本金</h4>
+                <div style="display:flex; gap:10px;">
+                    <div style="flex:1"><label style="font-size:0.8rem">房貸餘額</label><input id="debt_house" type="number" value="462" oninput="calc()" style="width:100%"></div>
+                    <div style="flex:1"><label style="font-size:0.8rem">信貸餘額</label><input id="debt_personal" type="number" value="98" oninput="calc()" style="width:100%"></div>
                 </div>
             </div>
-            <div style="flex:1; min-width:150px;">
-                <h4 style="margin:0 0 10px 0; color:var(--text-sub)">流動現金</h4>
-                <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                    <div class="inp-group" style="flex:1">
-                        <label class="inp-label">手頭現金</label>
-                        <input id="asset_cash" type="number" value="40" oninput="calc()" style="border-color:var(--c-safe); width:100%">
-                    </div>
-                    <div class="inp-group" style="flex:1">
-                        <label class="inp-label">未用循環信貸</label>
-                        <input id="unused_credit" type="number" value="36" oninput="calc()" style="width:100%">
-                    </div>
-                    <div class="inp-group" style="flex:1">
-                        <label class="inp-label">未用質押額度</label>
-                        <input id="unused_pledge" type="number" value="50" oninput="calc()" style="width:100%">
-                    </div>
+            <div style="flex:1; min-width:250px;">
+                <h4 style="margin:0 0 5px 0; color:var(--c-safe); font-size:0.9rem;">流動性與備用金</h4>
+                <div style="display:flex; gap:5px;">
+                    <div style="flex:1"><label style="font-size:0.7rem">手頭現金</label><input id="asset_cash" type="number" value="40" oninput="calc()" style="width:100%; border-color:var(--c-safe)"></div>
+                    <div style="flex:1"><label style="font-size:0.7rem">未用信貸</label><input id="unused_credit" type="number" value="36" oninput="calc()" style="width:100%"></div>
+                    <div style="flex:1"><label style="font-size:0.7rem">未用質押</label><input id="unused_pledge" type="number" value="50" oninput="calc()" style="width:100%"></div>
                 </div>
-                <div id="total_liquidity_display" style="font-size:0.85rem; color:var(--c-safe); margin-top:6px; font-weight:bold; text-align:right;"></div>
+                <div id="total_liquidity_display" style="font-size:0.8rem; color:var(--c-safe); margin-top:5px; text-align:right; font-weight:bold;"></div>
             </div>
         </div>
       </div>
-
+      
       <!-- AI 建議 -->
       <div class="ai-box">
         <div class="ai-title"><i class="fas fa-robot"></i> AI 財務總結與建議</div>
-        <div id="ai_advice_content" class="ai-content">正在分析您的財務數據...</div>
+        <div id="ai_advice_content" class="ai-content">分析中...</div>
         <div class="ai-title" style="margin-top:20px; font-size:1rem;"><i class="fas fa-lightbulb"></i> 點擊查看：計算邏輯與詳細解說</div>
         <div id="ai_explained_container"></div>
-        <i class="fas fa-brain ai-icon-bg"></i>
       </div>
-
     </div>
 
     <!-- 右側面板 -->
     <div class="side-panel">
-      
-      <!-- 收入 -->
       <div class="section-card">
-        <h3 style="margin:0 0 15px 0; color:var(--c-blue)">💰 月收入</h3>
+        <h3 style="margin:0 0 10px 0; color:var(--c-blue); font-size:1.1rem;">💰 月收入</h3>
         <div class="summary-row"><span>主動薪資</span><input id="inc_active" type="number" value="4.2" oninput="calc()"></div>
         <div class="summary-row"><span style="color:var(--c-gold); font-weight:bold;">被動配息</span><input id="inc_passive" type="number" value="5.5" oninput="calc()"></div>
         <div class="summary-row total-line" style="color:var(--c-blue)"><span>總收入</span><span id="disp_inc_total" class="privacy-blur">0</span></div>
       </div>
 
-      <!-- 支出 -->
       <div class="section-card">
-        <h3 style="margin:0 0 15px 0; color:var(--c-danger)">💸 月支出 (含升息)</h3>
+        <h3 style="margin:0 0 10px 0; color:var(--c-danger); font-size:1.1rem;">💸 月支出 (含升息)</h3>
         <div class="summary-row"><span>房貸月供</span><input id="exp_house" type="number" value="3.1" oninput="calc()"></div>
         <div class="summary-row"><span>信貸月供</span><input id="exp_personal" type="number" value="1.3" oninput="calc()"></div>
         <div class="summary-row"><span>保險/生活</span><input id="exp_life" type="number" value="2.0" oninput="calc()"></div>
@@ -552,13 +389,11 @@
         <div class="summary-row total-line" style="color:var(--c-danger)"><span>總支出</span><span id="disp_exp_total" class="privacy-blur">0</span></div>
       </div>
 
-      <!-- 結餘 -->
       <div class="section-card" style="text-align:center;">
          <div style="font-size:0.9rem; color:var(--text-sub)">月現金流</div>
          <div style="font-size:2rem; font-weight:800;" id="disp_surplus_big" class="privacy-blur">0</div>
          <div style="margin-top:5px; font-size:0.8rem;" id="surplus_msg"></div>
       </div>
-
     </div>
   </div>
 </div>
@@ -567,44 +402,19 @@
   let chartAsset = null;
   let chartFlow = null;
 
+  // State
+  let globalSimType = 'manual'; // 'manual' or 'history'
+  let currentStockDrop = 0;
+  let currentBalancedDrop = 0;
+
   const v = (id) => parseFloat(document.getElementById(id)?.value) || 0;
   const t = (id, txt) => { const el = document.getElementById(id); if(el) el.innerHTML = txt; };
-
-  // Backup & Restore
-  function exportJSON() {
-    const data = localStorage.getItem('wcj_final_v25_fire');
-    if(!data) { alert("無資料可備份"); return; }
-    const blob = new Blob([data], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `財務備份_${new Date().toISOString().slice(0,10)}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-  }
-
-  function importJSON(input) {
-    const file = input.files[0];
-    if(!file) return;
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        try {
-            const json = JSON.parse(e.target.result);
-            for(k in json) { if(document.getElementById(k)) document.getElementById(k).value = json[k]; }
-            calc();
-            alert("✅ 數據還原成功！");
-        } catch(e) { alert("❌ 檔案格式錯誤"); }
-    };
-    reader.readAsText(file);
-    input.value = '';
-  }
 
   function calcDuration(dateStr, elId) {
     if(!dateStr) { t(elId, "未設定"); return; }
     const start = new Date(dateStr);
     const now = new Date();
-    if (start > now) { t(elId, "待生效 (未來)"); return; }
+    if (start > now) { t(elId, "待生效"); return; }
     let months = (now.getFullYear() - start.getFullYear()) * 12;
     months -= start.getMonth();
     months += now.getMonth();
@@ -617,22 +427,54 @@
     t(elId, `持有: ${txt}`);
   }
 
+  // 歷史劇本
+  function setHistoryCrash(stockDrop, balancedDrop, label, desc) {
+    globalSimType = 'history';
+    currentStockDrop = stockDrop;
+    currentBalancedDrop = balancedDrop;
+    
+    // Update UI
+    document.getElementById('sim_slider').value = stockDrop;
+    document.getElementById('sim_label').innerText = `-${stockDrop}%`;
+    
+    const detailBox = document.getElementById('crash_detail');
+    detailBox.style.display = 'block';
+    document.getElementById('crash_title').innerText = label;
+    document.getElementById('crash_desc').innerText = `${desc} (ETF跌 ${stockDrop}%, 保單跌 ${balancedDrop}%)`;
+    
+    calc();
+  }
+
+  function manualSlider() {
+      globalSimType = 'manual';
+      const val = document.getElementById('sim_slider').value;
+      document.getElementById('sim_label').innerText = `-${val}%`;
+      document.getElementById('crash_detail').style.display = 'none';
+      calc();
+  }
+
+  function resetSim() {
+      document.getElementById('sim_slider').value = 0;
+      manualSlider();
+  }
+
   function renderAssetStatus(id, asset, loan, cost, mcLimit, liqLimit, isEtf, isSavings=false, rateHike=0) {
     const divAcc = v(`div_${id}`);
-    const roi = cost > 0 ? ((asset + divAcc - cost) / cost * 100) : 0;
-    const priceRoi = cost > 0 ? ((asset - cost) / cost * 100) : 0;
-    
+    // Dual ROI
+    let priceRoi = cost > 0 ? ((asset - cost) / cost * 100) : 0;
+    let totalRoi = cost > 0 ? ((asset + divAcc - cost) / cost * 100) : 0;
+
     const getColor = (val) => val >= 0 ? 'c-up' : 'c-down';
     const getSym = (val) => val >= 0 ? '+' : '';
 
     const roiHtml = `
         <div class="roi-wrapper">
             <div class="roi-row">
-                <span style="font-size:0.7rem; color:var(--text-sub)">含息</span>
-                <span class="roi-val ${getColor(roi)}">${getSym(roi)} ${roi.toFixed(1)}%</span>
+                <span class="roi-label">含息</span>
+                <span class="roi-val ${getColor(totalRoi)}">${getSym(totalRoi)}${totalRoi.toFixed(1)}%</span>
             </div>
             <div class="roi-row">
-                <span style="font-size:0.7rem; color:var(--text-sub)">不含息</span>
+                <span class="roi-label">不含息</span>
                 <span class="roi-val ${getColor(priceRoi)}">${getSym(priceRoi)} ${priceRoi.toFixed(1)}%</span>
             </div>
         </div>
@@ -642,83 +484,73 @@
     const dateVal = document.getElementById(`date_${id}`).value;
     calcDuration(dateVal, `dur_${id}`);
 
-    const dropPct = parseFloat(document.getElementById('sim_slider').value);
-    document.getElementById('sim_label').innerText = `-${dropPct}%`;
-    
+    // Interest Calc
     const rate = v(`rate_${id}`);
-    // 升息影響：每個貸款都加上 rateHike
     let effectiveRate = rate + rateHike;
     let interest = 0;
     if(loan > 0) interest = (loan * (effectiveRate/100)) / 12;
 
-    // Risk Calc
+    // ---- RISK STATUS (CURRENT) ----
     let ratioText = "";
     let color = "b-safe";
     let triggerMC = 0, triggerLiq = 0;
     let bufferMC = 0, bufferLiq = 0;
     let barWidth = 0;
 
-    if (isSavings) {
+    if(isSavings) {
         ratioText = asset > 0 ? (loan/asset*100).toFixed(1) + "%" : "0%";
-        const statusHtml = `
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2px;">
-                <span style="font-size:0.75rem; color:var(--text-sub)">借款比 <span class="badge b-safe" style="font-size:0.7rem; padding:2px 6px;">${ratioText}</span></span>
-            </div>
-            <div style="font-size:0.85rem; color:var(--c-safe); font-weight:bold; margin-top:8px;">🟢 儲蓄型 (無股市風險)</div>
-        `;
-        t(`status_${id}`, statusHtml);
-        const simHtml = `
-            <div style="font-weight:bold; font-size:0.9rem;" class="privacy-blur">${asset.toFixed(0)} <small style="color:var(--text-sub)">萬</small></div>
-            <div style="font-size:0.8rem; color:var(--text-sub); margin-top:4px;">🛡️ 價值恆定</div>
-        `;
-        t(`sim_res_${id}`, simHtml);
+        t(`status_${id}`, `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2px;"><span style="font-size:0.75rem; color:var(--text-sub)">借款比 <span class="badge b-safe" style="font-size:0.7rem; padding:2px 6px;">${ratioText}</span></span></div><div style="font-size:0.85rem; color:var(--c-safe); font-weight:bold; margin-top:8px;">🟢 儲蓄型 (無股市風險)</div>`);
+        // Sim Result for Savings
+        t(`sim_res_${id}`, `<div style="font-weight:bold; font-size:0.9rem;" class="privacy-blur">${asset.toFixed(0)} <small style="color:var(--text-sub)">萬</small></div><div style="font-size:0.8rem; color:var(--text-sub); margin-top:4px;">🛡️ 價值恆定</div>`);
         return { interest, bufferMC: 100, bufferLiq: 100, name: id, divAcc, loan, asset };
     }
 
-    // ETF Dual Display
-    if(isEtf) {
-        const ltv = asset>0 ? (loan/asset*100) : 0;
-        const maint = loan>0 ? (asset/loan*100) : 0;
-        
-        // Text
-        ratioText = `借${ltv.toFixed(0)}% | 維${loan>0?maint.toFixed(0)+'%':'-'}`;
-        
-        if(loan>0 && maint < 130) color = "b-warn";
-        if(loan>0 && maint < 115) color = "b-danger";
+    // Regular or ETF
+    let posMC, posLiq;
 
-        triggerMC = loan * 1.3;
-        triggerLiq = loan * 1.15;
-        
-        if(asset > 0) {
-            bufferMC = Math.max(0, (1 - triggerMC/asset)*100);
-            bufferLiq = Math.max(0, (1 - triggerLiq/asset)*100);
-        }
-        barWidth = Math.min(ltv, 100);
-    } else {
+    if(!isEtf) {
         // Policy
         const r = asset>0 ? loan/asset*100 : 0;
         ratioText = r.toFixed(1) + "%";
         if(r >= liqLimit) color = "b-danger"; else if(r >= mcLimit) color = "b-warn";
+        
         triggerMC = loan / (mcLimit/100);
         triggerLiq = loan / (liqLimit/100);
+        
         if(asset > 0) {
             bufferMC = Math.max(0, (1 - triggerMC/asset)*100);
             bufferLiq = Math.max(0, (1 - triggerLiq/asset)*100);
         }
         barWidth = Math.min(r, 100);
+        posMC = mcLimit;
+        posLiq = liqLimit;
+    } else {
+        // ETF
+        const maint = loan>0 ? (asset/loan*100) : 0;
+        const ltv = asset>0 ? (loan/asset*100) : 0;
+        ratioText = `借${ltv.toFixed(0)}% | 維${loan>0?maint.toFixed(0)+'%':'-'}`;
+        
+        if(loan>0 && maint < 130) color = "b-warn";
+        if(loan>0 && maint < 115) color = "b-danger";
+
+        triggerMC = loan * 1.3; // 130%
+        triggerLiq = loan * 1.15; // 115%
+        
+        if(asset > 0) {
+            bufferMC = Math.max(0, (1 - triggerMC/asset)*100);
+            bufferLiq = Math.max(0, (1 - triggerLiq/asset)*100);
+        }
+        // For visual bar: approximate Maint to LTV
+        // 130% Maint ~= 77% LTV
+        // 115% Maint ~= 87% LTV
+        barWidth = Math.min(ltv, 100);
+        posMC = 77;
+        posLiq = 87;
     }
 
     let barColor = "var(--c-safe)";
-    if(isEtf) {
-        if(barWidth >= 77) barColor = "var(--c-warn)";
-        if(barWidth >= 87) barColor = "var(--c-danger)";
-    } else {
-        if(barWidth >= mcLimit) barColor = "var(--c-warn)";
-        if(barWidth >= liqLimit) barColor = "var(--c-danger)";
-    }
-
-    let posMC = isEtf ? 77 : mcLimit;
-    let posLiq = isEtf ? 87 : liqLimit;
+    if(barWidth >= posMC) barColor = "var(--c-warn)";
+    if(barWidth >= posLiq) barColor = "var(--c-danger)";
 
     const statusHtml = `
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2px;">
@@ -742,42 +574,58 @@
     `;
     t(`status_${id}`, statusHtml);
 
-    // Simulation
-    const factor = 1 - (dropPct / 100);
+    // ---- SIMULATION ----
+    let drop = 0;
+    if (globalSimType === 'history') {
+        drop = isEtf ? currentStockDrop : currentBalancedDrop;
+    } else {
+        drop = parseFloat(document.getElementById('sim_slider').value);
+    }
+    
+    // UI update for drop label
+    document.getElementById('sim_label').innerText = `-${drop}%`;
+
+    const factor = 1 - (drop / 100);
     const simAsset = asset * factor;
+    
     let simTxt = "安全";
     let simCls = "b-safe";
-    let simRatioVal = 0;
     let topUpNeeded = 0;
 
     if(!isEtf) {
-        simRatioVal = simAsset>0 ? loan/simAsset*100 : 0;
-        if(simRatioVal >= liqLimit) { simTxt = "斷頭"; simCls = "b-danger"; }
-        else if(simRatioVal >= mcLimit) { simTxt = "補繳"; simCls = "b-warn"; }
-        if (simRatioVal > mcLimit) {
-            const maxLoanAllowed = simAsset * (mcLimit / 100);
-            topUpNeeded = loan - maxLoanAllowed;
+        const simRatio = simAsset>0 ? loan/simAsset*100 : 0;
+        if(simRatio >= liqLimit) { simTxt = "斷頭"; simCls = "b-danger"; }
+        else if(simRatio >= mcLimit) { simTxt = "補繳"; simCls = "b-warn"; }
+        
+        if(simRatio > mcLimit) {
+            const maxLoan = simAsset * (mcLimit/100);
+            topUpNeeded = loan - maxLoan;
         }
     } else {
-        simRatioVal = loan>0 ? simAsset/loan*100 : 0; 
+        const simMaint = loan>0 ? simAsset/loan*100 : 0;
         if(loan>0) {
-            if(simRatioVal < 115) { simTxt = "斷頭"; simCls = "b-danger"; }
-            else if(simRatioVal < 130) { simTxt = "追繳"; simCls = "b-warn"; }
-            if (simRatioVal < 130) {
+            if(simMaint < 115) { simTxt = "斷頭"; simCls = "b-danger"; }
+            else if(simMaint < 130) { simTxt = "追繳"; simCls = "b-warn"; }
+            
+            if(simMaint < 130) {
                 const targetLoan = simAsset / 1.3;
                 topUpNeeded = loan - targetLoan;
             }
         }
     }
 
-    const simDisplayRatio = isEtf ? (loan>0?simRatioVal.toFixed(0)+"%":"-") : simRatioVal.toFixed(1)+"%";
+    // Sim display
+    let simRatioDisp = "";
+    if(isEtf) simRatioDisp = loan>0 ? (simAsset/loan*100).toFixed(0)+"%" : "-";
+    else simRatioDisp = (simAsset>0 ? loan/simAsset*100 : 0).toFixed(1)+"%";
+
     let topUpHtml = "";
-    if (topUpNeeded > 0) topUpHtml = `<div style="font-size:0.8rem; color:var(--c-danger); margin-top:2px; font-weight:bold;">💸 需補 ${topUpNeeded.toFixed(1)} 萬</div>`;
+    if(topUpNeeded > 0) topUpHtml = `<div style="font-size:0.8rem; color:var(--c-danger); margin-top:2px; font-weight:bold;">💸 需補 ${topUpNeeded.toFixed(1)} 萬</div>`;
 
     const simHtml = `
         <div style="font-weight:bold; font-size:0.9rem;" class="privacy-blur">${simAsset.toFixed(0)} <small style="color:var(--text-sub)">萬</small></div>
         <div style="display:flex; justify-content:space-between; margin-top:4px; font-size:0.8rem;">
-            <span>${simDisplayRatio}</span>
+            <span>${simRatioDisp}</span>
             <span class="badge ${simCls}">${simTxt}</span>
         </div>
         ${topUpHtml}
@@ -787,6 +635,7 @@
     return { interest, bufferMC, bufferLiq, name: id, divAcc, loan, asset };
   }
 
+  // AI Advice
   function generateAI(netWorth, surplus, debtRatio, minBufferObj, totalAsset, totalDebt, investDebt, lifeDebt, totalLiquidity, monthlyExpense) {
     let msg = "";
     let detailsHtml = "";
@@ -877,14 +726,6 @@
     const debtRatio = totalAssets>0 ? (totalLiabilities/totalAssets*100) : 0;
     t('val_debt_ratio', debtRatio.toFixed(1)+"%");
 
-    // FIRE Progress
-    const fireTarget = v('fire_target');
-    const firePct = fireTarget > 0 ? (netWorth / fireTarget * 100) : 0;
-    t('fire_pct', firePct.toFixed(1) + "%");
-    document.getElementById('fire_bar').style.width = Math.min(firePct, 100) + "%";
-    t('fire_diff', (fireTarget - netWorth).toLocaleString());
-
-    // Cashflow
     const incAct = v('inc_active');
     const incPas = v('inc_passive');
     const inc = incAct + incPas;
@@ -892,9 +733,6 @@
     t('val_income', inc.toFixed(1));
 
     const expFix = v('exp_house') + v('exp_personal') + v('exp_life') + v('exp_flex');
-    // Calculate Extra Rate Hike Cost for Personal Loans/Mortgage if variable
-    // For simplicity, assuming mortgage/credit loan rates increase by hike too
-    // Mortgage interest impact approx: Loan * RateHike / 12
     const hikeImpact = ((houseDebt + personalDebt) * (rateHike/100)) / 12;
     t('disp_rate_hike_impact', hikeImpact.toFixed(2));
 
@@ -920,7 +758,12 @@
   }
 
   function initCharts() {
-    chartAsset = new Chart(document.getElementById('assetChart'), {
+    // Destroy old charts if exist
+    if (chartAsset) chartAsset.destroy();
+    if (chartFlow) chartFlow.destroy();
+
+    const ctxAsset = document.getElementById('assetChart').getContext('2d');
+    chartAsset = new Chart(ctxAsset, {
         type: 'doughnut',
         data: {
             labels: ['投資', '房產', '現金'],
@@ -929,7 +772,8 @@
         options: { responsive:true, maintainAspectRatio:false, cutout:'65%' }
     });
 
-    chartFlow = new Chart(document.getElementById('flowChart'), {
+    const ctxFlow = document.getElementById('flowChart').getContext('2d');
+    chartFlow = new Chart(ctxFlow, {
         type: 'bar',
         data: {
             labels: ['收支'],
@@ -948,18 +792,6 @@
     if(chartFlow) { chartFlow.data.datasets[0].data = [flows[0]]; chartFlow.data.datasets[1].data = [flows[1]]; chartFlow.data.datasets[2].data = [flows[2]]; chartFlow.update(); }
   }
 
-  function togglePrivacy() {
-    document.body.classList.toggle('privacy-mode');
-    const btn = document.getElementById('btnPrivacy');
-    if(document.body.classList.contains('privacy-mode')) {
-        btn.innerHTML = '<i class="fas fa-eye-slash"></i> 顯示金額';
-        btn.classList.add('active');
-    } else {
-        btn.innerHTML = '<i class="fas fa-eye"></i> 隱藏金額';
-        btn.classList.remove('active');
-    }
-  }
-
   function exportPDF() {
     const el = document.getElementById('dashboard-container');
     const opt = {
@@ -976,14 +808,43 @@
   function saveData() {
     const d = {};
     document.querySelectorAll('input').forEach(e => d[e.id] = e.value);
-    localStorage.setItem('wcj_final_v25_fire', JSON.stringify(d));
+    localStorage.setItem('wcj_final_v33_fixed', JSON.stringify(d));
     alert('已儲存');
   }
+  
+  function importJSON(input) {
+    const file = input.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const json = JSON.parse(e.target.result);
+            for(k in json) { if(document.getElementById(k)) document.getElementById(k).value = json[k]; }
+            calc();
+            alert("✅ 數據還原成功！");
+        } catch(e) { alert("❌ 檔案格式錯誤"); }
+    };
+    reader.readAsText(file);
+    input.value = '';
+  }
+  
   function toggleTheme() { document.documentElement.setAttribute('data-theme', document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark'); }
+  
+  function togglePrivacy() {
+    document.body.classList.toggle('privacy-mode');
+    const btn = document.getElementById('btnPrivacy');
+    if(document.body.classList.contains('privacy-mode')) {
+        btn.innerHTML = '<i class="fas fa-eye-slash"></i> 顯示金額';
+        btn.classList.add('active');
+    } else {
+        btn.innerHTML = '<i class="fas fa-eye"></i> 隱藏金額';
+        btn.classList.remove('active');
+    }
+  }
 
   window.onload = () => {
     initCharts();
-    const d = JSON.parse(localStorage.getItem('wcj_final_v25_fire'));
+    const d = JSON.parse(localStorage.getItem('wcj_final_v33_fixed'));
     if(d) for(k in d) if(document.getElementById(k)) document.getElementById(k).value=d[k];
     calc();
   };
