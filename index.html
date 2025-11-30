@@ -2,7 +2,7 @@
 <html lang="zh-TW" data-theme="light">
 <head>
   <meta charset="UTF-8">
-  <title>財務自由終極儀表板 (Final Complete)</title>
+  <title>財務自由終極儀表板 (Backup & FIRE)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -43,19 +43,28 @@
     /* Header */
     .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
     .btn-group { display: flex; gap: 5px; flex-wrap: wrap; }
-    .btn-group button { background: var(--bg-card); border: 1px solid var(--text-sub); color: var(--text-main); padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight:bold; transition:0.2s; font-size: 0.85rem; }
+    .btn-group button { background: var(--bg-card); border: 1px solid var(--text-sub); color: var(--text-main); padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight:bold; transition:0.2s; font-size: 0.85rem; display:flex; align-items:center; gap:5px; }
     .btn-group button:hover { background: var(--c-blue); color: white; border-color: var(--c-blue); }
+    
+    .btn-backup { border-color: var(--c-purple) !important; color: var(--c-purple) !important; }
+    .btn-backup:hover { background: var(--c-purple) !important; color: white !important; }
+    
     .btn-pdf { border-color: var(--c-danger) !important; color: var(--c-danger) !important; }
     .btn-pdf:hover { background: var(--c-danger) !important; color: white !important; }
+    
     .btn-privacy { border-color: var(--text-main) !important; }
     .btn-privacy.active { background: var(--text-main); color: var(--bg-card); }
 
     /* Hero Section */
     .hero-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px; }
-    .hero-card { background: var(--bg-card); padding: 20px; border-radius: var(--radius); box-shadow: var(--shadow); border-top: 4px solid var(--c-blue); }
+    .hero-card { background: var(--bg-card); padding: 20px; border-radius: var(--radius); box-shadow: var(--shadow); border-top: 4px solid var(--c-blue); position: relative; }
     .hero-title { font-size: 0.9rem; color: var(--text-sub); font-weight: 600; margin-bottom: 5px; }
     .hero-val { font-size: 1.8rem; font-weight: 800; }
     .hero-sub { font-size: 0.8rem; opacity: 0.8; margin-top: 5px; line-height: 1.4; }
+
+    /* FIRE Progress Bar */
+    .fire-track { width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px; margin-top: 8px; overflow: hidden; }
+    .fire-fill { height: 100%; background: linear-gradient(90deg, var(--c-blue), var(--c-purple)); border-radius: 4px; width: 0%; transition: width 1s ease; }
 
     /* Charts Section */
     .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
@@ -77,6 +86,7 @@
     
     /* Inputs */
     .inp-group { display: flex; flex-direction: column; gap: 5px; }
+    .inp-label { font-size: 0.75rem; color: var(--text-sub); }
     input[type="number"] { width: 95px; padding: 6px; border: 1px solid #cbd5e1; border-radius: 4px; text-align: right; font-weight: 600; background: var(--bg-body); color: var(--text-main); transition:0.2s; }
     input[type="number"]:focus { border-color: var(--c-blue); background: #fff; }
     input.sm { width: 60px; font-size: 0.85rem; }
@@ -113,11 +123,18 @@
     .line-trigger { font-weight: 800; margin-left:4px; }
     .line-label { color: var(--text-sub); display:flex; align-items:center; gap:4px; font-size:0.8rem;}
 
-    /* Slider */
-    .sim-control { background: linear-gradient(to right, rgba(239,68,68,0.05), rgba(239,68,68,0.01)); border: 1px solid rgba(239,68,68,0.15); padding: 15px; border-radius: 8px; margin-bottom: 15px; display: flex; flex-direction: column; gap: 10px; }
-    .range-wrap { display: flex; align-items: center; gap: 15px; }
+    /* Sliders Control */
+    .control-container { display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:15px; }
+    .sim-control { border: 1px solid rgba(239,68,68,0.2); padding: 15px; border-radius: 8px; background: linear-gradient(to right, rgba(239,68,68,0.03), rgba(255,255,255,0)); }
+    .rate-control { border: 1px solid rgba(59,130,246,0.2); padding: 15px; border-radius: 8px; background: linear-gradient(to right, rgba(59,130,246,0.03), rgba(255,255,255,0)); }
+    
+    .range-wrap { display: flex; align-items: center; gap: 10px; margin-top:10px; }
     input[type=range] { flex: 1; height: 6px; border-radius: 5px; background: #cbd5e1; outline: none; -webkit-appearance: none; }
-    input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--c-danger); cursor: pointer; border: 2px solid #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+    
+    /* Red Slider (Crash) */
+    #sim_slider::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--c-danger); cursor: pointer; border: 2px solid #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+    /* Blue Slider (Rate) */
+    #rate_slider::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--c-blue); cursor: pointer; border: 2px solid #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
 
     /* Side Panel */
     .side-panel { display: flex; flex-direction: column; gap: 20px; }
@@ -141,7 +158,8 @@
 
     /* Privacy Mode */
     body.privacy-mode input[type="number"],
-    body.privacy-mode .privacy-blur {
+    body.privacy-mode .privacy-blur,
+    body.privacy-mode .roi-val {
         color: transparent !important;
         text-shadow: 0 0 8px rgba(0,0,0,0.5);
         cursor: default;
@@ -155,6 +173,7 @@
       .hero-grid { grid-template-columns: 1fr 1fr; }
       .charts-grid { grid-template-columns: 1fr; }
       .main-layout { grid-template-columns: 1fr; }
+      .control-container { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -165,14 +184,17 @@
   <div class="header">
     <div>
       <h1 style="margin:0; color:var(--c-blue)"><i class="fas fa-university"></i> 財務自由終極儀表板</h1>
-      <span style="font-size:0.85rem; color:var(--text-sub)">持有紀錄、含息報酬、補繳試算、真實負債</span>
+      <span style="font-size:0.85rem; color:var(--text-sub)">備份還原、升息模擬、FIRE進度、ETF雙指標</span>
     </div>
     <div class="btn-group" data-html2canvas-ignore="true">
       <button onclick="togglePrivacy()" id="btnPrivacy" class="btn-privacy"><i class="fas fa-eye"></i> 隱藏金額</button>
       <button onclick="toggleTheme()"><i class="fas fa-adjust"></i> 模式</button>
+      <button onclick="exportJSON()" class="btn-backup"><i class="fas fa-download"></i> 備份</button>
+      <button onclick="document.getElementById('importFile').click()" class="btn-backup"><i class="fas fa-upload"></i> 還原</button>
       <button onclick="saveData()"><i class="fas fa-save"></i> 存檔</button>
       <button onclick="calc()"><i class="fas fa-sync"></i> 重算</button>
       <button onclick="exportPDF()" class="btn-pdf"><i class="fas fa-file-pdf"></i> 匯出 PDF</button>
+      <input type="file" id="importFile" style="display:none" onchange="importJSON(this)">
     </div>
   </div>
 
@@ -185,9 +207,13 @@
     </div>
     
     <div class="hero-card" style="border-top-color: var(--c-safe);">
-      <div class="hero-title">每月淨現金流 (Cash Flow)</div>
-      <div class="hero-val privacy-blur" style="color:var(--c-safe)">+<span id="val_surplus">0</span> 萬</div>
-      <div class="hero-sub">月收 <span id="val_income" class="privacy-blur">0</span> － 月支 <span id="val_expense" class="privacy-blur">0</span><br>(已自動扣除投資利息)</div>
+      <div class="hero-title">FIRE 退休目標進度</div>
+      <div style="display:flex; justify-content:space-between; align-items:end;">
+          <div class="hero-val privacy-blur" style="color:var(--c-safe)" id="fire_pct">0%</div>
+          <div style="font-size:0.8rem; color:var(--text-sub); text-align:right;">目標: <input type="number" id="fire_target" value="3000" oninput="calc()" style="width:70px; border:none; background:transparent; border-bottom:1px dashed #ccc; text-align:right;"> 萬</div>
+      </div>
+      <div class="fire-track"><div id="fire_bar" class="fire-fill"></div></div>
+      <div class="hero-sub" style="margin-top:5px;">距離目標還差 <span id="fire_diff" class="privacy-blur">0</span> 萬</div>
     </div>
 
     <div class="hero-card" style="border-top-color: var(--c-warn);">
@@ -220,21 +246,36 @@
     <!-- 左側：詳細資產負債表 -->
     <div class="main-content">
       
-      <!-- 股災模擬控制區 -->
-      <div class="sim-control">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-            <strong style="color:var(--c-danger)"><i class="fas fa-chart-line"></i> 市場壓力測試模擬 (滑桿)</strong>
-            <span style="background:#fff; padding:2px 8px; border-radius:4px; font-weight:bold; border:1px solid #ccc;">
-                假設跌幅：<span id="sim_label" style="color:var(--c-danger); font-size:1.1rem;">0%</span>
-            </span>
+      <!-- 雙模擬控制區 (股災 + 升息) -->
+      <div class="control-container">
+        <div class="sim-control">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <strong style="color:var(--c-danger)"><i class="fas fa-chart-line"></i> 股災模擬</strong>
+                <span style="background:#fff; padding:2px 8px; border-radius:4px; font-weight:bold; border:1px solid #ccc;">
+                    跌幅：<span id="sim_label" style="color:var(--c-danger); font-size:1rem;">0%</span>
+                </span>
+            </div>
+            <div class="range-wrap">
+                <span style="font-size:0.8rem;">0%</span>
+                <input type="range" id="sim_slider" min="0" max="60" step="1" value="0" oninput="calc()">
+                <span style="font-size:0.8rem;">-60%</span>
+            </div>
+            <div style="font-size:0.75rem; color:var(--text-sub); margin-top:5px;">* 測試資產縮水與斷頭風險</div>
         </div>
-        <div class="range-wrap">
-            <span style="font-size:0.8rem;">0%</span>
-            <input type="range" id="sim_slider" min="0" max="60" step="1" value="0" oninput="calc()">
-            <span style="font-size:0.8rem;">-60%</span>
-        </div>
-        <div style="font-size:0.8rem; color:var(--text-sub);">
-            * 拖動滑桿，右側表格將自動計算「需補繳金額」。
+
+        <div class="rate-control">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <strong style="color:var(--c-blue)"><i class="fas fa-university"></i> 升息模擬</strong>
+                <span style="background:#fff; padding:2px 8px; border-radius:4px; font-weight:bold; border:1px solid #ccc;">
+                    利率：+<span id="rate_label" style="color:var(--c-blue); font-size:1rem;">0.0%</span>
+                </span>
+            </div>
+            <div class="range-wrap">
+                <span style="font-size:0.8rem;">0%</span>
+                <input type="range" id="rate_slider" min="0" max="3" step="0.125" value="0" style="accent-color:var(--c-blue)" oninput="calc()">
+                <span style="font-size:0.8rem;">+3%</span>
+            </div>
+            <div style="font-size:0.75rem; color:var(--text-sub); margin-top:5px;">* 測試升息對現金流的衝擊 (房貸/投資)</div>
         </div>
       </div>
 
@@ -499,7 +540,7 @@
 
       <!-- 支出 -->
       <div class="section-card">
-        <h3 style="margin:0 0 15px 0; color:var(--c-danger)">💸 月支出</h3>
+        <h3 style="margin:0 0 15px 0; color:var(--c-danger)">💸 月支出 (含升息)</h3>
         <div class="summary-row"><span>房貸月供</span><input id="exp_house" type="number" value="3.1" oninput="calc()"></div>
         <div class="summary-row"><span>信貸月供</span><input id="exp_personal" type="number" value="1.3" oninput="calc()"></div>
         <div class="summary-row"><span>保險/生活</span><input id="exp_life" type="number" value="2.0" oninput="calc()"></div>
@@ -507,6 +548,7 @@
         <hr style="border:0; border-top:1px dashed #ddd; margin:10px 0;">
         <div class="summary-row" style="color:var(--text-sub)"><span>保單利息(自動)</span><span id="disp_policy_interest" class="privacy-blur">0</span></div>
         <div class="summary-row" style="color:var(--text-sub)"><span>ETF利息(自動)</span><span id="disp_etf_interest" class="privacy-blur">0</span></div>
+        <div class="summary-row" style="color:var(--text-sub); font-size:0.8rem;"><span>🔺 升息增加利息</span><span id="disp_rate_hike_impact" class="privacy-blur" style="color:var(--c-danger)">0</span></div>
         <div class="summary-row total-line" style="color:var(--c-danger)"><span>總支出</span><span id="disp_exp_total" class="privacy-blur">0</span></div>
       </div>
 
@@ -528,6 +570,36 @@
   const v = (id) => parseFloat(document.getElementById(id)?.value) || 0;
   const t = (id, txt) => { const el = document.getElementById(id); if(el) el.innerHTML = txt; };
 
+  // Backup & Restore
+  function exportJSON() {
+    const data = localStorage.getItem('wcj_final_v25_fire');
+    if(!data) { alert("無資料可備份"); return; }
+    const blob = new Blob([data], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `財務備份_${new Date().toISOString().slice(0,10)}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
+
+  function importJSON(input) {
+    const file = input.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const json = JSON.parse(e.target.result);
+            for(k in json) { if(document.getElementById(k)) document.getElementById(k).value = json[k]; }
+            calc();
+            alert("✅ 數據還原成功！");
+        } catch(e) { alert("❌ 檔案格式錯誤"); }
+    };
+    reader.readAsText(file);
+    input.value = '';
+  }
+
   function calcDuration(dateStr, elId) {
     if(!dateStr) { t(elId, "未設定"); return; }
     const start = new Date(dateStr);
@@ -545,7 +617,7 @@
     t(elId, `持有: ${txt}`);
   }
 
-  function renderAssetStatus(id, asset, loan, cost, mcLimit, liqLimit, isEtf, isSavings=false) {
+  function renderAssetStatus(id, asset, loan, cost, mcLimit, liqLimit, isEtf, isSavings=false, rateHike=0) {
     const divAcc = v(`div_${id}`);
     const roi = cost > 0 ? ((asset + divAcc - cost) / cost * 100) : 0;
     const priceRoi = cost > 0 ? ((asset - cost) / cost * 100) : 0;
@@ -574,9 +646,12 @@
     document.getElementById('sim_label').innerText = `-${dropPct}%`;
     
     const rate = v(`rate_${id}`);
+    // 升息影響：每個貸款都加上 rateHike
+    let effectiveRate = rate + rateHike;
     let interest = 0;
-    if(loan > 0) interest = (loan * (rate/100)) / 12;
+    if(loan > 0) interest = (loan * (effectiveRate/100)) / 12;
 
+    // Risk Calc
     let ratioText = "";
     let color = "b-safe";
     let triggerMC = 0, triggerLiq = 0;
@@ -600,26 +675,14 @@
         return { interest, bufferMC: 100, bufferLiq: 100, name: id, divAcc, loan, asset };
     }
 
-    if(!isEtf) {
-        const r = asset>0 ? loan/asset*100 : 0;
-        ratioText = r.toFixed(1) + "%";
-        if(r >= liqLimit) color = "b-danger"; else if(r >= mcLimit) color = "b-warn";
+    // ETF Dual Display
+    if(isEtf) {
+        const ltv = asset>0 ? (loan/asset*100) : 0;
+        const maint = loan>0 ? (asset/loan*100) : 0;
         
-        triggerMC = loan / (mcLimit/100);
-        triggerLiq = loan / (liqLimit/100);
+        // Text
+        ratioText = `借${ltv.toFixed(0)}% | 維${loan>0?maint.toFixed(0)+'%':'-'}`;
         
-        if(asset > 0) {
-            bufferMC = Math.max(0, (1 - triggerMC/asset)*100);
-            bufferLiq = Math.max(0, (1 - triggerLiq/asset)*100);
-        }
-        barWidth = Math.min(r, 100);
-    } else {
-        // ETF Dual Ratio: LTV & Maint
-        const maint = loan>0 ? asset/loan*100 : 0;
-        const ltv = asset>0 ? loan/asset*100 : 0;
-        
-        ratioText = `借${ltv.toFixed(1)}% | 維${maint.toFixed(0)}%`;
-
         if(loan>0 && maint < 130) color = "b-warn";
         if(loan>0 && maint < 115) color = "b-danger";
 
@@ -631,18 +694,35 @@
             bufferLiq = Math.max(0, (1 - triggerLiq/asset)*100);
         }
         barWidth = Math.min(ltv, 100);
+    } else {
+        // Policy
+        const r = asset>0 ? loan/asset*100 : 0;
+        ratioText = r.toFixed(1) + "%";
+        if(r >= liqLimit) color = "b-danger"; else if(r >= mcLimit) color = "b-warn";
+        triggerMC = loan / (mcLimit/100);
+        triggerLiq = loan / (liqLimit/100);
+        if(asset > 0) {
+            bufferMC = Math.max(0, (1 - triggerMC/asset)*100);
+            bufferLiq = Math.max(0, (1 - triggerLiq/asset)*100);
+        }
+        barWidth = Math.min(r, 100);
     }
 
     let barColor = "var(--c-safe)";
+    if(isEtf) {
+        if(barWidth >= 77) barColor = "var(--c-warn)";
+        if(barWidth >= 87) barColor = "var(--c-danger)";
+    } else {
+        if(barWidth >= mcLimit) barColor = "var(--c-warn)";
+        if(barWidth >= liqLimit) barColor = "var(--c-danger)";
+    }
+
     let posMC = isEtf ? 77 : mcLimit;
     let posLiq = isEtf ? 87 : liqLimit;
 
-    if(barWidth >= posMC) barColor = "var(--c-warn)";
-    if(barWidth >= posLiq) barColor = "var(--c-danger)";
-
     const statusHtml = `
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2px;">
-            <span style="font-size:0.75rem; color:var(--text-sub)">${isEtf ? '風險指標' : '借款比'} <span class="badge ${color}" style="font-size:0.7rem; padding:2px 6px;">${ratioText}</span></span>
+            <span style="font-size:0.75rem; color:var(--text-sub)">${isEtf?'風險指標':'借款比'} <span class="badge ${color}" style="font-size:0.7rem; padding:2px 6px;">${ratioText}</span></span>
         </div>
         <div class="water-track" title="水位圖">
             <div class="water-fill" style="width:${barWidth}%; background:${barColor}"></div>
@@ -651,17 +731,18 @@
         </div>
         <div class="risk-lines">
             <div class="risk-row">
-                <span class="line-label"><i class="fas fa-exclamation-circle" style="color:var(--c-warn)"></i> 補繳線 <span class="line-trigger privacy-blur" style="color:var(--c-warn)">${triggerMC.toFixed(1)}</span></span>
+                <span class="line-label"><i class="fas fa-exclamation-circle" style="color:var(--c-warn)"></i> 補繳 <span class="line-trigger privacy-blur" style="color:var(--c-warn)">${triggerMC.toFixed(1)}</span></span>
                 <span class="line-val" style="color:var(--c-warn); font-size:0.85rem;">剩 ${bufferMC.toFixed(0)}%</span>
             </div>
             <div class="risk-row">
-                <span class="line-label"><i class="fas fa-skull" style="color:var(--c-danger)"></i> 斷頭線 <span class="line-trigger privacy-blur" style="color:var(--c-danger)">${triggerLiq.toFixed(1)}</span></span>
+                <span class="line-label"><i class="fas fa-skull" style="color:var(--c-danger)"></i> 斷頭 <span class="line-trigger privacy-blur" style="color:var(--c-danger)">${triggerLiq.toFixed(1)}</span></span>
                 <span class="line-val" style="color:var(--c-danger); font-size:0.85rem;">剩 ${bufferLiq.toFixed(0)}%</span>
             </div>
         </div>
     `;
     t(`status_${id}`, statusHtml);
 
+    // Simulation
     const factor = 1 - (dropPct / 100);
     const simAsset = asset * factor;
     let simTxt = "安全";
@@ -678,32 +759,25 @@
             topUpNeeded = loan - maxLoanAllowed;
         }
     } else {
-        const simMaint = loan>0 ? simAsset/loan*100 : 0;
+        simRatioVal = loan>0 ? simAsset/loan*100 : 0; 
         if(loan>0) {
-            if(simMaint < 115) { simTxt = "斷頭"; simCls = "b-danger"; }
-            else if(simMaint < 130) { simTxt = "追繳"; simCls = "b-warn"; }
-            if (simMaint < 130) {
+            if(simRatioVal < 115) { simTxt = "斷頭"; simCls = "b-danger"; }
+            else if(simRatioVal < 130) { simTxt = "追繳"; simCls = "b-warn"; }
+            if (simRatioVal < 130) {
                 const targetLoan = simAsset / 1.3;
                 topUpNeeded = loan - targetLoan;
             }
         }
     }
 
-    // Display simulated ratio/maint
-    let simDisp = "";
-    if(isEtf) {
-         simDisp = loan>0 ? (simAsset/loan*100).toFixed(0)+"%" : "-";
-    } else {
-         simDisp = simRatioVal.toFixed(1)+"%";
-    }
-
+    const simDisplayRatio = isEtf ? (loan>0?simRatioVal.toFixed(0)+"%":"-") : simRatioVal.toFixed(1)+"%";
     let topUpHtml = "";
     if (topUpNeeded > 0) topUpHtml = `<div style="font-size:0.8rem; color:var(--c-danger); margin-top:2px; font-weight:bold;">💸 需補 ${topUpNeeded.toFixed(1)} 萬</div>`;
 
     const simHtml = `
         <div style="font-weight:bold; font-size:0.9rem;" class="privacy-blur">${simAsset.toFixed(0)} <small style="color:var(--text-sub)">萬</small></div>
         <div style="display:flex; justify-content:space-between; margin-top:4px; font-size:0.8rem;">
-            <span>${simDisp}</span>
+            <span>${simDisplayRatio}</span>
             <span class="badge ${simCls}">${simTxt}</span>
         </div>
         ${topUpHtml}
@@ -713,15 +787,14 @@
     return { interest, bufferMC, bufferLiq, name: id, divAcc, loan, asset };
   }
 
-  // AI Advice
   function generateAI(netWorth, surplus, debtRatio, minBufferObj, totalAsset, totalDebt, investDebt, lifeDebt, totalLiquidity, monthlyExpense) {
     let msg = "";
     let detailsHtml = "";
 
     const monthsSurvival = monthlyExpense > 0 ? totalLiquidity / monthlyExpense : 0;
     if (monthsSurvival >= 6) msg += `<div style="margin-bottom:8px;">💧 <b>流動性充裕：</b> 備用金 <b>${totalLiquidity.toLocaleString()}萬</b>，約可支撐 <b>${monthsSurvival.toFixed(1)}個月</b> 開銷，安全氣囊足夠。</div>`;
-    else if (monthsSurvival >= 3) msg += `<div style="margin-bottom:8px;">💧 <b>流動性尚可：</b> 備用金可支撐 <b>${monthsSurvival.toFixed(1)}個月</b>，建議補足至 6 個月以應對突發狀況。</div>`;
-    else msg += `<div style="margin-bottom:8px;">⚠️ <b>流動性吃緊：</b> 備用金僅夠 <b>${monthsSurvival.toFixed(1)}個月</b>，風險極高！建議優先保留現金。</div>`;
+    else if (monthsSurvival >= 3) msg += `<div style="margin-bottom:8px;">💧 <b>流動性尚可：</b> 備用金可支撐 <b>${monthsSurvival.toFixed(1)}個月</b>，建議補足至 6 個月。</div>`;
+    else msg += `<div style="margin-bottom:8px;">⚠️ <b>流動性吃緊：</b> 備用金僅夠 <b>${monthsSurvival.toFixed(1)}個月</b>，風險極高！</div>`;
 
     const bufferDesc = minBufferObj.val > 20 ? 
         `<span style='color:var(--c-safe)'>安全充足 (>20%)</span>` : 
@@ -742,6 +815,9 @@
   }
 
   function calc() {
+    const rateHike = parseFloat(document.getElementById('rate_slider').value);
+    document.getElementById('rate_label').innerText = rateHike.toFixed(3) + "%";
+
     let policyTotalInterest = 0;
     let etfTotalInterest = 0;
     let minBuffer = 100;
@@ -757,12 +833,12 @@
         return res.interest;
     };
 
-    const rA = renderAssetStatus('a', v('asset_a'), v('loan_a'), v('cost_a'), 80, 90, false);
-    const rB = renderAssetStatus('b', v('asset_b'), v('loan_b'), v('cost_b'), 80, 90, false);
-    const rC = renderAssetStatus('c', v('asset_c'), v('loan_c'), v('cost_c'), 80, 90, false);
-    const rD = renderAssetStatus('d', v('asset_d'), v('loan_d'), v('cost_d'), 60, 70, false);
-    const rE = renderAssetStatus('e', v('asset_e'), v('loan_e'), v('cost_e'), 80, 90, false, true);
-    const rETF = renderAssetStatus('etf', v('asset_etf'), v('loan_etf'), v('cost_etf'), 0, 0, true);
+    const rA = renderAssetStatus('a', v('asset_a'), v('loan_a'), v('cost_a'), 80, 90, false, false, rateHike);
+    const rB = renderAssetStatus('b', v('asset_b'), v('loan_b'), v('cost_b'), 80, 90, false, false, rateHike);
+    const rC = renderAssetStatus('c', v('asset_c'), v('loan_c'), v('cost_c'), 80, 90, false, false, rateHike);
+    const rD = renderAssetStatus('d', v('asset_d'), v('loan_d'), v('cost_d'), 60, 70, false, false, rateHike);
+    const rE = renderAssetStatus('e', v('asset_e'), v('loan_e'), v('cost_e'), 80, 90, false, true, rateHike);
+    const rETF = renderAssetStatus('etf', v('asset_etf'), v('loan_etf'), v('cost_etf'), 0, 0, true, false, rateHike);
 
     policyTotalInterest = processRisk(rA) + processRisk(rB) + processRisk(rC) + processRisk(rD) + processRisk(rE);
     etfTotalInterest = processRisk(rETF);
@@ -801,6 +877,14 @@
     const debtRatio = totalAssets>0 ? (totalLiabilities/totalAssets*100) : 0;
     t('val_debt_ratio', debtRatio.toFixed(1)+"%");
 
+    // FIRE Progress
+    const fireTarget = v('fire_target');
+    const firePct = fireTarget > 0 ? (netWorth / fireTarget * 100) : 0;
+    t('fire_pct', firePct.toFixed(1) + "%");
+    document.getElementById('fire_bar').style.width = Math.min(firePct, 100) + "%";
+    t('fire_diff', (fireTarget - netWorth).toLocaleString());
+
+    // Cashflow
     const incAct = v('inc_active');
     const incPas = v('inc_passive');
     const inc = incAct + incPas;
@@ -808,7 +892,13 @@
     t('val_income', inc.toFixed(1));
 
     const expFix = v('exp_house') + v('exp_personal') + v('exp_life') + v('exp_flex');
-    const totalExp = expFix + totalInvestInterest;
+    // Calculate Extra Rate Hike Cost for Personal Loans/Mortgage if variable
+    // For simplicity, assuming mortgage/credit loan rates increase by hike too
+    // Mortgage interest impact approx: Loan * RateHike / 12
+    const hikeImpact = ((houseDebt + personalDebt) * (rateHike/100)) / 12;
+    t('disp_rate_hike_impact', hikeImpact.toFixed(2));
+
+    const totalExp = expFix + totalInvestInterest + hikeImpact;
     t('disp_exp_total', totalExp.toFixed(2));
     t('val_expense', totalExp.toFixed(1));
 
@@ -886,14 +976,14 @@
   function saveData() {
     const d = {};
     document.querySelectorAll('input').forEach(e => d[e.id] = e.value);
-    localStorage.setItem('wcj_final_v22_complete', JSON.stringify(d));
+    localStorage.setItem('wcj_final_v25_fire', JSON.stringify(d));
     alert('已儲存');
   }
   function toggleTheme() { document.documentElement.setAttribute('data-theme', document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark'); }
 
   window.onload = () => {
     initCharts();
-    const d = JSON.parse(localStorage.getItem('wcj_final_v22_complete'));
+    const d = JSON.parse(localStorage.getItem('wcj_final_v25_fire'));
     if(d) for(k in d) if(document.getElementById(k)) document.getElementById(k).value=d[k];
     calc();
   };
