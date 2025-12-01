@@ -2,7 +2,7 @@
 <html lang="zh-TW" data-theme="light">
 <head>
   <meta charset="UTF-8">
-  <title>財務自由終極儀表板 (Pro Notes Edition)</title>
+  <title>財務自由終極儀表板 (Pro Strategy Edition)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <!-- 核心函式庫 -->
@@ -127,7 +127,21 @@
     /* Notes Box */
     .notes-box { background: linear-gradient(135deg, #eff6ff 0%, #ffffff 100%); border: 1px solid #bfdbfe; padding: 20px; border-radius: 12px; margin-top: 20px; position: relative; }
     .notes-title { display: flex; align-items: center; gap: 10px; font-weight: bold; color: var(--c-blue); font-size: 1.1rem; margin-bottom: 10px; }
-    textarea.custom-notes { width:100%; min-height:180px; padding:12px; border:1px solid #bfdbfe; border-radius:8px; font-family:'Segoe UI', sans-serif; font-size:0.95rem; line-height:1.6; resize:vertical; background:rgba(255,255,255,0.8); color: var(--text-main); }
+    
+    /* UPDATED: Larger Textarea */
+    textarea.custom-notes { 
+        width:100%; 
+        min-height: 450px; /* Increased height */
+        padding:15px; 
+        border:1px solid #bfdbfe; 
+        border-radius:8px; 
+        font-family:'Segoe UI', sans-serif; 
+        font-size:0.95rem; 
+        line-height:1.7; 
+        resize:vertical; 
+        background:rgba(255,255,255,0.8); 
+        color: var(--text-main); 
+    }
     textarea.custom-notes:focus { border-color: var(--c-blue); background:#fff; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
 
     /* Privacy Mode */
@@ -157,7 +171,7 @@
   <div class="header">
     <div>
       <h1 style="margin:0; color:var(--c-blue)"><i class="fas fa-university"></i> 財務自由終極儀表板</h1>
-      <span style="font-size:0.85rem; color:var(--text-sub)">Pro Notes Edition: 自訂策略版</span>
+      <span style="font-size:0.85rem; color:var(--text-sub)">Pro Strategy Edition: 包含專業理財建議</span>
     </div>
     <div class="btn-group" data-html2canvas-ignore="true">
       <button onclick="togglePrivacy()" id="btnPrivacy" class="btn-privacy"><i class="fas fa-eye"></i> 隱藏金額</button>
@@ -358,25 +372,42 @@
       <!-- 策略筆記與備註 -->
       <div class="notes-box">
         <div class="notes-title"><i class="fas fa-clipboard-list"></i> 策略筆記與備註 (AI 建議區)</div>
-        <textarea id="user_notes" class="custom-notes" placeholder="在此輸入您的理財策略、AI 建議或備忘錄...">【財務健檢與操作建議 - 2024/11】
+        <textarea id="user_notes" class="custom-notes" placeholder="在此輸入您的理財策略...">【財務健檢與操作建議 - 2025/12 Updated】
 
-1. 優先目標：信貸殲滅戰 (95.6萬)
-   - 策略：將每月「淨現金流」全數用於償還信貸，而非再投資。
-   - 原因：信貸會吃掉大量現金流且無擔保，還清後抗風險能力大增。
+1. 財務現況快篩：高槓桿下的「現金流」保衛戰
+您的資產增長核心在於「槓桿套利」。在此模式下，淨資產 (Net Worth) 只是參考，現金流 (Cash Flow) 才是生存關鍵。
+- 負債結構優化：還款重點在降低每月剛性支出。
+- 信貸 (95.6萬)：風險最高，雖餘額下降，但佔據顯著現金流，建議優先處理。
+- 房貸 (460.4萬)：良性負債，維持正常月供即可。
 
-2. 風險警示：假性流動性
-   - 現況：手頭現金約 40 萬 (僅夠支撐約 5 個月)。
-   - 建議：不要過度依賴「未用信貸/質押」當備用金。目標將純現金拉高至 80 萬 (約 12 個月生活費)。
+2. 重點風險提示 (Red Flags)
+⚠️ A. 「假性」流動性風險
+- 盲點：真正危機時，銀行可能縮減信貸或調降質押成數。
+- 建議：您的「手頭現金」(40萬) 僅夠 5 個月。目標拉高至 6~12 個月生活費 (50-80萬)，勿過度依賴借來的錢當備用金。
 
-3. 監控指標
-   - 債務支出比：若 (月還款總額 / 總收入) > 60%，需立刻暫停新增投資。
-   - 淨值維持率：若任一資產緩衝跌破 15%，請準備執行去槓桿 (賣資產還債)。
+⚠️ B. 升息循環的滯後打擊
+- 雙殺效應：若利率維持高檔，房貸/信貸與投資利息將同時上升，侵蝕淨現金流。
+- 建議：務必測試 +0.5% ~ +1.0% 升息情境。若測試結果導致現金流轉負，必須優先償還信貸。
 
-4. 升息風險
-   - 若利率再升 0.5%~1%，現金流可能轉負，需預留緩衝。
+⚠️ C. 資產相關性過高
+- 風險：若發生「股債雙殺」，ETF 與保單可能同時需補錢 (多頭燒)。
+- 建議：檢查保單底層資產是否與科技股高度連動。
 
-(此區塊可自由編輯，點擊「本地存檔」即可保存您的筆記)</textarea>
-        <div style="text-align:right; margin-top:5px; font-size:0.8rem; color:var(--text-sub);">* 記得點擊「本地存檔」以保存筆記</div>
+3. 具體操作建議 (Action Plan)
+★ 第一階段：信貸殲滅戰 (優先順序：高)
+- 目標：95.6 萬信貸盡快歸零。
+- 策略：每月淨現金流全數投入償還信貸，不進行再投資。
+- 效益：還清後每月自由現金流增加 1~2 萬，抗風險能力大幅提升。
+
+★ 第二階段：建立「防禦性」現金池
+- 目標：將現金部位提升至 80 萬。
+- 操作：暫停配息再投入，囤積現金直到覆蓋一年總支出。
+
+★ 第三階段：監控指標
+- 債務支出比：若 > 60% (替銀行打工)，容錯率極低。
+- 淨值維持率緩衝：任一資產緩衝跌破 15% 時，務必開始執行去槓桿 (賣資產還債)。
+</textarea>
+        <div style="text-align:right; margin-top:5px; font-size:0.8rem; color:var(--text-sub);">* 點擊「本地存檔」以保存筆記 (可自由編輯)</div>
       </div>
     </div>
 
@@ -781,12 +812,12 @@
     const el = document.getElementById('dashboard-container');
     const opt = {
         margin: [5, 5, 5, 5],
-        filename: '財務自由報告_Notes.pdf',
+        filename: '財務自由報告_Strategy.pdf',
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2, useCORS:true },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
-    alert("正在產生 PDF (含您的筆記)，請稍候...");
+    alert("正在產生 PDF (含策略筆記)，請稍候...");
     html2pdf().set(opt).from(el).save();
   }
 
@@ -794,7 +825,7 @@
     const d = {};
     // Select all inputs AND textareas (notes)
     document.querySelectorAll('input, textarea').forEach(e => d[e.id] = e.value);
-    localStorage.setItem('wcj_final_v35_notes', JSON.stringify(d));
+    localStorage.setItem('wcj_final_v36_notes', JSON.stringify(d));
     alert('已儲存 (含筆記)');
   }
   
@@ -842,7 +873,7 @@
 
   window.onload = () => {
     initCharts();
-    const d = JSON.parse(localStorage.getItem('wcj_final_v35_notes'));
+    const d = JSON.parse(localStorage.getItem('wcj_final_v36_notes'));
     if(d) {
         for(k in d) { if(document.getElementById(k)) document.getElementById(k).value=d[k]; }
     }
