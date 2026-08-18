@@ -279,29 +279,50 @@
     .dialog-close { position:absolute; right:14px; top:12px; border:0; background:transparent; color:var(--text-sub); font-size:1.5rem; cursor:pointer; }
     .dialog-actions { display:flex; justify-content:flex-end; gap:9px; margin-top:20px; }
     .dialog-actions button { min-height:40px; padding:8px 13px; border:1px solid rgba(100,116,139,.25); border-radius:10px; cursor:pointer; }
+    .mobile-toolbar-toggle { display:none; }
     @media (max-width:760px) {
       #dashboard-container { padding:14px 10px 44px; }
       .top-shell { position:static; margin:-14px -10px 16px; padding:16px 10px; }
-      .header { align-items:flex-start; }
-      .btn-group { width:100%; display:grid; grid-template-columns:repeat(3,1fr); }
-      .btn-group button { justify-content:center; padding:8px 5px; font-size:.75rem; }
+      .header { align-items:flex-start; gap:12px; }
+      .header h1 { font-size:1.55rem!important; line-height:1.2; }
+      .subtitle { display:block; margin-top:5px; line-height:1.45; }
+      .mobile-toolbar-toggle { display:flex; width:100%; min-height:46px; align-items:center; justify-content:center; gap:8px; border:1px solid rgba(59,130,246,.25); border-radius:12px; color:var(--c-blue); background:var(--bg-card); font-weight:800; }
+      .btn-group { width:100%; display:none; grid-template-columns:repeat(2,minmax(0,1fr)); padding-top:2px; }
+      .btn-group.mobile-open { display:grid; }
+      .btn-group button { justify-content:center; min-height:46px; padding:8px 5px; font-size:.78rem; }
       .hero-grid { grid-template-columns:1fr; gap:10px; }
       .hero-card { min-height:132px; padding:17px; }
       .charts-grid { gap:12px; }
-      .chart-card { height:310px; padding:15px; }
+      .chart-card { height:390px; padding:15px; }
+      .chart-card:first-child { height:535px; }
+      .chart-head { flex-wrap:wrap; }
+      .chart-actions { width:100%; justify-content:space-between; }
       .asset-chart-layout { grid-template-columns:1fr; }
-      .asset-breakdown { grid-template-columns:repeat(3,1fr); gap:5px; }
-      .asset-breakdown-row { padding:7px; }
+      .asset-breakdown { grid-template-columns:1fr; gap:6px; }
+      .asset-breakdown-row { padding:8px 10px; }
       .control-zone,.section-card,.notes-box { padding:15px; border-radius:15px; }
       .control-group[style] { border-left:0!important; padding-left:0!important; border-top:1px solid rgba(148,163,184,.2); padding-top:18px; }
       .privacy-banner { flex-direction:column; }
-      .table-container { margin:0 -15px; padding:0 15px 8px; }
-      .asset-table { min-width:880px; }
+      .table-container { margin:0; padding:0; overflow:visible; }
+      .asset-table,.asset-table tbody,.asset-table tr,.asset-table td { display:block; width:100%; min-width:0; }
+      .asset-table thead { display:none; }
+      .asset-table tr { margin-bottom:14px; padding:14px; border:1px solid rgba(148,163,184,.25); border-radius:15px; background:color-mix(in srgb,var(--bg-card) 94%,var(--bg-body)); box-shadow:0 4px 14px rgba(15,23,42,.05); }
+      .asset-table td { border:0!important; padding:9px 0!important; background:transparent!important; }
+      .asset-table td::before { display:block; margin-bottom:6px; color:var(--text-sub); font-size:.68rem; font-weight:800; letter-spacing:.04em; }
+      .asset-table td:nth-child(1)::before { content:'資產項目與持有時間'; }
+      .asset-table td:nth-child(2)::before { content:'現值／成本／累積配息'; }
+      .asset-table td:nth-child(3)::before { content:'借款與利率'; }
+      .asset-table td:nth-child(4)::before { content:'目前 → 股災後風險'; }
+      .asset-table input,.custom-asset-row input,.custom-asset-row select,.summary-row input { min-height:44px; font-size:16px; }
+      .risk-compare { grid-template-columns:1fr auto 1fr; }
+      .risk-detail-grid { grid-template-columns:1fr; }
       .custom-notes { min-height:240px; }
       .stress-grid,.stress-results { grid-template-columns:1fr; }
       .custom-asset-row { grid-template-columns:repeat(2,minmax(0,1fr)); }
       .custom-name-block { grid-column:1/-1; }
       .remove-asset { grid-column:2; justify-self:end; }
+      .stress-chart-card { height:390px; }
+      .health-explain ul { padding-left:20px; font-size:.76rem; }
     }
     @media print {
       body { background:white; }
@@ -321,6 +342,7 @@
       <h1 style="margin:3px 0 0; color:var(--c-blue)">個人財務風險儀表板</h1>
       <span class="subtitle">看懂資產、現金流與壓力情境，資料僅儲存在這台裝置</span>
     </div>
+    <button class="mobile-toolbar-toggle" type="button" onclick="toggleMobileToolbar()" aria-expanded="false"><i class="fas fa-sliders"></i> 功能選單</button>
     <div class="btn-group" data-html2canvas-ignore="true">
       <button onclick="togglePrivacy()" id="btnPrivacy" class="btn-privacy"><i class="fas fa-eye"></i> 隱藏金額</button>
       <button onclick="toggleTheme()"><i class="fas fa-adjust"></i> 模式</button>
@@ -1212,6 +1234,15 @@
     input.value = '';
   }
   
+  function toggleMobileToolbar() {
+    const group = document.querySelector('.btn-group');
+    const button = document.querySelector('.mobile-toolbar-toggle');
+    if (!group || !button) return;
+    const open = group.classList.toggle('mobile-open');
+    button.setAttribute('aria-expanded', String(open));
+    button.innerHTML = `<i class="fas fa-${open ? 'xmark' : 'sliders'}"></i> ${open ? '收合功能' : '功能選單'}`;
+  }
+
   function toggleTheme() {
     const next = document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';
     document.documentElement.setAttribute('data-theme', next);
