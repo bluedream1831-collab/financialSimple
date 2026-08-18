@@ -80,6 +80,11 @@
     .asset-breakdown-row span { display:flex; justify-content:space-between; gap:8px; color:var(--text-sub); font-size:.7rem; }
     .asset-breakdown-row strong { display:block; margin-top:3px; font-size:.88rem; }
     .stress-chart-card { margin-top:16px; height:330px; padding:16px; border-radius:14px; background:color-mix(in srgb,var(--bg-card) 88%,var(--bg-body)); border:1px solid rgba(148,163,184,.2); }
+    .health-overall { margin-top:10px; padding:10px 11px; border-radius:11px; background:rgba(124,58,237,.07); border-left:4px solid var(--c-purple); font-size:.76rem; line-height:1.55; }
+    .health-explain { margin-top:9px; border-top:1px dashed rgba(148,163,184,.35); padding-top:8px; }
+    .health-explain summary { cursor:pointer; color:var(--c-purple); font-size:.75rem; font-weight:800; }
+    .health-explain ul { margin:8px 0 0; padding-left:17px; color:var(--text-sub); font-size:.7rem; line-height:1.55; }
+    .health-explain li+li { margin-top:6px; }
 
     /* Control Zone */
     .control-zone { background: var(--bg-card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 20px; margin-bottom: 20px; border-left: 5px solid var(--c-danger); }
@@ -319,6 +324,7 @@
     <div class="btn-group" data-html2canvas-ignore="true">
       <button onclick="togglePrivacy()" id="btnPrivacy" class="btn-privacy"><i class="fas fa-eye"></i> 隱藏金額</button>
       <button onclick="toggleTheme()"><i class="fas fa-adjust"></i> 模式</button>
+      <button onclick="toggleMoneyUnit()" id="btnMoneyUnit"><i class="fas fa-coins"></i> 單位：元</button>
       <button onclick="exportJSON()" class="btn-backup"><i class="fas fa-download"></i> 備份 JSON</button>
       <button onclick="document.getElementById('importFile').click()" class="btn-backup" style="border-style:dashed"><i class="fas fa-upload"></i> 還原</button>
       <button onclick="saveData()"><i class="fas fa-save"></i> 本地存檔</button>
@@ -338,14 +344,14 @@
   <div class="hero-grid">
     <div class="hero-card">
       <div class="hero-title"><i class="fas fa-sack-dollar"></i> 真實淨資產</div>
-      <div class="hero-val privacy-blur" style="color:var(--c-blue)"><span id="val_net_worth">0</span> 萬</div>
+      <div class="hero-val privacy-blur" style="color:var(--c-blue)"><span id="val_net_worth">0</span> <span class="money-unit-label">元</span></div>
       <div class="hero-sub">總資產 <span id="val_assets" class="privacy-blur">0</span> － 總負債 <span id="val_liabilities" class="privacy-blur">0</span><br>(含房貸/信貸本金)</div>
       <i class="fas fa-chart-pie hero-icon-bg" style="color:var(--c-blue)"></i>
     </div>
     
     <div class="hero-card" style="border-top-color: var(--c-safe);">
       <div class="hero-title"><i class="fas fa-hand-holding-dollar"></i> 每月淨現金流</div>
-      <div class="hero-val privacy-blur" style="color:var(--c-safe)">+<span id="val_surplus">0</span> 萬</div>
+      <div class="hero-val privacy-blur" style="color:var(--c-safe)"><span id="val_surplus">0</span> <span class="money-unit-label">元</span></div>
       <div class="hero-sub">月收 <span id="val_income" class="privacy-blur">0</span> － 月支 <span id="val_expense" class="privacy-blur">0</span><br>(已自動扣除投資利息)</div>
       <i class="fas fa-coins hero-icon-bg" style="color:var(--c-safe)"></i>
     </div>
@@ -365,7 +371,7 @@
 
     <div class="hero-card" style="border-top-color: var(--c-purple);">
       <div class="hero-title"><i class="fas fa-chart-line"></i> 投資總損益 (含息)</div>
-      <div class="hero-val privacy-blur"><span id="val_pl">0</span> 萬</div>
+      <div class="hero-val privacy-blur"><span id="val_pl">0</span> <span class="money-unit-label">元</span></div>
       <div class="hero-sub">總投入 <span id="val_cost" class="privacy-blur">0</span> ｜ 現值 <span id="val_invest_assets" class="privacy-blur">0</span><br>累積配息 <span id="val_total_div" class="privacy-blur">0</span></div>
       <i class="fas fa-arrow-trend-up hero-icon-bg" style="color:var(--c-purple)"></i>
     </div>
@@ -592,6 +598,13 @@
         <div class="summary-row"><span>負債資產比</span><strong id="health_debt">0%</strong></div>
         <div class="summary-row"><span>被動收入覆蓋率</span><strong id="health_passive">0%</strong></div>
         <div class="summary-row"><span>利息占收入</span><strong id="health_interest">0%</strong></div>
+        <div class="health-overall" id="health_overall"><strong>整體解讀：</strong>輸入資料後顯示快篩說明。</div>
+        <details class="health-explain"><summary><i class="fas fa-circle-info"></i> 指標如何計算與解讀？</summary><ul>
+          <li><strong>緊急預備金</strong>＝現金 ÷ 每月總支出。3～6 個月是常見參考範圍；工作或收入波動較大時，可自行提高目標。</li>
+          <li><strong>負債資產比</strong>＝總負債 ÷ 總資產。比例越高，資產價格下跌或升息時承受的壓力通常越大。</li>
+          <li><strong>被動收入覆蓋率</strong>＝每月被動收入 ÷ 每月總支出。100% 代表目前被動收入約可覆蓋全部月支出。</li>
+          <li><strong>利息占收入</strong>＝每月投資借款利息 ÷ 每月總收入。比例越低，收入被利息占用的程度越小。</li>
+        </ul></details>
         <p class="unit-note">快篩僅依本頁輸入值估算，不等同個別化財務建議。</p>
       </div>
     </div>
@@ -610,6 +623,7 @@
   let chartFlow = null;
   let chartStress = null;
   let includeHouseInChart = true;
+  let moneyUnit = 'yuan';
   let customAssets = [];
 
   // State
@@ -617,7 +631,11 @@
   let currentStockDrop = 0;
   let currentBalancedDrop = 0;
 
-  const v = (id) => parseFloat(document.getElementById(id)?.value) || 0;
+  const isMoneyId = id => /^(fire_target|asset_|cost_|div_|loan_|debt_|unused_|inc_|exp_)/.test(id) && !/(slider|sensitivity|rate_)/.test(id);
+  const v = id => { const n=parseFloat(document.getElementById(id)?.value)||0; return isMoneyId(id)&&moneyUnit==='yuan'?n/10000:n; };
+  const formatMoney = (wan,digits=1) => moneyUnit==='yuan'?`${Math.round(wan*10000).toLocaleString()} 元`:`${Number(wan).toLocaleString(undefined,{maximumFractionDigits:digits})} 萬`;
+  function setMoneyInputsFromWan(values=null){document.querySelectorAll('input[id]').forEach(el=>{if(!isMoneyId(el.id))return;const n=values&&Object.hasOwn(values,el.id)?Number(values[el.id])||0:Number(el.value)||0;el.value=moneyUnit==='yuan'?n*10000:n;});}
+  function toggleMoneyUnit(){const values={};document.querySelectorAll('input[id]').forEach(el=>{if(isMoneyId(el.id))values[el.id]=v(el.id);});moneyUnit=moneyUnit==='yuan'?'wan':'yuan';localStorage.setItem('financial_simple_money_unit',moneyUnit);setMoneyInputsFromWan(values);renderCustomAssets();calc();document.getElementById('btnMoneyUnit').innerHTML=`<i class="fas fa-coins"></i> 單位：${moneyUnit==='yuan'?'元':'萬元'}`;document.querySelectorAll('.money-unit-label').forEach(el=>el.textContent=moneyUnit==='yuan'?'元':'萬');}
   const t = (id, txt) => { const el = document.getElementById(id); if(el) el.innerHTML = txt; };
   const makeId = () => `asset_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,7)}`;
   const safeText = (value) => String(value ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
@@ -891,7 +909,7 @@
     const totalLiabilities = investDebt + houseDebt + personalDebt;
     const netWorth = totalAssets - totalLiabilities;
 
-    t('val_net_worth', netWorth.toLocaleString());
+    t('val_net_worth', formatMoney(netWorth).replace(/ (元|萬)$/,''));
     t('val_assets', totalAssets.toLocaleString());
     t('val_liabilities', totalLiabilities.toLocaleString());
     t('val_invest_assets', investAsset.toLocaleString());
@@ -909,7 +927,7 @@
     const fixedDividends = v('div_a')+v('div_b')+v('div_c')+v('div_d')+v('div_e')+v('div_etf');
     const pl = (investAsset + fixedDividends + custom.investmentDividends) - investCost;
     const elPl = document.getElementById('val_pl');
-    elPl.innerText = (pl>0?"+":"") + pl.toLocaleString();
+    elPl.innerText = (pl>0?"+":"") + formatMoney(pl).replace(/ (元|萬)$/,'');
     elPl.style.color = pl>=0 ? "var(--c-safe)" : "var(--c-danger)";
 
     const debtRatio = totalAssets>0 ? (totalLiabilities/totalAssets*100) : 0;
@@ -929,17 +947,17 @@
     t('val_expense', totalExp.toFixed(1));
 
     const surplus = inc - totalExp;
-    t('val_surplus', surplus.toFixed(2));
+    t('val_surplus', formatMoney(surplus,2).replace(/ (元|萬)$/,''));
     
     const surBig = document.getElementById('disp_surplus_big');
-    surBig.innerText = (surplus>0?"+":"") + surplus.toFixed(2) + " 萬";
+    surBig.innerText = (surplus>0?"+":"") + formatMoney(surplus,2);
     surBig.style.color = surplus>=0 ? "var(--c-safe)" : "var(--c-danger)";
     t('surplus_msg', surplus>=0 ? "財務健康" : "現金流赤字");
 
     const unusedCredit = v('unused_credit');
     const unusedPledge = v('unused_pledge');
     const totalLiquidity = cash + unusedCredit + unusedPledge;
-    t('total_liquidity_display', `總可動用備用金: ${totalLiquidity} 萬`);
+    t('total_liquidity_display', `總可動用備用金：${formatMoney(totalLiquidity)}`);
 
     const monthlyCoreExpense = Math.max(totalExp, 0);
     const emergencyMonths = monthlyCoreExpense > 0 ? cash / monthlyCoreExpense : 0;
@@ -949,6 +967,24 @@
     t('health_debt', `${debtRatio.toFixed(1)}%`);
     t('health_passive', `${passiveCoverage.toFixed(0)}%`);
     t('health_interest', `${interestRatio.toFixed(1)}%`);
+    const paintHealth = (id, level) => {
+      const el=document.getElementById(id);
+      el.style.color=level==='safe'?'var(--c-safe)':level==='warn'?'var(--c-warn)':'var(--c-danger)';
+    };
+    const emergencyLevel=emergencyMonths>=6?'safe':emergencyMonths>=3?'warn':'danger';
+    const debtLevel=debtRatio<40?'safe':debtRatio<60?'warn':'danger';
+    const passiveLevel=passiveCoverage>=100?'safe':passiveCoverage>=70?'warn':'danger';
+    const interestLevel=interestRatio<=10?'safe':interestRatio<=20?'warn':'danger';
+    paintHealth('health_emergency',emergencyLevel); paintHealth('health_debt',debtLevel); paintHealth('health_passive',passiveLevel); paintHealth('health_interest',interestLevel);
+    const attention=[];
+    if(emergencyLevel!=='safe') attention.push(`預備金目前約 ${emergencyMonths.toFixed(1)} 個月`);
+    if(debtLevel!=='safe') attention.push(`負債資產比為 ${debtRatio.toFixed(1)}%`);
+    if(passiveLevel==='safe') attention.push('被動收入已可覆蓋目前月支出'); else attention.push(`被動收入覆蓋約 ${passiveCoverage.toFixed(0)}%`);
+    if(interestLevel!=='safe') attention.push(`利息占收入約 ${interestRatio.toFixed(1)}%`);
+    const overallLevel=[emergencyLevel,debtLevel,passiveLevel,interestLevel].includes('danger')?'danger':[emergencyLevel,debtLevel,passiveLevel,interestLevel].includes('warn')?'warn':'safe';
+    const overall=document.getElementById('health_overall');
+    overall.innerHTML=`<strong>整體解讀：</strong>${attention.join('；')}。`;
+    overall.style.borderLeftColor=overallLevel==='safe'?'var(--c-safe)':overallLevel==='warn'?'var(--c-warn)':'var(--c-danger)';
 
     const fixedStressValue = shock => ['a','b','c','d','etf'].reduce((sum,id) => sum + v(`asset_${id}`) * Math.max(0,1-(shock*Math.max(0,v(`sensitivity_${id}`))/10000)), v('asset_e'));
     const fixedStressedAssets = fixedStressValue(marketDrop);
@@ -961,8 +997,8 @@
     let stressGrade = '穩定', stressColor = 'var(--c-safe)';
     if(stressedCashflow < 0 || stressedNetWorth < 0) { stressGrade='高風險'; stressColor='var(--c-danger)'; }
     else if(stressedCashflow < Math.max(0.5, inc*0.1) || marketDrop >= 30 || rateHike >= 1) { stressGrade='需留意'; stressColor='var(--c-warn)'; }
-    t('stress_net_worth', `${stressedNetWorth.toLocaleString(undefined,{maximumFractionDigits:1})} 萬`);
-    t('stress_cashflow', `${stressedCashflow>=0?'+':''}${stressedCashflow.toFixed(2)} 萬`);
+    t('stress_net_worth', formatMoney(stressedNetWorth));
+    t('stress_cashflow', `${stressedCashflow>=0?'+':''}${formatMoney(stressedCashflow,2)}`);
     t('stress_runway', Number.isFinite(runway) ? `${runway.toFixed(1)} 個月` : '無赤字');
     const gradeEl = document.getElementById('stress_grade'); gradeEl.textContent = stressGrade; gradeEl.style.color = stressColor;
 
@@ -1017,7 +1053,7 @@
         ctx.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--text-sub').trim()||'#64748b';
         ctx.font='600 11px system-ui'; ctx.fillText(chart.$scopeLabel||'總資產',cx,cy-10);
         ctx.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--text-main').trim()||'#0f172a';
-        ctx.font='800 15px system-ui'; ctx.fillText(`${total.toLocaleString(undefined,{maximumFractionDigits:1})} 萬`,cx,cy+11);
+        ctx.font='800 15px system-ui'; ctx.fillText(formatMoney(total),cx,cy+11);
         ctx.restore();
       }
     };
@@ -1070,7 +1106,7 @@
       chartAsset.data.labels=labels; chartAsset.data.datasets[0].data=values; chartAsset.data.datasets[0].backgroundColor=colors;
       chartAsset.$scopeLabel=includeHouseInChart?'總資產':'可投資資產';
       document.getElementById('asset_scope_toggle').textContent=includeHouseInChart?'切換：不含房產':'切換：含房產';
-      t('chart_asset_total',`${includeHouseInChart?'總資產':'可投資'} ${total.toLocaleString(undefined,{maximumFractionDigits:1})} 萬`);
+      t('chart_asset_total',`${includeHouseInChart?'總資產':'可投資'} ${formatMoney(total)}`);
       document.getElementById('asset_breakdown').innerHTML=labels.map((label,i)=>`<div class="asset-breakdown-row" style="--row-color:${colors[i]}"><span><b>${label}</b><b>${(total?values[i]/total*100:0).toFixed(1)}%</b></span><strong class="privacy-blur">${Number(values[i]).toLocaleString(undefined,{maximumFractionDigits:1})} 萬</strong></div>`).join('');
       chartAsset.update();
     }
@@ -1081,7 +1117,7 @@
       chartFlow.data.datasets[0].backgroundColor=['#3b82f6','#eab308','#ef4444',surplus>=0?'#10b981':'#dc2626'];
       const rate=income>0?surplus/income*100:0;
       const badge=document.getElementById('chart_flow_surplus');
-      badge.textContent=`結餘 ${surplus>=0?'+':''}${surplus.toFixed(2)} 萬｜${rate.toFixed(1)}%`;
+      badge.textContent=`結餘 ${surplus>=0?'+':''}${formatMoney(surplus,2)}｜${rate.toFixed(1)}%`;
       badge.style.color=surplus>=0?'var(--c-safe)':'var(--c-danger)';
       badge.style.background=surplus>=0?'rgba(16,185,129,.1)':'rgba(239,68,68,.1)';
       chartFlow.update();
@@ -1112,7 +1148,7 @@
   function collectState() {
     const fields = {};
     document.querySelectorAll('input[id], textarea[id]').forEach(e => {
-      if(!['importFile','backup_password','backup_password_confirm'].includes(e.id)) fields[e.id] = e.value;
+      if(!['importFile','backup_password','backup_password_confirm'].includes(e.id)) fields[e.id] = isMoneyId(e.id) ? v(e.id) : e.value;
     });
     return { version:2, exportedAt:new Date().toISOString(), fields, customAssets };
   }
@@ -1122,7 +1158,7 @@
     if(!fields || typeof fields !== 'object') throw new Error('invalid');
     for(const k in fields) {
       const el = document.getElementById(k);
-      if(el && !['file','password'].includes(el.type)) el.value = fields[k];
+      if(el && !['file','password'].includes(el.type)) el.value = isMoneyId(k)&&moneyUnit==='yuan' ? (Number(fields[k])||0)*10000 : fields[k];
     }
     customAssets = Array.isArray(payload.customAssets) ? payload.customAssets.map(item => ({
       id:item.id || makeId(), name:String(item.name||'未命名資產'), category:item.category||'other',
@@ -1222,10 +1258,12 @@
   window.onload = () => {
     const savedTheme = localStorage.getItem('financial_simple_theme');
     if(savedTheme) document.documentElement.setAttribute('data-theme', savedTheme);
-    initCharts();
+    moneyUnit=localStorage.getItem('financial_simple_money_unit')||'yuan'; initCharts();
     let d = null;
     try { d = JSON.parse(localStorage.getItem('wcj_final_v36_notes')); } catch(e) { d = null; }
-    if(d) applyState(d); else renderCustomAssets();
+    if(d) applyState(d); else { setMoneyInputsFromWan(); renderCustomAssets(); }
+    document.getElementById('btnMoneyUnit').innerHTML=`<i class="fas fa-coins"></i> 單位：${moneyUnit==='yuan'?'元':'萬元'}`;
+    document.querySelectorAll('.money-unit-label').forEach(el=>el.textContent=moneyUnit==='yuan'?'元':'萬');
     document.querySelectorAll('button').forEach(btn => { if(!btn.hasAttribute('type')) btn.type = 'button'; });
     document.querySelectorAll('input,textarea').forEach(el => {
       if(!el.getAttribute('aria-label')) el.setAttribute('aria-label', el.id.replaceAll('_',' '));
