@@ -2,7 +2,7 @@
 <html lang="zh-TW" data-theme="light">
 <head>
   <meta charset="UTF-8">
-  <title>Financial Simple V2.1.1｜個人財務風險儀表板</title>
+  <title>Financial Simple V2.1.2｜個人財務風險儀表板</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="在瀏覽器本機試算資產、負債、現金流、FIRE 進度與市場壓力情境。資料不會主動上傳。">
   <meta name="robots" content="noindex, nofollow">
@@ -338,7 +338,7 @@
   <!-- Header -->
   <div class="top-shell"><div class="header">
     <div>
-      <span class="brand-kicker"><i class="fas fa-shield-heart"></i> Financial Simple V2.1.1</span>
+      <span class="brand-kicker"><i class="fas fa-shield-heart"></i> Financial Simple V2.1.2</span>
       <h1 style="margin:3px 0 0; color:var(--c-blue)">個人財務風險儀表板</h1>
       <span class="subtitle">看懂資產、現金流與壓力情境，資料僅儲存在這台裝置</span>
     </div>
@@ -861,23 +861,32 @@
       }
     }
 
-    // 「可再跌」必須從壓力後現值往門檻計算，不能用「總情境跌幅 - 目前滑桿跌幅」做百分點相減。
+    // 「可再跌」必須從壓力後現值往各門檻重新計算，不能用「總情境跌幅 - 目前滑桿跌幅」做百分點相減。
     const bufferMC = stressedAsset>0 ? Math.max(0,(1-triggerMC/stressedAsset)*100) : 0;
     const bufferLiq = stressedAsset>0 ? Math.max(0,(1-triggerLiq/stressedAsset)*100) : 0;
     const sensitivityFactor = sensitivity/100;
-    const remainingMarketDrop = sensitivityFactor>0 ? bufferMC/sensitivityFactor : Infinity;
-    const thresholdName = isEtf ? '130% 追繳門檻' : `${mcLimit}% 第一門檻`;
-    let remainingText='無借款';
-    if(loan>0) {
-      if(bufferMC<=0) remainingText=`已達 ${thresholdName}`;
-      else {
-        const marketHint = Number.isFinite(remainingMarketDrop) && Math.abs(sensitivityFactor-1)>0.001
-          ? `（依目前敏感度換算，市場約再跌 ${remainingMarketDrop.toFixed(1)}%）`
-          : '';
-        remainingText=`距 ${thresholdName}：壓力後資產現值約可再跌 ${bufferMC.toFixed(1)}% ${marketHint}`;
-      }
+
+    const thresholdLine = (label, buffer, tone='var(--c-safe)') => {
+      if(loan<=0) return `<div style="color:var(--text-sub);">${label}：無借款</div>`;
+      if(buffer<=0) return `<div style="color:var(--c-danger);font-weight:800;">${label}：已達門檻</div>`;
+      const marketEquivalent = sensitivityFactor>0 ? buffer/sensitivityFactor : Infinity;
+      const marketHint = Number.isFinite(marketEquivalent) && Math.abs(sensitivityFactor-1)>0.001
+        ? ` <span style="color:var(--text-sub);font-weight:600;">（依目前敏感度換算，市場約再跌 ${marketEquivalent.toFixed(1)}%）</span>`
+        : '';
+      return `<div style="color:${tone};font-weight:800;">${label}：壓力後資產現值約可再跌 ${buffer.toFixed(1)}%${marketHint}</div>`;
+    };
+
+    let thresholdHtml='';
+    if(isEtf) {
+      thresholdHtml = thresholdLine('距 130% 追繳門檻', bufferMC);
+      thresholdHtml += `<div style="margin-top:3px;color:var(--text-sub);font-size:.68rem;">166% 是補足／解除追繳的回升水位，不是第二個下跌門檻。</div>`;
+    } else {
+      thresholdHtml = thresholdLine(`距 ${mcLimit}% 第一門檻`, bufferMC);
+      thresholdHtml += `<div style="margin-top:4px;">${thresholdLine(`距 ${liqLimit}% 第二門檻`, bufferLiq, 'var(--c-warn)')}</div>`;
     }
-    const topUpHtml = actionHtml || `<div style="color:var(--c-safe);font-weight:800;">${remainingText}</div>`;
+
+    // 即使已觸發第一門檻，也保留第二門檻的剩餘跌幅資訊；處理建議另外顯示。
+    const topUpHtml = `<div style="grid-column:1/-1;display:grid;gap:4px;">${thresholdHtml}${actionHtml ? `<div style="margin-top:4px;">${actionHtml}</div>` : ''}</div>`;
 
     t(`status_${id}`, `
       <div class="risk-compare">
