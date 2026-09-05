@@ -2,7 +2,7 @@
 <html lang="zh-TW" data-theme="light">
 <head>
   <meta charset="UTF-8">
-  <title>Financial Simple V2.1｜個人財務風險儀表板</title>
+  <title>Financial Simple V2.1.1｜個人財務風險儀表板</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="在瀏覽器本機試算資產、負債、現金流、FIRE 進度與市場壓力情境。資料不會主動上傳。">
   <meta name="robots" content="noindex, nofollow">
@@ -338,7 +338,7 @@
   <!-- Header -->
   <div class="top-shell"><div class="header">
     <div>
-      <span class="brand-kicker"><i class="fas fa-shield-heart"></i> Financial Simple V2.1</span>
+      <span class="brand-kicker"><i class="fas fa-shield-heart"></i> Financial Simple V2.1.1</span>
       <h1 style="margin:3px 0 0; color:var(--c-blue)">個人財務風險儀表板</h1>
       <span class="subtitle">看懂資產、現金流與壓力情境，資料僅儲存在這台裝置</span>
     </div>
@@ -494,7 +494,7 @@
             <tbody>
               <!-- 保單 A -->
               <tr>
-                <td><b>投資型保單 A</b><br><span class="rule-tag">補繳80% / 終止90%</span><label class="sensitivity-inline">市場敏感度 <input id="sensitivity_a" type="number" min="0" max="200" value="60" oninput="calc()">%</label><div class="date-wrapper"><input type="date" id="date_a" onchange="calc()"><div id="dur_a" style="font-size:0.7rem;color:var(--c-blue)"></div></div></td>
+                <td><b>投資型保單 A</b><br><span class="rule-tag">第一門檻 80% / 第二門檻 90%（依條款）</span><label class="sensitivity-inline">市場敏感度 <input id="sensitivity_a" type="number" min="0" max="200" value="60" oninput="calc()">%</label><div class="date-wrapper"><input type="date" id="date_a" onchange="calc()"><div id="dur_a" style="font-size:0.7rem;color:var(--c-blue)"></div></div></td>
                 <td><div class="inp-group"><input id="asset_a" type="number" value="0" oninput="calc()"><input id="cost_a" type="number" value="0" oninput="calc()" style="opacity:0.7"><input id="div_a" type="number" value="0" oninput="calc()" style="border-color:var(--c-gold)"></div><div id="roi_a"></div></td>
                 <td><div class="inp-group"><input id="loan_a" type="number" value="0" oninput="calc()"><div style="display:flex;align-items:center;gap:2px;"><input id="rate_a" type="number" value="0" class="sm" oninput="calc()"><span style="font-size:0.7rem">%</span></div></div></td>
                 <td style="background:rgba(59,130,246,0.02)"><div id="status_a"></div></td>
@@ -502,7 +502,7 @@
               </tr>
               <!-- 保單 B -->
               <tr>
-                <td><b>投資型保單 B</b><br><span class="rule-tag">補繳80% / 終止90%</span><label class="sensitivity-inline">市場敏感度 <input id="sensitivity_b" type="number" min="0" max="200" value="60" oninput="calc()">%</label><div class="date-wrapper"><input type="date" id="date_b" onchange="calc()"><div id="dur_b" style="font-size:0.7rem;color:var(--c-blue)"></div></div></td>
+                <td><b>投資型保單 B</b><br><span class="rule-tag">第一門檻 80% / 第二門檻 90%（依條款）</span><label class="sensitivity-inline">市場敏感度 <input id="sensitivity_b" type="number" min="0" max="200" value="60" oninput="calc()">%</label><div class="date-wrapper"><input type="date" id="date_b" onchange="calc()"><div id="dur_b" style="font-size:0.7rem;color:var(--c-blue)"></div></div></td>
                 <td><div class="inp-group"><input id="asset_b" type="number" value="0" oninput="calc()"><input id="cost_b" type="number" value="0" oninput="calc()" style="opacity:0.7"><input id="div_b" type="number" value="0" oninput="calc()" style="border-color:var(--c-gold)"></div><div id="roi_b"></div></td>
                 <td><div class="inp-group"><input id="loan_b" type="number" value="0" oninput="calc()"><div style="display:flex;align-items:center;gap:2px;"><input id="rate_b" type="number" value="0" class="sm" oninput="calc()"><span style="font-size:0.7rem">%</span></div></div></td>
                 <td style="background:rgba(59,130,246,0.02)"><div id="status_b"></div></td>
@@ -510,7 +510,7 @@
               </tr>
               <!-- 保單 C -->
               <tr>
-                <td><b>投資型保單 C</b><br><span class="rule-tag">補繳80% / 終止90%</span><label class="sensitivity-inline">市場敏感度 <input id="sensitivity_c" type="number" min="0" max="200" value="60" oninput="calc()">%</label><div class="date-wrapper"><input type="date" id="date_c" onchange="calc()"><div id="dur_c" style="font-size:0.7rem;color:var(--c-blue)"></div></div></td>
+                <td><b>投資型保單 C</b><br><span class="rule-tag">第一門檻 80% / 第二門檻 90%（依條款）</span><label class="sensitivity-inline">市場敏感度 <input id="sensitivity_c" type="number" min="0" max="200" value="60" oninput="calc()">%</label><div class="date-wrapper"><input type="date" id="date_c" onchange="calc()"><div id="dur_c" style="font-size:0.7rem;color:var(--c-blue)"></div></div></td>
                 <td><div class="inp-group"><input id="asset_c" type="number" value="0" oninput="calc()"><input id="cost_c" type="number" value="0" oninput="calc()" style="opacity:0.7"><input id="div_c" type="number" value="0" oninput="calc()" style="border-color:var(--c-gold)"></div><div id="roi_c"></div></td>
                 <td><div class="inp-group"><input id="loan_c" type="number" value="0" oninput="calc()"><div style="display:flex;align-items:center;gap:2px;"><input id="rate_c" type="number" value="0" class="sm" oninput="calc()"><span style="font-size:0.7rem">%</span></div></div></td>
                 <td style="background:rgba(59,130,246,0.02)"><div id="status_c"></div></td>
@@ -518,7 +518,7 @@
               </tr>
               <!-- 保單 D -->
               <tr>
-                <td><b>投資型保單 D</b><br><span class="rule-tag">補繳60% / 終止70%</span><label class="sensitivity-inline">市場敏感度 <input id="sensitivity_d" type="number" min="0" max="200" value="60" oninput="calc()">%</label><div class="date-wrapper"><input type="date" id="date_d" onchange="calc()"><div id="dur_d" style="font-size:0.7rem;color:var(--c-blue)"></div></div></td>
+                <td><b>投資型保單 D</b><br><span class="rule-tag">第一門檻 60% / 第二門檻 70%（依條款）</span><label class="sensitivity-inline">市場敏感度 <input id="sensitivity_d" type="number" min="0" max="200" value="60" oninput="calc()">%</label><div class="date-wrapper"><input type="date" id="date_d" onchange="calc()"><div id="dur_d" style="font-size:0.7rem;color:var(--c-blue)"></div></div></td>
                 <td><div class="inp-group"><input id="asset_d" type="number" value="0" oninput="calc()"><input id="cost_d" type="number" value="0" oninput="calc()" style="opacity:0.7"><input id="div_d" type="number" value="0" oninput="calc()" style="border-color:var(--c-gold)"></div><div id="roi_d"></div></td>
                 <td><div class="inp-group"><input id="loan_d" type="number" value="0" oninput="calc()"><div style="display:flex;align-items:center;gap:2px;"><input id="rate_d" type="number" value="0" class="sm" oninput="calc()"><span style="font-size:0.7rem">%</span></div></div></td>
                 <td style="background:rgba(59,130,246,0.02)"><div id="status_d"></div></td>
@@ -534,7 +534,7 @@
               </tr>
               <!-- ETF -->
               <tr style="background:rgba(59,130,246,0.03)">
-                <td><b>台股 ETF</b> (質押)<br><span class="rule-tag">追繳 130% / 斷頭 115%</span><label class="sensitivity-inline">市場敏感度 <input id="sensitivity_etf" type="number" min="0" max="200" value="100" oninput="calc()">%</label><div class="date-wrapper"><input type="date" id="date_etf" onchange="calc()"><div id="dur_etf" style="font-size:0.7rem;color:var(--c-blue)"></div></div></td>
+                <td><b>台股 ETF</b> (質押)<br><span class="rule-tag">追繳 &lt;130% / 解除追繳 ≥166%</span><label class="sensitivity-inline">市場敏感度 <input id="sensitivity_etf" type="number" min="0" max="200" value="100" oninput="calc()">%</label><div class="date-wrapper"><input type="date" id="date_etf" onchange="calc()"><div id="dur_etf" style="font-size:0.7rem;color:var(--c-blue)"></div></div></td>
                 <td><div class="inp-group"><input id="asset_etf" type="number" value="0" oninput="calc()"><input id="cost_etf" type="number" value="0" oninput="calc()" style="opacity:0.7"><input id="div_etf" type="number" value="0" oninput="calc()" style="border-color:var(--c-gold)"></div><div id="roi_etf"></div></td>
                 <td><div class="inp-group"><input id="loan_etf" type="number" value="0" oninput="calc()"><div style="display:flex;align-items:center;gap:2px;"><input id="rate_etf" type="number" value="0" class="sm" oninput="calc()"><span style="font-size:0.7rem">%</span></div></div></td>
                 <td style="background:rgba(59,130,246,0.02)"><div id="status_etf"></div></td>
@@ -543,6 +543,7 @@
             </tbody>
           </table>
         </div>
+        <p class="unit-note">風險距離採「壓力後現值 → 門檻」重新計算。ETF 質押以維持率低於 130% 作為追繳警示，166% 為補足／解除追繳的重要水位；實際補繳、擔保品折算與處分時點仍以你的券商契約與通知為準。保單 A–D 的門檻則仍沿用本工具既有設定，請以各保單條款核對。</p>
       </div>
 
       <div class="section-card dynamic-assets-card">
@@ -822,9 +823,11 @@
 
     let currentMetric=0, stressedMetric=0, currentBar=0, stressedBar=0;
     let triggerMC=0, triggerLiq=0, posMC=0, posLiq=0;
-    let currentText='', stressedText='', state='安全', stateCls='b-safe', topUpNeeded=0;
+    let currentText='', stressedText='', state='安全', stateCls='b-safe', actionHtml='';
 
     if(isEtf) {
+      // 股票質押／不限用途款項借貸：130% 為追繳門檻；166% 為補足後解除追繳的重要水位。
+      // 是否處分擔保品取決於追繳通知後的期限與補繳狀況，不能用固定 115% 當成「斷頭線」。
       const currentMaint = loan>0 ? asset/loan*100 : Infinity;
       const stressedMaint = loan>0 ? stressedAsset/loan*100 : Infinity;
       const currentLtv = asset>0 ? loan/asset*100 : 0;
@@ -832,28 +835,49 @@
       currentMetric=currentMaint; stressedMetric=stressedMaint; currentBar=Math.min(100,currentLtv); stressedBar=Math.min(100,stressedLtv);
       currentText=loan>0?`維持率 ${currentMaint.toFixed(0)}%`:'無借款';
       stressedText=loan>0?`維持率 ${stressedMaint.toFixed(0)}%`:'無借款';
-      triggerMC=loan*1.3; triggerLiq=loan*1.15; posMC=77; posLiq=87;
-      if(loan>0 && stressedMaint<115){state='斷頭風險';stateCls='b-danger';}
-      else if(loan>0 && stressedMaint<130){state='追繳風險';stateCls='b-warn';}
-      if(loan>0 && stressedMaint<130) topUpNeeded=Math.max(0,loan-stressedAsset/1.3);
+      triggerMC=loan*1.30;                 // 維持率 130% 時的擔保品市值
+      triggerLiq=loan;                    // 僅用於風險尺視覺終點，不代表法定處分線
+      posMC=100/1.30;                     // 130% 維持率換算 LTV 約 76.9%
+      posLiq=100;
+      if(loan>0 && stressedMaint<100){state='擔保品低於借款';stateCls='b-danger';}
+      else if(loan>0 && stressedMaint<130){state='追繳門檻以下';stateCls='b-warn';}
+
+      if(loan>0 && stressedMaint<130) {
+        const repayTo166=Math.max(0,loan-stressedAsset/1.66);
+        const collateralTo166=Math.max(0,loan*1.66-stressedAsset);
+        actionHtml=`<div style="color:var(--c-danger);font-weight:800;">已低於 130%：若以還款方式補至 166%，約需償還 <span class="privacy-blur">${repayTo166.toFixed(1)} 萬</span></div><div style="margin-top:3px;color:var(--text-sub);">若以等值合格擔保品補足，約需增加 <span class="privacy-blur">${collateralTo166.toFixed(1)} 萬</span>（實際折算依券商規定）</div>`;
+      }
     } else {
       const currentRatio = asset>0 ? loan/asset*100 : 0;
       const stressedRatio = stressedAsset>0 ? loan/stressedAsset*100 : (loan>0?100:0);
       currentMetric=currentRatio; stressedMetric=stressedRatio; currentBar=Math.min(100,currentRatio); stressedBar=Math.min(100,stressedRatio);
       currentText=`借款比 ${currentRatio.toFixed(1)}%`; stressedText=`借款比 ${stressedRatio.toFixed(1)}%`;
       triggerMC=loan/(mcLimit/100); triggerLiq=loan/(liqLimit/100); posMC=mcLimit; posLiq=liqLimit;
-      if(stressedRatio>=liqLimit){state='終止風險';stateCls='b-danger';}
-      else if(stressedRatio>=mcLimit){state='補繳風險';stateCls='b-warn';}
-      if(stressedRatio>mcLimit) topUpNeeded=Math.max(0,loan-stressedAsset*(mcLimit/100));
+      if(stressedRatio>=liqLimit){state='第二門檻風險';stateCls='b-danger';}
+      else if(stressedRatio>=mcLimit){state='第一門檻風險';stateCls='b-warn';}
+      if(loan>0 && stressedRatio>mcLimit) {
+        const repayToLimit=Math.max(0,loan-stressedAsset*(mcLimit/100));
+        actionHtml=`<div style="color:var(--c-danger);font-weight:800;">若以還款方式降回 ${mcLimit}% 門檻，約需償還 <span class="privacy-blur">${repayToLimit.toFixed(1)} 萬</span></div>`;
+      }
     }
 
+    // 「可再跌」必須從壓力後現值往門檻計算，不能用「總情境跌幅 - 目前滑桿跌幅」做百分點相減。
     const bufferMC = stressedAsset>0 ? Math.max(0,(1-triggerMC/stressedAsset)*100) : 0;
     const bufferLiq = stressedAsset>0 ? Math.max(0,(1-triggerLiq/stressedAsset)*100) : 0;
     const sensitivityFactor = sensitivity/100;
-    const triggerShock = asset>0 && sensitivityFactor>0 ? Math.max(0,(1-triggerMC/asset)*100/sensitivityFactor) : Infinity;
-    const remainingShock = Number.isFinite(triggerShock) ? Math.max(0,triggerShock-marketShock) : Infinity;
-    const remainingText = loan<=0 ? '無借款' : (Number.isFinite(remainingShock) ? `距追繳／補繳約可再跌 ${remainingShock.toFixed(1)}%` : '不受股災影響');
-    const topUpHtml = topUpNeeded>0 ? `<div style="color:var(--c-danger);font-weight:800;">需補約 <span class="privacy-blur">${topUpNeeded.toFixed(1)} 萬</span></div>` : `<div style="color:var(--c-safe);font-weight:800;">${remainingText}</div>`;
+    const remainingMarketDrop = sensitivityFactor>0 ? bufferMC/sensitivityFactor : Infinity;
+    const thresholdName = isEtf ? '130% 追繳門檻' : `${mcLimit}% 第一門檻`;
+    let remainingText='無借款';
+    if(loan>0) {
+      if(bufferMC<=0) remainingText=`已達 ${thresholdName}`;
+      else {
+        const marketHint = Number.isFinite(remainingMarketDrop) && Math.abs(sensitivityFactor-1)>0.001
+          ? `（依目前敏感度換算，市場約再跌 ${remainingMarketDrop.toFixed(1)}%）`
+          : '';
+        remainingText=`距 ${thresholdName}：壓力後資產現值約可再跌 ${bufferMC.toFixed(1)}% ${marketHint}`;
+      }
+    }
+    const topUpHtml = actionHtml || `<div style="color:var(--c-safe);font-weight:800;">${remainingText}</div>`;
 
     t(`status_${id}`, `
       <div class="risk-compare">
