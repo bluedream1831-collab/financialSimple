@@ -117,6 +117,21 @@
     .stress-results span { display:block; color:var(--text-sub); font-size:.72rem; margin-bottom:5px; }
     .stress-results strong { font-size:1.05rem; }
 
+    /* 自動存檔狀態 */
+    .save-status { display:inline-flex; align-items:center; gap:6px; margin-top:7px; color:var(--text-sub); font-size:.75rem; }
+    .save-status .dot { width:7px; height:7px; border-radius:50%; background:var(--c-safe); }
+    .save-status.pending .dot { background:var(--c-warn); }
+
+    /* FIRE 推算 */
+    .proj-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)) auto; gap:12px; align-items:end; }
+    .proj-field { display:grid; gap:5px; color:var(--text-sub); font-size:.72rem; }
+    .proj-field input { width:100%; text-align:right; }
+    .proj-results { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin:16px 0 6px; }
+    .proj-results > div { padding:12px; border-radius:12px; background:var(--bg-body); }
+    .proj-results span { display:block; color:var(--text-sub); font-size:.72rem; margin-bottom:5px; }
+    .proj-results strong { font-size:1.05rem; }
+    .proj-chart-box { position:relative; height:300px; margin-top:6px; }
+
     /* Main layout */
     .main-layout { display:grid; grid-template-columns:3fr 1fr; gap:20px; }
     .section-card { background:var(--bg-card); border-radius:var(--radius); border:1px solid rgba(148,163,184,.16); box-shadow:var(--shadow); padding:20px; margin-bottom:20px; }
@@ -240,7 +255,7 @@
       .asset-table input, .custom-asset-row input, .custom-asset-row select, .summary-row input { min-height:44px; font-size:16px; width:100%; }
       .risk-detail-grid { grid-template-columns:1fr; }
       .custom-notes { min-height:240px; }
-      .stress-grid, .stress-results { grid-template-columns:1fr; }
+      .stress-grid, .stress-results, .proj-grid, .proj-results { grid-template-columns:1fr; }
       .custom-asset-row { grid-template-columns:repeat(2,minmax(0,1fr)); }
       .custom-name-block { grid-column:1/-1; }
       .remove-asset { grid-column:2; justify-self:end; }
@@ -302,6 +317,7 @@
       <span class="brand-kicker"><i class="fas fa-shield-heart"></i> Financial Simple V2.2</span>
       <h1>個人財務風險儀表板</h1>
       <span class="subtitle">看懂資產、現金流與壓力情境，資料僅儲存在這台裝置</span>
+      <span class="save-status" id="save_status"><span class="dot"></span>尚未儲存</span>
     </div>
     <button class="mobile-toolbar-toggle" type="button" onclick="toggleMobileToolbar()" aria-expanded="false"><i class="fas fa-sliders"></i> 功能選單</button>
     <div class="btn-group">
@@ -372,6 +388,29 @@
     </div>
   </div>
   <p class="unit-note" style="margin:-8px 0 20px;">圖表一律以「萬元」為單位顯示，不受上方單位切換影響。</p>
+
+  <!-- FIRE 時間軸推算 -->
+  <div class="section-card">
+    <div class="section-title">
+      <span><i class="fas fa-route"></i> FIRE 時間軸推算</span>
+      <span class="chart-kpi" id="proj_verdict">待輸入</span>
+    </div>
+    <div class="proj-grid">
+      <label class="proj-field">投資年化報酬率 %<input type="number" id="proj_return" value="5" step="0.5" oninput="calc()"></label>
+      <label class="proj-field">房產年增值率 %<input type="number" id="proj_house_growth" value="0" step="0.5" oninput="calc()"></label>
+      <label class="proj-field">每月可投入（<span class="money-unit-label">元</span>）<input type="number" id="proj_contrib" value="0" oninput="calc()"></label>
+      <label class="proj-field">目前年齡（選填）<input type="number" id="proj_age" min="0" max="99" step="1" oninput="calc()"></label>
+      <button class="h-btn" type="button" onclick="syncContribToSurplus()"><i class="fas fa-arrow-down"></i> 帶入月結餘</button>
+    </div>
+    <div class="proj-results">
+      <div><span>預估達標</span><strong id="proj_eta">—</strong></div>
+      <div><span>達標時淨資產</span><strong id="proj_final" class="privacy-blur">—</strong></div>
+      <div><span>達標時年齡</span><strong id="proj_age_out">—</strong></div>
+      <div><span>報酬率 ±2% 區間</span><strong id="proj_band">—</strong></div>
+    </div>
+    <div class="proj-chart-box"><canvas id="projChart"></canvas></div>
+    <p class="unit-note">推算方式：投資資產每月以年化報酬率複利成長並加入「每月可投入」，房產依年增值率成長，現金與負債假設維持不變（不計提前還款與本金攤還）。這是單一假設下的直線推估，不是保證，實際會受市場波動、稅費與生活變動影響。</p>
+  </div>
 
   <!-- 壓力測試 -->
   <div class="control-zone">
@@ -586,7 +625,8 @@
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
 <script>
-  let chartAsset = null, chartFlow = null, chartStress = null;
+  let chartAsset = null, chartFlow = null, chartStress = null, chartProj = null;
+  let bootDone = false, autosaveTimer = null;
   let includeHouseInChart = true;
   let moneyUnit = 'yuan';
   let customAssets = [];
@@ -599,7 +639,7 @@
   const CATEGORY_LABELS = { investment:'投資', property:'房產', cash:'現金／定存', other:'其他' };
 
   /* ---------- 單位與格式 ---------- */
-  const isMoneyId = id => /^(fire_target|asset_|cost_|div_|loan_|debt_|unused_|inc_|exp_)/.test(id) && !/(slider|sensitivity|rate_)/.test(id);
+  const isMoneyId = id => /^(fire_target|proj_contrib|asset_|cost_|div_|loan_|debt_|unused_|inc_|exp_)/.test(id) && !/(slider|sensitivity|rate_)/.test(id);
   const v = id => { const n = parseFloat(document.getElementById(id)?.value) || 0; return isMoneyId(id) && moneyUnit === 'yuan' ? n / 10000 : n; };
   const unitText = () => moneyUnit === 'yuan' ? '元' : '萬';
   const toDisplayMoney = wan => moneyUnit === 'yuan' ? Math.round(wan * 10000) : wan;
@@ -885,6 +925,101 @@
     return { ...base, bufferMC, bufferLiq, currentText, stressedText, state, stateCls };
   }
 
+  /* ---------- FIRE 時間軸推算 ---------- */
+  const MAX_PROJ_MONTHS = 480; // 40 年
+
+  function runProjection(startInvest, house, cash, debt, contrib, annualReturn, annualHouseGrowth, target) {
+    const r = annualReturn / 100 / 12;
+    const hg = annualHouseGrowth / 100 / 12;
+    let invest = startInvest, houseVal = house;
+    const yearly = [startInvest + house + cash - debt];
+    let reachedMonth = null;
+    if (yearly[0] >= target && target > 0) reachedMonth = 0;
+
+    for (let month = 1; month <= MAX_PROJ_MONTHS; month++) {
+      invest = invest * (1 + r) + contrib;
+      houseVal = houseVal * (1 + hg);
+      const net = invest + houseVal + cash - debt;
+      if (reachedMonth === null && target > 0 && net >= target) reachedMonth = month;
+      if (month % 12 === 0) yearly.push(net);
+    }
+    return { yearly, reachedMonth, finalNet: invest + houseVal + cash - debt };
+  }
+
+  function describeEta(months) {
+    if (months === null) return null;
+    const y = Math.floor(months / 12), m = months % 12;
+    const target = new Date();
+    target.setMonth(target.getMonth() + months);
+    const when = `${target.getFullYear()} 年 ${target.getMonth() + 1} 月`;
+    const span = months === 0 ? '已達標' : (y > 0 ? `${y} 年 ${m} 個月` : `${m} 個月`);
+    return { years: y, months: m, span, when, totalMonths: months };
+  }
+
+  function syncContribToSurplus() {
+    if (!lastSnapshot) calc();
+    const el = document.getElementById('proj_contrib');
+    el.value = moneyUnit === 'yuan' ? Math.round(lastSnapshot.surplus * 10000) : Number(lastSnapshot.surplus.toFixed(4));
+    calc();
+    showToast('已帶入目前月結餘');
+  }
+
+  function calcProjection(snapshot) {
+    const annualReturn = parseFloat(document.getElementById('proj_return').value) || 0;
+    const houseGrowth = parseFloat(document.getElementById('proj_house_growth').value) || 0;
+    const contrib = v('proj_contrib');
+    const ageRaw = parseFloat(document.getElementById('proj_age').value);
+    const age = Number.isFinite(ageRaw) && ageRaw > 0 ? ageRaw : null;
+    const target = snapshot.fireTarget;
+    const args = [snapshot.investAsset, snapshot.houseVal, snapshot.cash, snapshot.totalLiabilities, contrib];
+
+    const base = runProjection(...args, annualReturn, houseGrowth, target);
+    const low = runProjection(...args, annualReturn - 2, houseGrowth, target);
+    const high = runProjection(...args, annualReturn + 2, houseGrowth, target);
+
+    const eta = describeEta(base.reachedMonth);
+    const etaLow = describeEta(low.reachedMonth);
+    const etaHigh = describeEta(high.reachedMonth);
+
+    // 顯示到達標後再多 5 年，最少 15 年，最多 40 年
+    const horizonYears = Math.min(40, Math.max(15, eta ? Math.ceil(eta.totalMonths / 12) + 5 : 30));
+    const labels = Array.from({ length: horizonYears + 1 }, (_, i) => `${i} 年`);
+    const cut = arr => arr.slice(0, horizonYears + 1);
+
+    const verdict = document.getElementById('proj_verdict');
+    if (target <= 0) {
+      t('proj_eta', '—'); t('proj_final', '—'); t('proj_age_out', '—'); t('proj_band', '—');
+      verdict.textContent = '請先設定 FIRE 目標';
+      verdict.style.color = 'var(--text-sub)';
+    } else if (!eta) {
+      t('proj_eta', `40 年內未達標`);
+      t('proj_final', formatMoney(base.finalNet));
+      t('proj_age_out', '—');
+      t('proj_band', etaHigh ? `樂觀情境約 ${etaHigh.span}` : '±2% 情境皆未達標');
+      verdict.textContent = '目前投入與報酬率不足以達標';
+      verdict.style.color = 'var(--c-danger)';
+    } else {
+      t('proj_eta', `${eta.span}（${eta.when}）`);
+      const netAtTarget = base.yearly[Math.min(base.yearly.length - 1, Math.ceil(eta.totalMonths / 12))];
+      t('proj_final', formatMoney(Math.max(netAtTarget, target)));
+      t('proj_age_out', age !== null ? `${(age + eta.totalMonths / 12).toFixed(1)} 歲` : '填入年齡後顯示');
+      t('proj_band', `${etaHigh ? etaHigh.span : '未達標'} ～ ${etaLow ? etaLow.span : '未達標'}`);
+      verdict.textContent = eta.totalMonths === 0 ? '已達標' : `約 ${eta.span}後達標`;
+      verdict.style.color = 'var(--c-safe)';
+    }
+
+    if (chartProj) {
+      chartProj.data.labels = labels;
+      chartProj.data.datasets[0].data = cut(base.yearly);
+      chartProj.data.datasets[1].data = cut(high.yearly);
+      chartProj.data.datasets[2].data = cut(low.yearly);
+      chartProj.data.datasets[3].data = labels.map(() => target);
+      chartProj.update();
+    }
+
+    return { annualReturn, houseGrowth, contrib, age, eta, etaLow, etaHigh, finalNet: base.finalNet, horizonYears };
+  }
+
   /* ---------- 主計算 ---------- */
   function calc() {
     const rateHike = parseFloat(document.getElementById('rate_slider').value) || 0;
@@ -1044,11 +1179,13 @@
     };
 
     updateCharts([investAsset, houseVal, cash], [incAct, incPas, totalExp, surplus], stressSeries);
+    lastSnapshot.projection = calcProjection(lastSnapshot);
+    scheduleAutosave();
   }
 
   /* ---------- 圖表 ---------- */
   function initCharts() {
-    [chartAsset, chartFlow, chartStress].forEach(c => c && c.destroy());
+    [chartAsset, chartFlow, chartStress, chartProj].forEach(c => c && c.destroy());
 
     const centerTotal = {
       id: 'centerTotal',
@@ -1112,6 +1249,20 @@
       options: { responsive:true, maintainAspectRatio:false, animation:{ duration:400 }, interaction:{ mode:'index', intersect:false },
         plugins:{ legend:{ position:'bottom' }, tooltip:{ callbacks:{ label:(ctx) => ` ${ctx.dataset.label}：${Number(ctx.raw).toFixed(ctx.datasetIndex ? 2 : 1)} 萬` } } },
         scales:{ y:{ beginAtZero:false, title:{ display:true, text:'淨資產（萬）' } }, y1:{ position:'right', grid:{ drawOnChartArea:false }, title:{ display:true, text:'月現金流（萬）' } } } }
+    });
+
+    chartProj = new Chart(document.getElementById('projChart'), {
+      type: 'line',
+      data: { labels: [], datasets: [
+        { label:'預估淨資產', data:[], borderColor:'#2563eb', backgroundColor:'rgba(37,99,235,.12)', borderWidth:2.5, fill:true, pointRadius:0, tension:.2 },
+        { label:'報酬率 +2%', data:[], borderColor:'#10b981', borderWidth:1.4, borderDash:[5,4], pointRadius:0, tension:.2 },
+        { label:'報酬率 −2%', data:[], borderColor:'#f59e0b', borderWidth:1.4, borderDash:[5,4], pointRadius:0, tension:.2 },
+        { label:'FIRE 目標', data:[], borderColor:'#ef4444', borderWidth:1.6, borderDash:[2,3], pointRadius:0 }
+      ] },
+      options: { responsive:true, maintainAspectRatio:false, animation:{ duration:400 }, interaction:{ mode:'index', intersect:false },
+        plugins:{ legend:{ position:'bottom', labels:{ boxWidth:14, usePointStyle:true } },
+          tooltip:{ callbacks:{ label:(ctx) => ` ${ctx.dataset.label}：${wanText(Number(ctx.raw) || 0)}` } } },
+        scales:{ x:{ grid:{ display:false }, ticks:{ maxTicksLimit:12 } }, y:{ title:{ display:true, text:'淨資產（萬）' }, grid:{ color:'rgba(148,163,184,.2)' } } } }
     });
   }
 
@@ -1229,6 +1380,18 @@
         <p style="font-size:8pt;color:#444;margin:6px 0 0;">整體解讀：${esc(s.healthNote)}。</p>
       </div>
 
+      ${s.projection ? `<div class="pr-section">
+        <h2>FIRE 時間軸推算</h2>
+        <div class="pr-kpi">
+          <div><span>預估達標</span><strong>${s.projection.eta ? esc(s.projection.eta.span) : '40 年內未達標'}</strong><em>${s.projection.eta ? esc(s.projection.eta.when) : '需提高投入或報酬率'}</em></div>
+          <div><span>達標時年齡</span><strong>${s.projection.eta && s.projection.age !== null ? (s.projection.age + s.projection.eta.totalMonths / 12).toFixed(1) + ' 歲' : '—'}</strong><em>目前 ${s.projection.age !== null ? s.projection.age + ' 歲' : '未填'}</em></div>
+          <div><span>每月可投入</span><strong>${m(s.projection.contrib, 2)}</strong><em>年化報酬假設 ${s.projection.annualReturn.toFixed(1)}%</em></div>
+          <div><span>報酬率 ±2% 區間</span><strong>${s.projection.etaHigh ? esc(s.projection.etaHigh.span) : '未達標'} ～ ${s.projection.etaLow ? esc(s.projection.etaLow.span) : '未達標'}</strong><em>房產年增值 ${s.projection.houseGrowth.toFixed(1)}%</em></div>
+        </div>
+        <div class="pr-charts" style="margin-top:8px;"><figure class="pr-chart-wide"><figcaption>淨資產推估曲線（萬元）</figcaption><img alt="淨資產推估" src="${snapshotChart(chartProj)}"></figure></div>
+        <p style="font-size:7.5pt;color:#555;margin:5px 0 0;">投資資產以年化報酬率複利成長並加入每月投入，房產依年增值率成長，現金與負債假設不變。單一假設推估，非保證。</p>
+      </div>` : ''}
+
       <div class="pr-section">
         <h2>收支結構（每月）</h2>
         <table class="pr-table">
@@ -1319,9 +1482,41 @@
     calc();
   }
 
+  function setSaveStatus(text, pending = false) {
+    const el = document.getElementById('save_status');
+    if (!el) return;
+    el.innerHTML = `<span class="dot"></span>${text}`;
+    el.classList.toggle('pending', pending);
+  }
+
+  function persist() {
+    try {
+      localStorage.setItem('wcj_final_v36_notes', JSON.stringify(collectState()));
+      localStorage.setItem('financial_simple_theme', document.documentElement.getAttribute('data-theme'));
+      const now = new Date();
+      setSaveStatus(`已自動儲存 ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`);
+      return true;
+    } catch (err) {
+      setSaveStatus('儲存失敗，請改用「備份 JSON」', true);
+      return false;
+    }
+  }
+
+  function scheduleAutosave() {
+    if (!bootDone) return;
+    setSaveStatus('尚未儲存的變更…', true);
+    clearTimeout(autosaveTimer);
+    autosaveTimer = setTimeout(persist, 1500);
+  }
+
+  function flushAutosave() {
+    if (!bootDone) return;
+    clearTimeout(autosaveTimer);
+    persist();
+  }
+
   function saveData() {
-    localStorage.setItem('wcj_final_v36_notes', JSON.stringify(collectState()));
-    localStorage.setItem('financial_simple_theme', document.documentElement.getAttribute('data-theme'));
+    flushAutosave();
     showToast('已儲存在這台裝置');
   }
 
@@ -1372,6 +1567,8 @@
     document.querySelectorAll('input[type="number"], input[type="date"], textarea').forEach(el => {
       if (el.id === 'fire_target') el.value = moneyUnit === 'yuan' ? 20000000 : 2000;
       else if (el.id.startsWith('sensitivity_')) el.value = el.id === 'sensitivity_etf' ? 100 : 60;
+      else if (el.id === 'proj_return') el.value = 5;
+      else if (el.id === 'proj_house_growth') el.value = 0;
       else el.value = '';
     });
     ['sim_slider','rate_slider','div_cut_slider','income_cut_slider','extra_expense_slider'].forEach(id => document.getElementById(id).value = 0);
@@ -1431,7 +1628,18 @@
       if (!el.getAttribute('aria-label')) el.setAttribute('aria-label', el.id.replaceAll('_', ' '));
     });
     calc();
+
+    // 筆記與日期不會觸發 calc，另外掛上自動存檔
+    document.getElementById('user_notes').addEventListener('input', scheduleAutosave);
+    document.querySelectorAll('input[type="date"]').forEach(el => el.addEventListener('change', scheduleAutosave));
+
+    bootDone = true;
+    setSaveStatus(saved ? '已載入本機資料' : '輸入後會自動儲存');
   };
+
+  // 離開或切到背景時把未寫入的變更補上
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flushAutosave(); });
+  window.addEventListener('pagehide', flushAutosave);
 
   // 使用者用 Ctrl/⌘+P 直接列印時，也先產生報表版
   window.addEventListener('beforeprint', () => { try { buildPrintReport(); } catch (e) {} });
