@@ -2,7 +2,7 @@
 <html lang="zh-TW" data-theme="light">
 <head>
   <meta charset="UTF-8">
-  <title>Financial Simple V2.1.2｜個人財務風險儀表板</title>
+  <title>Financial Simple V2.1.3｜個人財務風險儀表板</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="在瀏覽器本機試算資產、負債、現金流、FIRE 進度與市場壓力情境。資料不會主動上傳。">
   <meta name="robots" content="noindex, nofollow">
@@ -71,15 +71,15 @@
     .chart-box { flex: 1; position: relative; width: 100%; overflow: hidden; }
     .chart-head { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:8px; }
     .chart-head h3 { margin:0; font-size:1rem; }
-    .chart-kpi { padding:5px 9px; border-radius:999px; background:color-mix(in srgb,var(--c-blue) 10%,transparent); color:var(--c-blue); font-size:.72rem; font-weight:800; white-space:nowrap; }
+    .chart-kpi { padding:5px 9px; border-radius:999px; background:rgba(59,130,246,.10); color:var(--c-blue); font-size:.72rem; font-weight:800; white-space:nowrap; }
     .chart-actions { display:flex; align-items:center; gap:7px; }
     .chart-toggle { border:1px solid rgba(59,130,246,.25); border-radius:999px; padding:5px 9px; background:var(--bg-card); color:var(--c-blue); font-size:.7rem; font-weight:800; cursor:pointer; }
     .asset-chart-layout { flex:1; min-height:0; display:grid; grid-template-columns:minmax(0,1.35fr) minmax(150px,.65fr); gap:12px; }
     .asset-breakdown { display:grid; align-content:center; gap:9px; }
-    .asset-breakdown-row { padding:9px 10px; border-radius:11px; background:color-mix(in srgb,var(--bg-body) 72%,var(--bg-card)); border-left:4px solid var(--row-color); }
+    .asset-breakdown-row { padding:9px 10px; border-radius:11px; background:var(--bg-body); border-left:4px solid var(--row-color); }
     .asset-breakdown-row span { display:flex; justify-content:space-between; gap:8px; color:var(--text-sub); font-size:.7rem; }
     .asset-breakdown-row strong { display:block; margin-top:3px; font-size:.88rem; }
-    .stress-chart-card { margin-top:16px; height:330px; padding:16px; border-radius:14px; background:color-mix(in srgb,var(--bg-card) 88%,var(--bg-body)); border:1px solid rgba(148,163,184,.2); }
+    .stress-chart-card { margin-top:16px; height:330px; padding:16px; border-radius:14px; background:var(--bg-card); border:1px solid rgba(148,163,184,.2); }
     .health-overall { margin-top:10px; padding:10px 11px; border-radius:11px; background:rgba(124,58,237,.07); border-left:4px solid var(--c-purple); font-size:.76rem; line-height:1.55; }
     .health-explain { margin-top:9px; border-top:1px dashed rgba(148,163,184,.35); padding-top:8px; }
     .health-explain summary { cursor:pointer; color:var(--c-purple); font-size:.75rem; font-weight:800; }
@@ -204,7 +204,7 @@
         var(--bg-body);
     }
     #dashboard-container { padding:24px clamp(14px,3vw,38px) 60px; }
-    .top-shell { position:sticky; top:0; z-index:50; margin:0 calc(clamp(14px,3vw,38px) * -1) 22px; padding:12px clamp(14px,3vw,38px); backdrop-filter:blur(18px); background:color-mix(in srgb,var(--bg-body) 82%,transparent); border-bottom:1px solid rgba(100,116,139,.18); }
+    .top-shell { position:sticky; top:0; z-index:50; margin:0 calc(clamp(14px,3vw,38px) * -1) 22px; padding:12px clamp(14px,3vw,38px); backdrop-filter:blur(18px); background:var(--bg-body); border-bottom:1px solid rgba(100,116,139,.18); }
     .brand-kicker { display:inline-flex; align-items:center; gap:7px; color:var(--c-blue); font-weight:800; letter-spacing:.08em; font-size:.72rem; text-transform:uppercase; }
     .header h1 { font-size:clamp(1.5rem,3vw,2.25rem); letter-spacing:-.04em; }
     .subtitle { display:block; margin-top:5px; color:var(--text-sub); font-size:.88rem; }
@@ -221,7 +221,7 @@
     .hero-card:hover { transform:translateY(-3px); box-shadow:0 18px 42px rgba(30,64,175,.13); }
     .hero-title { text-transform:uppercase; letter-spacing:.05em; font-size:.76rem; }
     .section-title { font-size:1.05rem; }
-    input,textarea { color:var(--text-main); background:color-mix(in srgb,var(--bg-card) 88%,var(--bg-body)); border-radius:8px!important; }
+    input,textarea { color:var(--text-main); background:var(--bg-card); border-radius:8px!important; }
     input[type=number],input[type=date] { min-height:38px; }
     .asset-table thead { position:sticky; top:0; z-index:2; background:var(--bg-card); }
     .asset-table tbody tr { transition:background .15s; }
@@ -239,7 +239,7 @@
     .stress-control span { display:flex; justify-content:space-between; font-size:.8rem; color:var(--text-sub); }
     .stress-control b { color:var(--c-purple); }
     .stress-results { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top:14px; }
-    .stress-results > div { padding:12px; border-radius:12px; background:color-mix(in srgb,var(--bg-body) 60%,var(--bg-card)); }
+    .stress-results > div { padding:12px; border-radius:12px; background:var(--bg-body); }
     .stress-results span { display:block; color:var(--text-sub); font-size:.72rem; margin-bottom:5px; }
     .stress-results strong { font-size:1.05rem; }
     .btn-add-asset { border:0; border-radius:10px; padding:9px 13px; background:var(--c-blue); color:white; font-weight:800; cursor:pointer; }
@@ -248,7 +248,7 @@
     .empty-state strong { color:var(--text-main); }
     .empty-state span { font-size:.78rem; }
     .custom-assets-list { display:grid; gap:10px; }
-    .custom-asset-row { display:grid; grid-template-columns:minmax(150px,1.45fr) repeat(6,minmax(85px,1fr)) 44px; gap:8px; align-items:end; padding:12px; border-radius:14px; background:color-mix(in srgb,var(--bg-body) 64%,var(--bg-card)); border:1px solid rgba(148,163,184,.16); }
+    .custom-asset-row { display:grid; grid-template-columns:minmax(150px,1.45fr) repeat(6,minmax(85px,1fr)) 44px; gap:8px; align-items:end; padding:12px; border-radius:14px; background:var(--bg-body); border:1px solid rgba(148,163,184,.16); }
     .custom-asset-row label { display:grid; gap:5px; color:var(--text-sub); font-size:.68rem; }
     .custom-asset-row input,.custom-asset-row select { width:100%; min-width:0; min-height:38px; border:1px solid rgba(100,116,139,.28); border-radius:8px; padding:6px 8px; color:var(--text-main); background:var(--bg-card); }
     .custom-risk-line { grid-column:1/-1; display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 10px; border-radius:9px; background:rgba(59,130,246,.055); color:var(--text-sub); font-size:.76rem; }
@@ -306,7 +306,7 @@
       .table-container { margin:0; padding:0; overflow:visible; }
       .asset-table,.asset-table tbody,.asset-table tr,.asset-table td { display:block; width:100%; min-width:0; }
       .asset-table thead { display:none; }
-      .asset-table tr { margin-bottom:14px; padding:14px; border:1px solid rgba(148,163,184,.25); border-radius:15px; background:color-mix(in srgb,var(--bg-card) 94%,var(--bg-body)); box-shadow:0 4px 14px rgba(15,23,42,.05); }
+      .asset-table tr { margin-bottom:14px; padding:14px; border:1px solid rgba(148,163,184,.25); border-radius:15px; background:var(--bg-card); box-shadow:0 4px 14px rgba(15,23,42,.05); }
       .asset-table td { border:0!important; padding:9px 0!important; background:transparent!important; }
       .asset-table td::before { display:block; margin-bottom:6px; color:var(--text-sub); font-size:.68rem; font-weight:800; letter-spacing:.04em; }
       .asset-table td:nth-child(1)::before { content:'資產項目與持有時間'; }
@@ -324,6 +324,37 @@
       .stress-chart-card { height:390px; }
       .health-explain ul { padding-left:20px; font-size:.76rem; }
     }
+    /* PDF export compatibility: html2canvas-safe capture state */
+    body.pdf-exporting { background:#fff !important; }
+    body.pdf-exporting #dashboard-container {
+      max-width:1200px !important;
+      width:1200px !important;
+      padding:18px 18px 36px !important;
+      margin:0 auto !important;
+      background:#fff !important;
+    }
+    body.pdf-exporting .top-shell {
+      position:static !important;
+      margin:0 0 18px !important;
+      padding:0 !important;
+      backdrop-filter:none !important;
+      -webkit-backdrop-filter:none !important;
+      background:#fff !important;
+    }
+    body.pdf-exporting .asset-table thead { position:static !important; }
+    body.pdf-exporting .hero-card,
+    body.pdf-exporting .chart-card,
+    body.pdf-exporting .section-card,
+    body.pdf-exporting .control-zone,
+    body.pdf-exporting .notes-box,
+    body.pdf-exporting .stress-chart-card {
+      break-inside:avoid;
+      page-break-inside:avoid;
+      box-shadow:none !important;
+    }
+    body.pdf-exporting .privacy-banner { break-inside:avoid; page-break-inside:avoid; }
+    body.pdf-exporting .mobile-toolbar-toggle { display:none !important; }
+
     @media print {
       body { background:white; }
       .top-shell { position:static; background:white; }
@@ -338,7 +369,7 @@
   <!-- Header -->
   <div class="top-shell"><div class="header">
     <div>
-      <span class="brand-kicker"><i class="fas fa-shield-heart"></i> Financial Simple V2.1.2</span>
+      <span class="brand-kicker"><i class="fas fa-shield-heart"></i> Financial Simple V2.1.3</span>
       <h1 style="margin:3px 0 0; color:var(--c-blue)">個人財務風險儀表板</h1>
       <span class="subtitle">看懂資產、現金流與壓力情境，資料僅儲存在這台裝置</span>
     </div>
@@ -1180,17 +1211,83 @@
     if(chartStress&&stressSeries){chartStress.data.labels=stressSeries.map(x=>x.label);chartStress.data.datasets[0].data=stressSeries.map(x=>x.net);chartStress.data.datasets[1].data=stressSeries.map(x=>x.flow);chartStress.update();}
   }
 
-  function exportPDF() {
+  async function exportPDF() {
     const el = document.getElementById('dashboard-container');
+    if (!el) {
+      alert('❌ 找不到報表內容，無法匯出 PDF。');
+      return;
+    }
+
+    // html2pdf 由 CDN 載入；若被網路、擴充功能或 CSP 擋住，提供可用的瀏覽器列印備援。
+    if (typeof window.html2pdf !== 'function') {
+      const usePrint = confirm('PDF 元件尚未載入。\n\n可能是網路、廣告阻擋器或 CDN 被擋。\n按「確定」改用瀏覽器列印，你可以在列印視窗選擇「另存為 PDF」。');
+      if (usePrint) window.print();
+      return;
+    }
+
+    if (window.__pdfExporting) return;
+    window.__pdfExporting = true;
+    document.body.classList.add('pdf-exporting');
+    showToast('正在產生 PDF，請勿關閉頁面');
+
+    const filename = `Financial_Simple_${new Date().toISOString().slice(0,10)}.pdf`;
     const opt = {
-        margin: [5, 5, 5, 5],
-        filename: '財務自由報告_Strategy.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS:true },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      margin: [6, 6, 6, 6],
+      filename,
+      image: { type: 'jpeg', quality: 0.94 },
+      pagebreak: { mode: ['css', 'legacy'], avoid: ['.hero-card', '.chart-card', '.section-card', '.notes-box', '.stress-chart-card'] },
+      html2canvas: {
+        scale: 1.35,
+        useCORS: true,
+        allowTaint: false,
+        backgroundColor: '#ffffff',
+        logging: false,
+        scrollX: 0,
+        scrollY: 0,
+        windowWidth: 1240,
+        onclone: (doc) => {
+          const body = doc.body;
+          body.classList.add('pdf-exporting');
+          body.classList.remove('privacy-mode');
+
+          // 匯出時解除 sticky / backdrop-filter，避免 html2canvas 重複或解析異常。
+          doc.querySelectorAll('.top-shell').forEach(node => {
+            node.style.position = 'static';
+            node.style.backdropFilter = 'none';
+            node.style.webkitBackdropFilter = 'none';
+          });
+          doc.querySelectorAll('.asset-table thead').forEach(node => node.style.position = 'static');
+
+          // textarea 的「目前值」同步到文字內容，確保策略筆記可被畫進 PDF。
+          doc.querySelectorAll('textarea').forEach(node => {
+            const original = document.getElementById(node.id);
+            if (original) {
+              node.value = original.value;
+              node.textContent = original.value;
+            }
+          });
+        }
+      },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait', compress: true }
     };
-    alert("正在產生 PDF (含策略筆記)，請稍候...");
-    html2pdf().set(opt).from(el).save();
+
+    try {
+      // 等待 Chart.js 把最後一次動畫畫完，避免 PDF 圖表空白。
+      if (typeof chartAsset !== 'undefined' && chartAsset) chartAsset.update('none');
+      if (typeof chartFlow !== 'undefined' && chartFlow) chartFlow.update('none');
+      if (typeof chartStress !== 'undefined' && chartStress) chartStress.update('none');
+      await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      await window.html2pdf().set(opt).from(el).save();
+      showToast('PDF 已匯出');
+    } catch (err) {
+      console.error('PDF export failed:', err);
+      const msg = err && err.message ? err.message : String(err || '未知錯誤');
+      const usePrint = confirm(`❌ PDF 匯出失敗：${msg}\n\n按「確定」改用瀏覽器列印，並選擇「另存為 PDF」。`);
+      if (usePrint) window.print();
+    } finally {
+      document.body.classList.remove('pdf-exporting');
+      window.__pdfExporting = false;
+    }
   }
 
   function saveData() {
